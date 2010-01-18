@@ -1,0 +1,6 @@
+EXPORTS	
+	?IsSubscribed@CIpVmbxInterface@@QBEHKAAH@Z @ 1 NONAME ; int CIpVmbxInterface::IsSubscribed(unsigned long, int &) const
+	?NewL@CIpVmbxEngine@@SAPAV1@AAVCIpVmbxInterface@@@Z @ 2 NONAME ; class CIpVmbxEngine * CIpVmbxEngine::NewL(class CIpVmbxInterface &)
+	?NewL@CIpVmbxInterface@@SAPAV1@AAVMIpVmbxObserver@@@Z @ 3 NONAME ; class CIpVmbxInterface * CIpVmbxInterface::NewL(class MIpVmbxObserver &)
+	?SubscribeL@CIpVmbxInterface@@QAEXKAAVCSIPProfile@@@Z @ 4 NONAME ; void CIpVmbxInterface::SubscribeL(unsigned long, class CSIPProfile &)
+	?UnsubscribeL@CIpVmbxInterface@@QAEXK@Z @ 5 NONAME ; void CIpVmbxInterface::UnsubscribeL(unsigned long)

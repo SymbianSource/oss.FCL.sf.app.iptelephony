@@ -1,0 +1,59 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  mmp-file
+*
+*/
+
+
+// To get the APP_LAYER_SYSTEMINCLUDE-definition
+#include <platform_paths.hrh>
+
+#include <data_caging_paths.hrh>
+
+TARGET             ipvoicemailengine.dll
+TARGETTYPE         DLL
+UID                0x1000008D     0x1020596F
+
+VENDORID           VID_DEFAULT
+CAPABILITY         CAP_GENERAL_DLL
+
+
+
+SOURCEPATH         ../src
+SOURCE             ipvmbxengine.cpp
+SOURCE             ipvmbxeventmonitor.cpp 
+SOURCE             ipvmbxbase.cpp
+SOURCE             ipvmbxinterface.cpp
+SOURCE             ipvmbxparsetype.cpp
+
+START RESOURCE ipvoicemailengine.rss
+HEADER
+TARGETPATH RESOURCE_FILES_DIR
+LANGUAGE_IDS
+END //RESOURCE
+
+USERINCLUDE        ../inc
+
+// Default system include paths for application layer modules.
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY            euser.lib
+LIBRARY            etext.lib           // for CParaFormatLayer, CCharFormatLayer, CRichText
+LIBRARY            msgs.lib efsrv.lib gsmu.lib smcm.lib //Messaging SMS
+LIBRARY            mceclient.lib
+LIBRARY            serviceprovidersettings.lib
+LIBRARY            sipprofilecli.lib
+LIBRARY            charconv.lib 
+LIBRARY            commonengine.lib
+

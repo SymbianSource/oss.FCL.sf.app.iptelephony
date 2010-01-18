@@ -1,0 +1,47 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Device Management General VoIP settings adapter
+*
+*/
+
+
+#include "defaultcaps.hrh"
+#include  <platform_paths.hrh>
+
+CAPABILITY              CAP_ECOM_PLUGIN
+TARGET                  nsmldmgeneralvoipsettingsadapter.dll
+TARGETTYPE              PLUGIN
+UID                     0x10009D8D 0x10275414
+VENDORID                VID_DEFAULT
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+
+SOURCEPATH      ../src
+USERINCLUDE     ../inc
+
+SOURCE                  NSmlDmGeneralVoIPSettingsAdapter.cpp
+
+START RESOURCE          NSmlDmGeneralVoIPSettingsAdapter.rss
+END
+
+LIBRARY                 euser.lib
+LIBRARY                 ecom.lib
+LIBRARY                 nsmldebug.lib
+LIBRARY                 charconv.lib
+LIBRARY                 centralrepository.lib
+LIBRARY                 sysutil.lib
+LIBRARY                 rcse.lib
+LIBRARY                 featmgr.lib
+

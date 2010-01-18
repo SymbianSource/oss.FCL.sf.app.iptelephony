@@ -1,0 +1,4 @@
+<?xml version="1.0" standalone="yes" ?> 
+ <backup_registration>
+  <dbms_backup policy="10202869" /> 
+ </backup_registration>

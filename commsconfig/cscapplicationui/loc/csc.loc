@@ -1,0 +1,90 @@
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for project CSC
+*
+*/
+
+
+
+// d: CSC applications name on app grid
+// l: cell_app_pane_t1
+// r: VoIP Rel3.0 
+//
+#define qtn_set_folder_conn_service_configurator                       "Internet communications settings"
+
+
+// d:Title pane text
+// l:title_pane_t2/opt9
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_title                                             "Internet communications settings"
+
+
+// d:Service item text in service view
+// d:%U represents service name
+// l:list_double2_large_graphic_pane
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_service_settings                                  "%U settings"
+
+
+// d:Text in service configuration confirmation note
+// d: %U represents service name
+// l:popup_note_window
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_query_configure_service                           "Service %U not yet configured. Configure now?"
+
+
+// d:Text in unable to configure service information note
+// l:popup_note_window
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_error_note_unable_to_configure                    "Unable to configure service"
+
+// d:Text in unable to delete service information note
+// d: %U represents service name
+// l:popup_note_window
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_error_note_unable_to_delete                       "Service %U is in use, unable to delete"
+
+
+// d:Text in delete service confirmation query
+// d:%U represents service name
+// l:popup_note_window
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_delete_service_settings                           "Delete %U settings?"
+
+
+// d:Options menu item text for service deletion
+// l:list_single_pane_t1_cp2
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_option_delete_service                             "Delete service"
+
+
+// d:Text in removing service wait note
+// l:popup_note_wait_window
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_removing_service                                  "Removing service"
+
+
+// d:Text in main pane when there are no services or plugins installed.
+// l:main_list_empty_pane
+// r:VoIP Rel3.0 
+//
+#define qtn_voip_csc_no_services_installed                             "No services installed"

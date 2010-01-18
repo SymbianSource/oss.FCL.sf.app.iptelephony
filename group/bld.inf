@@ -1,0 +1,36 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  
+*
+*/
+
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+
+PRJ_MMPFILES
+
+#include "../richcallsettingsengine/group/bld.inf"
+#include "../voipplugins/group/bld.inf"
+#include "../commsconfig/group/bld.inf"
+#include "../convergedconnectionhandler/group/bld.inf"
+#include "../sipvoipprovider/group/bld.inf"
+#include "../callcontinuity/group/bld.inf"
+#include "../iptel_plat/group/bld.inf"
+
+PRJ_TESTMMPFILES
+
+//  End of File  

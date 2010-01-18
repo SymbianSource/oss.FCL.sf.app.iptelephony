@@ -1,0 +1,139 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project SVP
+*
+*/
+
+// To get the APP_LAYER_SYSTEMINCLUDE-definition
+#include <platform_paths.hrh>
+
+TARGET                  svp.dll
+TARGETTYPE              PLUGIN
+
+// 271066503	0x10282587	 SIP VoIP Provider 	ecom dll uid 
+// 271066504	0x10282588	 SIP VoIP Provider	ecom interface uid
+// 271066505	0x10282589	 SIP VoIP Provider	ecom implementation uid
+
+// ECOM Dll recognition UID followed by the unique UID for this dll
+UID                     0x10009D8D 0x10282587
+
+CAPABILITY              CAP_ECOM_PLUGIN 
+VENDORID                VID_DEFAULT
+
+// svp controller
+SOURCEPATH              ../src
+SOURCE                  svpcontroller.cpp
+SOURCE                  svpsessionbase.cpp
+SOURCE                  svpmosession.cpp
+SOURCE                  svpmtsession.cpp
+SOURCE                  svpemergencysession.cpp
+SOURCE                  svputility.cpp
+SOURCE                  svpproxy.cpp
+SOURCE                  svpuriparser.cpp
+SOURCE                  svptimer.cpp
+SOURCE                  svppropertywatch.cpp
+SOURCE                  svpvolumeobserver.cpp
+SOURCE                  svpforwardprovider.cpp
+SOURCE                  svppositioningprovider.cpp
+SOURCE                  svpemergencyiapprovider.cpp
+SOURCE                  svpemergencyconnection.cpp
+SOURCE                  svpsslogcall.cpp
+SOURCE                  svpsupplementaryservices.cpp
+SOURCE                  svpdtmfeventgenerator.cpp
+SOURCE                  svpaudioutility.cpp
+SOURCE                  svprtpobserver.cpp
+SOURCE                  svprtpobserverrequest.cpp
+SOURCE                  svpsettings.cpp
+
+// svp hold
+SOURCEPATH              ../svphold/src
+SOURCE                  svpholdattributehandler.cpp
+SOURCE                  svpholdmediahandler.cpp
+SOURCE                  svpholdcontroller.cpp
+SOURCE                  svpholdcontext.cpp
+SOURCE                  svpholdstatebase.cpp                  
+SOURCE                  svpholdconnectedstate.cpp             
+SOURCE                  svpholddhstate.cpp
+SOURCE                  svpholdinstate.cpp
+SOURCE                  svpholdoutstate.cpp
+SOURCE                  svpholdoutestablishingstate.cpp
+SOURCE                  svpholdinestablishingstate.cpp
+
+// svp transfer
+SOURCEPATH              ../svptransfer/src
+SOURCE                  svptransfercontroller.cpp
+SOURCE                  svptransferstatecontext.cpp
+SOURCE                  svptransferstatebase.cpp
+SOURCE                  svptransferidlestate.cpp
+SOURCE                  svptransferpendingstate.cpp
+SOURCE                  svptransferacceptedstate.cpp
+SOURCE                  svptransferterminatingstate.cpp
+SOURCE                  svptransferterminatedstate.cpp
+
+// user include paths
+USERINCLUDE             ../inc
+USERINCLUDE             ../svphold/inc
+USERINCLUDE             ../svptransfer/inc
+USERINCLUDE             ../../inc
+
+// system include paths
+SYSTEMINCLUDE           /epoc32/include/ecom
+SYSTEMINCLUDE           ../../inc    // IPTelephony internal headers
+APP_LAYER_SYSTEMINCLUDE
+
+SOURCEPATH              ../data
+START RESOURCE          10282587.RSS
+TARGET                  svp.rsc
+END
+
+
+LIBRARY                 bafl.lib 
+LIBRARY                 euser.lib
+LIBRARY                 ecom.lib
+LIBRARY                 mceclient.lib  
+LIBRARY                 rcse.lib
+LIBRARY                 centralrepository.lib    // for call waiting value
+LIBRARY                 sipclient.lib            // for keepalive value
+LIBRARY                 sipprofilecli.lib        // for keepalive value
+LIBRARY                 sipcodec.lib             // for sipstring
+LIBRARY                 inetprotutil.lib         // for escape utils 
+LIBRARY                 cenrepnotifhandler.lib   // for volume watcher
+LIBRARY                 sdpcodec.lib             // for connection field
+LIBRARY                 lbs.lib                  // for positioning provider
+LIBRARY                 connmon.lib              // for connection monitor
+LIBRARY                 commdb.lib               // for TCommDbConnPref
+LIBRARY                 insock.lib               // for TInetAddr class
+LIBRARY                 esock.lib                // for RSocket class
+LIBRARY                 estor.lib                // for RBufWriteStream class
+LIBRARY                 sysutil.lib             // for SW version
+LIBRARY                 platformenv.lib         // for phonemodel
+
+                        // Symbian OS general
+LIBRARY                 cone.lib 
+LIBRARY                 efsrv.lib
+LIBRARY telephonyaudiorouting.lib 		// for tracking audio routing
+// for Log call service
+LIBRARY			apgrfx.lib
+LIBRARY			apparc.lib 
+LIBRARY			logcli.lib
+LIBRARY			logseng.lib
+LIBRARY			logwrap.lib
+LIBRARY			pbkeng.lib 
+LIBRARY			charconv.lib 
+LIBRARY			pbkview.lib 
+LIBRARY			voipeventlog.lib	// for VoIP event logger
+LIBRARY                 ipapputils.lib          // CIpAppPhoneUtils, CIPAppUtilsAddressResolver
+LIBRARY                 callprovider.lib
+LIBRARY                 serviceprovidersettings.lib
+

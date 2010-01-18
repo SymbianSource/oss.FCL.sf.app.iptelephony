@@ -1,0 +1,8 @@
+EXPORTS
+	_ZN13CIpVmbxEngine4NewLER16CIpVmbxInterface @ 1 NONAME
+	_ZN16CIpVmbxInterface10SubscribeLEmR11CSIPProfile @ 2 NONAME
+	_ZN16CIpVmbxInterface12UnsubscribeLEm @ 3 NONAME
+	_ZN16CIpVmbxInterface4NewLER15MIpVmbxObserver @ 4 NONAME
+	_ZNK16CIpVmbxInterface12IsSubscribedEm @ 5 NONAME ABSENT
+	_ZNK16CIpVmbxInterface12IsSubscribedEmRi @ 6 NONAME
+

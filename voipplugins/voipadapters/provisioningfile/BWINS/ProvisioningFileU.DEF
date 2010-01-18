@@ -1,0 +1,6 @@
+EXPORTS
+	?NewL@CWPProvisioningFile@@SAPAV1@V?$TBuf@$0BAA@@@@Z @ 1 NONAME ; class CWPProvisioningFile * CWPProvisioningFile::NewL(class TBuf<256>)
+	?ProvFileContainsIapL@CWPProvisioningFile@@QAEHXZ @ 2 NONAME ; int CWPProvisioningFile::ProvFileContainsIapL(void)
+	?ProvFileL@CWPProvisioningFile@@QAEXAAK@Z @ 3 NONAME ; void CWPProvisioningFile::ProvFileL(unsigned long &)
+	?ProvFileL@CWPProvisioningFile@@QAEXXZ @ 4 NONAME ; void CWPProvisioningFile::ProvFileL(void)
+

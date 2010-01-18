@@ -1,0 +1,42 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resources for VoIP adapter.
+*
+*/
+
+
+//  RESOURCE IDENTIFIER
+
+//  INCLUDES
+#include <badef.rh>
+#include "wpvoipadapter.loc"
+
+// Rich text labels
+RESOURCE LBUF r_qtn_sm_head_voip
+	{
+	txt = qtn_sm_head_voip;
+	}
+RESOURCE LBUF r_qtn_sm_default_name_voip
+	{
+	txt = qtn_sm_default_name_voip;
+	}
+RESOURCE LBUF r_qtn_sm_provider_voip
+	{
+	txt = qtn_sm_provider_voip;
+	}
+RESOURCE LBUF r_qtn_sm_voipid_default
+	{
+	txt = qtn_sm_provider_voip;
+	}
+// End of file.

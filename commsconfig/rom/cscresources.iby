@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2005 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description: 
+*       Resources IBY file for CSC Application
+*
+*
+*/
+
+
+#ifndef CSCRESOURCES_IBY
+#define CSCRESOURCES_IBY
+
+
+DATA=DATAZ_\RESOURCE_FILES_DIR\cscsettingsui.rsc	RESOURCE_FILES_DIR\cscsettingsui.rsc
+DATA=DATAZ_\RESOURCE_FILES_DIR\cscgspluginrsc.rsc   RESOURCE_FILES_DIR\cscgspluginrsc.rsc
+
+S60_APP_RESOURCE(CSC)
+S60_APP_CAPTION(CSC)
+
+
+#endif //CSCRESOURCES_IBY

@@ -1,0 +1,317 @@
+/*
+* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for project CSC
+*
+*/
+
+
+NAME SECO
+
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.loc>
+#include <appinfo.rh>
+
+#include <csc.loc>
+#include "csc.hrh"
+
+
+// -----------------------------------------------------------------------------
+//
+// Define the resource file signature 
+// This resource should be empty
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+
+// -----------------------------------------------------------------------------
+//
+// Default Document Name
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_default_document_name
+    {
+    buf="";
+    }
+
+// -----------------------------------------------------------------------------
+//
+// Define default menu and status pane
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE EIK_APP_INFO 
+    {
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+// r_csc_service_view_title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_csc_service_view_title
+    {
+    buf = qtn_voip_csc_title;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_csc_serviceview_menubar
+// Menubar for CSC service view
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_csc_serviceview_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_csc_serviceview_menu;
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+// r_csc_serviceview_menu
+// Menu for CSC service view "Options"
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_csc_serviceview_menu
+    {
+    items = 
+        {
+        MENU_ITEM
+            {
+            command = EAknSoftkeyOpen;
+            txt = qtn_options_open;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = EAknSoftkeySelect;
+            txt = qtn_cffh_options_select;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ECSCCommandDelete;
+            txt = qtn_voip_csc_option_delete_service;
+            },
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM
+            {
+            command = EAknSoftkeyExit;
+            txt = qtn_options_exit;
+            }
+        };
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+// r_csc_view_service
+// Service view resource
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_csc_view_service
+    {
+    menubar = r_csc_serviceview_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+    }
+
+//----------------------------------------------------
+//   
+//    r_csc_softkeys_options_exit_open
+//    Text association with MSK ( OPEN )
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_csc_softkeys_options_exit_open
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyExit; 
+            txt = text_softkey_exit; 
+            },
+        CBA_BUTTON 
+            {
+            id=ECSCCmdOpen; 
+            txt = qtn_msk_open;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_csc_msk_open
+//    Middle softkey label: open.
+//
+// -----------------------------------------------------------------------------
+//    
+RESOURCE TBUF r_csc_msk_open
+    {
+    buf = qtn_msk_open;
+    }
+
+// -----------------------------------------------------------------------------
+//   
+//    r_csc_msk_select
+//    Middle softkey label: select.
+//
+// -----------------------------------------------------------------------------
+//    
+RESOURCE TBUF r_csc_msk_select
+    {
+    buf = qtn_msk_select;
+    }
+
+// -----------------------------------------------------------------------------
+//    
+//    r_csc_configure_service_query
+//    Configure service query.
+//
+// -----------------------------------------------------------------------------
+//     
+RESOURCE DIALOG r_csc_configure_service_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = r_qtn_csc_configure_service_query;
+                };
+            }
+        };
+    }  
+
+// -----------------------------------------------------------------------------
+//    
+//    r_csc_delete_service_query
+//    Delete service confirmation query.
+//
+// -----------------------------------------------------------------------------
+//     
+RESOURCE DIALOG r_csc_delete_service_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = r_qtn_csc_delete_service_query;
+                };
+            }
+        };
+    }
+
+
+//**RESOURCE STRINGS**
+
+RESOURCE TBUF r_qtn_csc_service_listbox_item
+    {
+    buf=qtn_voip_csc_service_settings;
+    }
+
+RESOURCE TBUF r_qtn_csc_configure_service_query
+    {
+    buf=qtn_voip_csc_query_configure_service;
+    }
+
+RESOURCE TBUF r_qtn_csc_delete_service_query
+    {
+    buf=qtn_voip_csc_delete_service_settings;
+    }
+   
+RESOURCE TBUF r_qtn_csc_unable_to_configure_note
+   {
+   buf=qtn_voip_csc_error_note_unable_to_configure;
+   }
+
+RESOURCE TBUF r_qtn_csc_unable_to_delete_note
+   {
+   buf=qtn_voip_csc_error_note_unable_to_delete;
+   }
+
+RESOURCE TBUF r_qtn_csc_removing_service
+    {
+    buf=qtn_voip_csc_removing_service;
+    }
+
+RESOURCE TBUF r_qtn_csc_no_services_installed
+    {
+    buf=qtn_voip_csc_no_services_installed;
+    }
+   
+//**RESOURCE STRINGS END**
+
+// -----------------------------------------------------------------------------
+//
+// r_csc_localisable_app_info
+// Defines caption and icon
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE LOCALISABLE_APP_INFO r_csc_localisable_app_info
+    {
+    short_caption = qtn_set_folder_conn_service_configurator;
+    caption_and_icon = 
+    CAPTION_AND_ICON_INFO
+        {
+        caption = qtn_set_folder_conn_service_configurator;
+#ifdef __SCALABLE_ICONS
+        number_of_icons = 1;
+        icon_file = "\\resource\\apps\\csc_aif.mif";        
+#else
+        number_of_icons = 2;
+        icon_file = "\\resource\\apps\\csc_aif.mbm";        
+#endif // __SCALABLE_ICONS
+        };
+    }
+    

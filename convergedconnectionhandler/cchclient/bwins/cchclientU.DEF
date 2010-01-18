@@ -1,0 +1,30 @@
+EXPORTS
+	??0RCCHClient@@QAE@XZ @ 1 NONAME ; RCCHClient::RCCHClient(void)
+	??0RCCHServer@@QAE@XZ @ 2 NONAME ; RCCHServer::RCCHServer(void)
+	??1RCCHClient@@UAE@XZ @ 3 NONAME ; RCCHClient::~RCCHClient(void)
+	?Close@RCCHClient@@QAEXXZ @ 4 NONAME ; void RCCHClient::Close(void)
+	?Connect@RCCHServer@@QAEHXZ @ 5 NONAME ; int RCCHServer::Connect(void)
+	?DisableService@RCCHClient@@QBEXABVTServiceSelection@@AAVTRequestStatus@@@Z @ 6 NONAME ; void RCCHClient::DisableService(class TServiceSelection const &, class TRequestStatus &) const
+	?DisableServiceCancel@RCCHClient@@QBEXXZ @ 7 NONAME ; void RCCHClient::DisableServiceCancel(void) const
+	?Disconnect@RCCHServer@@QAEXXZ @ 8 NONAME ; void RCCHServer::Disconnect(void)
+	?EnableService@RCCHClient@@QBEXABVTServiceSelection@@AAVTRequestStatus@@H@Z @ 9 NONAME ; void RCCHClient::EnableService(class TServiceSelection const &, class TRequestStatus &, int) const
+	?EnableServiceCancel@RCCHClient@@QBEXXZ @ 10 NONAME ; void RCCHClient::EnableServiceCancel(void) const
+	?FreeService@RCCHClient@@QAEHABVTServiceSelection@@@Z @ 11 NONAME ; int RCCHClient::FreeService(class TServiceSelection const &)
+	?GetConnectionInfo@RCCHClient@@QBEXABVTServiceSelection@@AAV?$TPckgBuf@VTServiceConnectionInfo@@@@AAVTRequestStatus@@@Z @ 12 NONAME ; void RCCHClient::GetConnectionInfo(class TServiceSelection const &, class TPckgBuf<class TServiceConnectionInfo> &, class TRequestStatus &) const
+	?GetConnectionInfoCancel@RCCHClient@@QBEXXZ @ 13 NONAME ; void RCCHClient::GetConnectionInfoCancel(void) const
+	?GetServiceInfo@RCCHClient@@QBEHABVTServiceSelection@@AAVTDes16@@@Z @ 14 NONAME ; int RCCHClient::GetServiceInfo(class TServiceSelection const &, class TDes16 &) const
+	?GetServiceState@RCCHClient@@QBEHABVTServiceSelection@@AAW4TCCHSubserviceState@@@Z @ 15 NONAME ; int RCCHClient::GetServiceState(class TServiceSelection const &, enum TCCHSubserviceState &) const
+	?GetServicesCancel@RCCHClient@@QBEXXZ @ 16 NONAME ; void RCCHClient::GetServicesCancel(void) const
+	?GetServicesL@RCCHClient@@QAEXAAV?$CArrayFixFlat@VTCCHService@@@@AAVTRequestStatus@@@Z @ 17 NONAME ; void RCCHClient::GetServicesL(class CArrayFixFlat<class TCCHService> &, class TRequestStatus &)
+	?GetServicesL@RCCHClient@@QAEXABVTServiceSelection@@AAV?$CArrayFixFlat@VTCCHService@@@@AAVTRequestStatus@@@Z @ 18 NONAME ; void RCCHClient::GetServicesL(class TServiceSelection const &, class CArrayFixFlat<class TCCHService> &, class TRequestStatus &)
+	?IsReserved@RCCHClient@@QBEHABVTServiceSelection@@@Z @ 19 NONAME ; int RCCHClient::IsReserved(class TServiceSelection const &) const
+	?Open@RCCHClient@@QAEHABVRCCHServer@@@Z @ 20 NONAME ; int RCCHClient::Open(class RCCHServer const &)
+	?RegisterToServer@RCCHClient@@QBEXAAVTRequestStatus@@@Z @ 21 NONAME ; void RCCHClient::RegisterToServer(class TRequestStatus &) const
+	?RegisterToServerCancel@RCCHClient@@QBEXXZ @ 22 NONAME ; void RCCHClient::RegisterToServerCancel(void) const
+	?ReserveService@RCCHClient@@QAEHABVTServiceSelection@@@Z @ 23 NONAME ; int RCCHClient::ReserveService(class TServiceSelection const &)
+	?SetConnectionInfo@RCCHClient@@QAEXABV?$TPckgBuf@VTServiceConnectionInfo@@@@AAVTRequestStatus@@@Z @ 24 NONAME ; void RCCHClient::SetConnectionInfo(class TPckgBuf<class TServiceConnectionInfo> const &, class TRequestStatus &)
+	?SetConnectionInfoCancel@RCCHClient@@QBEXXZ @ 25 NONAME ; void RCCHClient::SetConnectionInfoCancel(void) const
+	?StartServer@RCCHServer@@IBEHXZ @ 26 NONAME ; int RCCHServer::StartServer(void) const
+	?SubscribeToEvents@RCCHClient@@QBEXABVTServiceSelection@@AAV?$TPckgBuf@VTServiceStatus@@@@AAVTRequestStatus@@@Z @ 27 NONAME ; void RCCHClient::SubscribeToEvents(class TServiceSelection const &, class TPckgBuf<class TServiceStatus> &, class TRequestStatus &) const
+	?SubscribeToEventsCancel@RCCHClient@@QBEXXZ @ 28 NONAME ; void RCCHClient::SubscribeToEventsCancel(void) const
+

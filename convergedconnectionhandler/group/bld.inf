@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for project Converged Connection
+                 Handler (CCH)
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_EXPORTS
+../rom/cch.iby CORE_APP_LAYER_IBY_EXPORT_PATH( cch.iby )
+
+// Temporarily move resource iby to core due missing localization
+//../rom/cchresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( cchresources.iby )
+../rom/cchresources.iby CORE_APP_LAYER_IBY_EXPORT_PATH( cchresources.iby )
+
+#include "../cchserver/group/bld.inf"
+#include "../cchclient/group/bld.inf"
+#include "../cchclientapi/group/bld.inf"
+

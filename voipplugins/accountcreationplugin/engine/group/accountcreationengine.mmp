@@ -1,0 +1,77 @@
+/*
+* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project file for Account Creation Plugin
+*
+*/
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+#include "../../inc/accountcreationpluginuids.hrh"
+
+TARGET      accountcreationengine.dll
+CAPABILITY  CAP_GENERAL_DLL
+TARGETTYPE  dll
+
+UID         0x1000006C 0x2000BEF3
+VENDORID    VID_DEFAULT
+
+SOURCEPATH  ../src
+SOURCE      acpprovider.cpp
+SOURCE      acpcontroller.cpp
+SOURCE      acpxmlhandler.cpp
+SOURCE      acphttphandler.cpp
+SOURCE      acpbrowserparams.cpp
+SOURCE      acpimagehandler.cpp
+
+USERINCLUDE ../inc
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE   /epoc32/include/ecom
+
+LIBRARY     bafl.lib
+LIBRARY     http.lib
+LIBRARY     euser.lib
+LIBRARY     efsrv.lib
+LIBRARY     xmlframework.lib
+LIBRARY     inetprotutil.lib
+LIBRARY     estor.lib
+LIBRARY     downloadmgruilib.lib
+LIBRARY     downloadmgr.lib 
+LIBRARY     commdb.lib 
+LIBRARY	    etel.lib
+LIBRARY     etelmm.lib
+LIBRARY     eikcore.lib
+LIBRARY     sipprofilecli.lib
+LIBRARY     apparc.lib
+LIBRARY     apgrfx.lib 
+LIBRARY     cone.lib
+LIBRARY     charconv.lib
+LIBRARY     centralrepository.lib
+LIBRARY     imageconversion.lib
+LIBRARY     fbscli.lib
+LIBRARY     egul.lib
+LIBRARY     bitmaptransforms.lib
+LIBRARY     platformenv.lib
+LIBRARY     esock.lib
+LIBRARY     sipclient.lib
+LIBRARY     xdmsettingsapi.lib
+LIBRARY     presencesettingsapi.lib 
+LIBRARY     cryptography.lib
+LIBRARY     provisioningengine.lib
+
+#ifdef __PLUG_AND_PLAY_MOBILE_SERVICES    
+LIBRARY     pnp.lib
+#endif
+LIBRARY     sysversioninfo.lib 
+// End of file.

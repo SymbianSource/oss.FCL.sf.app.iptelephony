@@ -1,0 +1,35 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Converged Connection Handler ROM definition file.
+*
+*/
+
+
+#ifndef CCH_IBY
+#define CCH_IBY
+
+
+//Server EXE
+file=ABI_DIR\BUILD_DIR\CCHServer.exe    PROGRAMS_DIR\CCHServer.exe
+
+//Client DLL
+file=ABI_DIR\BUILD_DIR\CCHClient.dll   SHARED_LIB_DIR\CCHClient.dll
+
+file=ABI_DIR\BUILD_DIR\cch.dll				 SHARED_LIB_DIR\cch.dll
+
+// CCH UI components
+ECOM_PLUGIN(cchuinotifwrapper.dll,	1020E567.RSC)
+file=ABI_DIR\BUILD_DIR\cchuinotif.dll      SHARED_LIB_DIR\cchuinotif.dll
+
+#endif // CCH_IBY

@@ -1,0 +1,87 @@
+/*
+* Copyright (c) 2007-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project CSC
+*
+*/
+
+
+#include <bldvariant.hrh>
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+TARGET          csc.exe
+EPOCSTACKSIZE   0x2700
+TARGETTYPE      exe
+UID             0x100039CE 0x10275458
+
+CAPABILITY      CAP_APPLICATION TrustedUI NetworkControl
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          cscappui.cpp
+SOURCE          cscdialog.cpp
+SOURCE          cscdocument.cpp 
+SOURCE          cscapplication.cpp 
+SOURCE          cscserviceview.cpp
+SOURCE          cscnoteutilities.cpp
+SOURCE          cscservicecontainer.cpp
+
+SOURCEPATH      ../group
+
+TARGETPATH      /system/apps/csc
+
+START RESOURCE  ../data/csc.rss
+HEADER
+TARGETPATH      APP_RESOURCE_DIR
+LANGUAGE_IDS
+END // RESOURCE
+
+USERINCLUDE     ../inc
+USERINCLUDE     ../../cscengine/inc
+SYSTEMINCLUDE   ../../../inc
+
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         cch.lib
+LIBRARY         ecom.lib
+LIBRARY         egul.lib
+LIBRARY         bafl.lib
+LIBRARY         cone.lib 
+LIBRARY         avkon.lib
+LIBRARY         euser.lib
+LIBRARY         efsrv.lib 
+LIBRARY         apgrfx.lib 
+LIBRARY         apparc.lib
+LIBRARY         eikctl.lib
+LIBRARY         hlplch.lib
+LIBRARY         fbscli.lib
+LIBRARY         featmgr.lib
+LIBRARY         eikcore.lib
+LIBRARY         aknicon.lib
+LIBRARY         eikcoctl.lib
+LIBRARY         aknskins.lib
+LIBRARY         cscengine.lib
+LIBRARY         aknnotify.lib
+LIBRARY         platformenv.lib 
+LIBRARY         commonengine.lib
+LIBRARY         cscsettingsui.lib
+LIBRARY         xspviewservices.lib
+
+
+START RESOURCE  ../data/csc_reg.rss
+DEPENDS csc.rsg
+// Do not change the UID 10003a3f below.
+TARGETPATH /private/10003a3f/apps
+END
+

@@ -1,0 +1,36 @@
+/*
+* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for GeneralVoIPSettingsAdapter
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+PRJ_PLATFORMS
+DEFAULT
+
+PRJ_EXPORTS
+../rom/wpgeneralvoipsettingsadapter.iby CORE_APP_LAYER_IBY_EXPORT_PATH( wpgeneralvoipsettingsadapter.iby )
+
+../rom/wpgeneralvoipsettingsadapterresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( wpgeneralvoipsettingsadapterresources.iby )
+
+../loc/wpgeneralvoipsettingsadapter.loc APP_LAYER_LOC_EXPORT_PATH( wpgeneralvoipsettingsadapter.loc )
+
+PRJ_MMPFILES
+./wpgeneralvoipsettingsadapter.mmp
+
+// End of file
+PRJ_TESTMMPFILES
+//../../Internal/tsrc/UT_CPGeneralVoIPSettingsAdapter/Group/UT_CWPGeneralVoIPSettingsAdapter.mmp

@@ -1,0 +1,45 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:   Project definition file for project Vcc UI property handler
+*
+*/
+
+#include <platform_paths.hrh>
+
+TARGET          vccuipropertyhandler.dll
+TARGETTYPE      DLL
+UID             0x1000008d  0x2000E5BF 
+
+//SECUREID 0x11111111
+// Capability assignment.
+CAPABILITY      CAP_GENERAL_DLL
+
+USERINCLUDE	    ../inc
+USERINCLUDE     ../../vcc/inc
+
+APP_LAYER_SYSTEMINCLUDE
+
+SOURCEPATH	  ../src
+
+SOURCE		  vccuipspropertylistener.cpp
+SOURCE		  vccuipsproperty.cpp 
+SOURCE		  vccuipropertyhandlerdllmain.cpp
+SOURCE		  Rubydebug.cpp
+
+
+nostrictdef
+
+LIBRARY		 euser.lib
+LIBRARY         efsrv.lib               //rubydebug
+

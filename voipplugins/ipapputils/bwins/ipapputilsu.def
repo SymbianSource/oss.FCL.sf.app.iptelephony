@@ -1,0 +1,21 @@
+EXPORTS
+	??1CIpAppPhoneUtils@@UAE@XZ @ 1 NONAME ; CIpAppPhoneUtils::~CIpAppPhoneUtils(void)
+	??1CSipClientResolverUtils@@UAE@XZ @ 2 NONAME ; CSipClientResolverUtils::~CSipClientResolverUtils(void)
+	?GetLocalIpAddressFromIap@CIPAppUtilsAddressResolver@@QAEHAAVTInetAddr@@K@Z @ 3 NONAME ; int CIPAppUtilsAddressResolver::GetLocalIpAddressFromIap(class TInetAddr &, unsigned long)
+	?GetPhoneModelL@CIpAppPhoneUtils@@QBEXAAVTDes16@@@Z @ 4 NONAME ; void CIpAppPhoneUtils::GetPhoneModelL(class TDes16 &) const
+	?GetTerminalTypeL@CIpAppPhoneUtils@@QBEXAAVTDes16@@@Z @ 5 NONAME ; void CIpAppPhoneUtils::GetTerminalTypeL(class TDes16 &) const
+	?GetWlanMACAddress@CIPAppUtilsAddressResolver@@QAEHAAVTDes8@@ABVTDesC8@@@Z @ 6 NONAME ; int CIPAppUtilsAddressResolver::GetWlanMACAddress(class TDes8 &, class TDesC8 const &)
+	?NewL@CIPAppUtilsAddressResolver@@SAPAV1@XZ @ 7 NONAME ; class CIPAppUtilsAddressResolver * CIPAppUtilsAddressResolver::NewL(void)
+	?NewL@CIpAppPhoneUtils@@SAPAV1@XZ @ 8 NONAME ; class CIpAppPhoneUtils * CIpAppPhoneUtils::NewL(void)
+	?NewL@CSipClientResolverUtils@@SAPAV1@XZ @ 9 NONAME ; class CSipClientResolverUtils * CSipClientResolverUtils::NewL(void)
+	?NewLC@CIPAppUtilsAddressResolver@@SAPAV1@XZ @ 10 NONAME ; class CIPAppUtilsAddressResolver * CIPAppUtilsAddressResolver::NewLC(void)
+	?NewLC@CIpAppPhoneUtils@@SAPAV1@XZ @ 11 NONAME ; class CIpAppPhoneUtils * CIpAppPhoneUtils::NewLC(void)
+	?NewLC@CSipClientResolverUtils@@SAPAV1@XZ @ 12 NONAME ; class CSipClientResolverUtils * CSipClientResolverUtils::NewLC(void)
+	?RegisterClientWithUserL@CSipClientResolverUtils@@QBEXABVTUid@@ABVTDesC8@@0@Z @ 13 NONAME ; void CSipClientResolverUtils::RegisterClientWithUserL(class TUid const &, class TDesC8 const &, class TUid const &) const
+	?UnRegisterClientWithUserL@CSipClientResolverUtils@@QBEXABVTUid@@ABVTDesC8@@@Z @ 14 NONAME ; void CSipClientResolverUtils::UnRegisterClientWithUserL(class TUid const &, class TDesC8 const &) const
+	?WlanSsidL@CIPAppUtilsAddressResolver@@QAEXKAAVTDes16@@@Z @ 15 NONAME ; void CIPAppUtilsAddressResolver::WlanSsidL(unsigned long, class TDes16 &)
+	?GetPhoneModelL@CIpAppPhoneUtils@@QBEXAAVTDes16@@AAVRFs@@@Z @ 16 NONAME ; void CIpAppPhoneUtils::GetPhoneModelL(class TDes16 &, class RFs &) const
+	?GetTerminalTypeL@CIpAppPhoneUtils@@QBEXAAVTDes16@@AAVRFs@@@Z @ 17 NONAME ; void CIpAppPhoneUtils::GetTerminalTypeL(class TDes16 &, class RFs &) const
+	?GetImplementationUidWithUserL@CSipClientResolverUtils@@QBEXABVTDesC8@@AAVTUid@@@Z @ 18 NONAME ; void CSipClientResolverUtils::GetImplementationUidWithUserL(class TDesC8 const &, class TUid &) const
+	?GetAllImplementationUidsWithUserL@CSipClientResolverUtils@@QBEXABVTDesC8@@AAV?$RArray@VTUid@@@@@Z @ 19 NONAME ; void CSipClientResolverUtils::GetAllImplementationUidsWithUserL(class TDesC8 const &, class RArray<class TUid> &) const
+
