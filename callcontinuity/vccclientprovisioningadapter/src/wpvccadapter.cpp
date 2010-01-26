@@ -544,7 +544,8 @@ void CWPVccAdapter::VisitL( CWPParameter& aParameter )
 void CWPVccAdapter::VisitLinkL( CWPCharacteristic& /*aLink*/ )
     {
     RUBY_DEBUG_BLOCK( "CWPVccAdapter::VisitLinkL" );
-    User::Leave( KErrNotSupported );
+    
+    RUBY_DEBUG0("Do nothing");
     }
 
 
