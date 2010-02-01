@@ -27,6 +27,7 @@ _LIT( KComponent, "SVP" );
 
 #include <e32svr.h>
 #include <e32cmn.h>
+#include "svpconsts.h"
 
 /*****************************************************
 * Format string for adding component to prints.
@@ -41,7 +42,7 @@ _LIT( KSVPPrintFormatString, "%S: %S" );
  */
 static inline void PrintL( const TDesC& aStr )
     {
-    HBufC* line = HBufC::NewLC( 256 );
+    HBufC* line = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr( line->Des() );
     ptr.Format( KSVPPrintFormatString(), &KComponent(), &aStr );   
     RDebug::Print( line->Des() );
@@ -57,11 +58,11 @@ static inline void Print( const TDesC& aStr )
  */
 static inline void PrintL( const TDesC& aStr, const TInt& aTInt )
     {
-    HBufC* line1 = HBufC::NewLC( 256 );
+    HBufC* line1 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr1( line1->Des() );
     ptr1.Format( aStr, aTInt );
     
-    HBufC* line2 = HBufC::NewLC( 256 );
+    HBufC* line2 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr2( line2->Des() );
     ptr2.Format( KSVPPrintFormatString(), &KComponent(), line1 );   
     RDebug::Print( line2->Des() );
@@ -77,11 +78,11 @@ static inline void Print( const TDesC& aStr, const TInt& aTInt )
  */
 static inline void PrintL( const TDesC& aStr, const TAny* aPtr )
     {
-    HBufC* line1 = HBufC::NewLC( 256 );
+    HBufC* line1 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr1( line1->Des() );
     ptr1.Format( aStr, aPtr );
     
-    HBufC* line2 = HBufC::NewLC( 256 );
+    HBufC* line2 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr2( line2->Des() );
     ptr2.Format( KSVPPrintFormatString(), &KComponent(), line1 ); 
     RDebug::Print( line2->Des() );
@@ -99,11 +100,11 @@ static inline void PrintL( const TDesC& aStr,
                            const TInt& aTInt1,
                            const TInt& aTInt2 )
     {
-    HBufC* line1 = HBufC::NewLC( 256 );
+    HBufC* line1 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr1( line1->Des() );
     ptr1.Format( aStr, aTInt1, aTInt2 );
         
-    HBufC* line2 = HBufC::NewLC( 256 );
+    HBufC* line2 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr2( line2->Des() );
     ptr2.Format( KSVPPrintFormatString(), &KComponent(), line1 );   
     RDebug::Print( line2->Des() );
@@ -123,11 +124,11 @@ static inline void PrintL( const TDesC& aStr1,
                            const TInt& aTInt,
                            const TDesC* aStr2 )
     {
-    HBufC* line1 = HBufC::NewLC( 256 );
+    HBufC* line1 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr1( line1->Des() );
     ptr1.Format( aStr1, aTInt, aStr2 );
         
-    HBufC* line2 = HBufC::NewLC( 256 );
+    HBufC* line2 = HBufC::NewLC( KSvpMaxDebugBufferSize );
     TPtr ptr2( line2->Des() );
     ptr2.Format( KSVPPrintFormatString(), &KComponent(), line1 );   
     RDebug::Print( line2->Des() );

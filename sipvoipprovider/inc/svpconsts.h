@@ -205,6 +205,9 @@ const TUint8 KSVPSemiColonMark = ';';
 
 const TUint KSVPMaxLangCodeLength = 4; 
 
+//Logging
+const TInt KSvpMaxDebugBufferSize = 256;
+
 // ipapputils
 const TUint KSVPWlanMacAddressLength = 50;
 _LIT8 ( KSVPWlanMacAddressFrmt, "-" );

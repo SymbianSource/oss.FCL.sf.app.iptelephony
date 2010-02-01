@@ -306,10 +306,16 @@ void CVccHoTrigger::WlanSignalChanged(
     
     if ( iPreviousWlanClass == iWlanClass )
         {
-        RUBY_DEBUG0( "No change in WLAN signal class -> return" );
-    
-        return;
-        }
+        if (iWlanClass == ESignalClassWeak)
+            {
+            RUBY_DEBUG0( "Signal is still weak try again to do HO" );
+            }
+        else
+            {
+            RUBY_DEBUG0( "No change in WLAN signal class -> return" );
+            return;
+            }
+          }
     else
         {
         iPreviousWlanClass = iWlanClass;
@@ -360,7 +366,7 @@ void CVccHoTrigger::GsmSignalChanged(
     // If the previous class is the same as the new one
     // - do nothing.
     
-    if ( iPreviousGsmClass == iGsmClass )
+    if ( iPreviousGsmClass == iGsmClass && iWlanClass != ESignalClassWeak  )
         {
         RUBY_DEBUG0( "No change in GSM signal class -> return" );
     
@@ -570,8 +576,8 @@ void CVccHoTrigger::TriggerHo()
 		RUBY_DEBUG0( "VccHoTrigger::TriggerHo - no immediate HO" );
 		}
 	
-	if ( iWlanClass == ESignalClassWeak &&
-	     iGsmClass == ESignalClassNormal && 
+	if ( ( iWlanClass == ESignalClassWeak || iCchServiceStatus == EServiceUnavailable )&&
+	        iGsmClass == ESignalClassNormal && 
 	     ( iPolicy.AllowedDirection() & EPsToCsAllowed  ))
 	    {
 	    RUBY_DEBUG0( "VccHoTrigger::WlanSignalChanged - NotifySubscriberL" );
@@ -657,7 +663,7 @@ TBool CVccHoTrigger::DoImmediateHo()
 		}
 	
 	else if ( (iPolicy.PreferredDomain() == EPsPreferred)  &&
-	      iWlanClass == ESignalClassNormal &&
+	      iWlanClass == ESignalClassNormal && iCchServiceStatus != EServiceUnavailable &&
 	      ( iPolicy.AllowedDirection() & ECsToPsAllowed  ) )
         {
         // Current call is CS, PS signal is ok, preferred domain is PS and 

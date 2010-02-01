@@ -711,6 +711,12 @@ void CCchUiApiImpl::DoHandleNoConnectionsCompleteL(
             MCchUiObserver::ECchUiClientOperationResultGeneralFailure;
         }
     
+    if ( iLastOperationResult != 
+        MCchUiObserver::ECchUiClientOperationResultNotSet )
+        {
+        InformObserversL( aResultParams.iServiceId );
+        }
+       
     switch ( iLastOperationResult )
         {
         case MCchUiObserver::ECchUiClientOperationResultAccessPointAdded:

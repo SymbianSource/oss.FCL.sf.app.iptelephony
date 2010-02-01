@@ -1,0 +1,52 @@
+/*
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project description file.
+*
+*/
+
+
+
+
+#include <platform_paths.hrh>
+
+//OPTION ARMCC --asm --interleave
+ALWAYS_BUILD_AS_ARM
+
+TARGET          voipprovrec.dll
+TARGETTYPE      PLUGIN
+UID             0x10009D8D 0x20026FE1
+
+CAPABILITY      CAP_ECOM_PLUGIN
+
+SOURCEPATH      ../data
+
+START RESOURCE  20026FE1.rss
+#ifdef SYMBIAN_SECURE_ECOM
+TARGET          VoIPProvRec.rsc
+#endif
+END
+
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../src
+SOURCE          VoIPProvisioningRecognizer.cpp
+
+USERINCLUDE     ../inc
+APP_LAYER_SYSTEMINCLUDE
+
+LIBRARY         EUSER.LIB
+LIBRARY         APMIME.LIB
+
+// END OF FILE
+

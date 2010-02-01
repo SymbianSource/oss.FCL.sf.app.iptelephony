@@ -161,6 +161,13 @@ TCCHSubserviceType CCCHSubserviceInfo::Type()
 //
 void CCCHSubserviceInfo::SetState( const TCCHSubserviceState aState )
     {
+    CCHLOGSTRING2( "CCCHSubserviceInfo::SetState: iPreviousState = %d", 
+        iState );
+    CCHLOGSTRING2( "CCCHSubserviceInfo::SetState: new state = %d", 
+        aState );
+    CCHLOGSTRING2( "CCCHSubserviceInfo::SetState: new state = %d", 
+        Type() );
+    iPreviousState = iState;
     iState = aState;
     }
 
@@ -235,20 +242,34 @@ void CCCHSubserviceInfo::StatusChanged()
         iType );
     CCHLOGSTRING2( "CCCHSubserviceInfo::StatusChangedL: iState %d", 
         iState );
+    CCHLOGSTRING2( "CCCHSubserviceInfo::StatusChangedL: iPreviousState %d", 
+        iPreviousState );
     CCHLOGSTRING2( "CCCHSubserviceInfo::StatusChangedL: iError %d", 
         iError );
-        
-    TServiceStatus serviceStatus;
-    serviceStatus.iConnectionInfo.iServiceSelection.iServiceId = iServiceId;
-    serviceStatus.iConnectionInfo.iServiceSelection.iType      = iType;
-    serviceStatus.iConnectionInfo.iIapId                       = iIapId;
-    serviceStatus.iConnectionInfo.iSNAPId                      = iSNAPId; 
-    serviceStatus.iConnectionInfo.iSNAPLocked                  = iSNAPLocked; 
-    serviceStatus.iState                                       = iState;
-    serviceStatus.iError                                       = iError;
     
-    // Send notify to clients
-    iServer.RequestStorage().NotifyServiceStatesChange( serviceStatus );
+    if( iPreviousState == ECCHUninitialized && iState == ECCHDisabled )
+        {
+        CCHLOGSTRING( "CCCHSubserviceInfo::StatusChangedL: Status not notified" );
+        }
+    else 
+        {
+        if ( iPreviousState == ECCHDisconnecting && iState == ECCHDisabled )
+            {
+            iPreviousState = ECCHUninitialized;
+            }
+        CCHLOGSTRING( "CCCHSubserviceInfo::StatusChangedL: Notify new status" );
+        TServiceStatus serviceStatus;
+        serviceStatus.iConnectionInfo.iServiceSelection.iServiceId = iServiceId;
+        serviceStatus.iConnectionInfo.iServiceSelection.iType      = iType;
+        serviceStatus.iConnectionInfo.iIapId                       = iIapId;
+        serviceStatus.iConnectionInfo.iSNAPId                      = iSNAPId; 
+        serviceStatus.iConnectionInfo.iSNAPLocked                  = iSNAPLocked; 
+        serviceStatus.iState                                       = iState;
+        serviceStatus.iError                                       = iError;
+        
+        // Send notify to clients
+        iServer.RequestStorage().NotifyServiceStatesChange( serviceStatus );
+        }
     CCHLOGSTRING( "CCCHSubserviceInfo::StatusChangedL: OUT" );
     }
 

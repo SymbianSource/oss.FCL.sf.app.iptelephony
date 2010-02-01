@@ -262,7 +262,11 @@ private: // data
      * Enable at start-up
      */
     TBool                           iEnableAtStartUp;
-    
+
+     /**
+     * Previous state of subservice
+     */
+    TCCHSubserviceState             iPreviousState;    
     };
 
 #endif // C_CCHSUBSERVICEINFO_H

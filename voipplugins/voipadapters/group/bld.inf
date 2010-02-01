@@ -28,6 +28,7 @@ PRJ_MMPFILES
 #include "../dmvoipadapter/group/bld.inf"
 #include "../cpvoipadapter/group/bld.inf"
 #include "../provisioningfile/group/bld.inf"
+#include "../voipxmlprovisioning/group/bld.inf"
 
 PRJ_TESTMMPFILES
 //  End of File  

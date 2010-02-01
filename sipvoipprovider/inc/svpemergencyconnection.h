@@ -46,7 +46,8 @@ public:
         ESVPNone, 
         ESVPSnapConnect, 
         ESVPConnect, 
-        ESVPSipProxyAddress
+        ESVPSipProxyAddress,
+        ESVPSipDomainAddress
         };
 
     /**
@@ -111,6 +112,10 @@ private:
     
     void RunL();
     
+    TInt RunError( TInt aError );
+    
+    void RequestSipServerDomainL();
+    
 private: // data
 
     /**
@@ -137,6 +142,11 @@ private: // data
      * SIP server address buffer
      */
     TSipServerAddrBuf iSipServerAddrBuf;
+    
+    /**
+     * SIP server domain name buffer
+     */
+    TSipServerDomainBuf iSipServerDomainBuf;
 
     /**
      * Connection
