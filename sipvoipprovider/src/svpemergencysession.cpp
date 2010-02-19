@@ -453,6 +453,11 @@ void CSVPEmergencySession::StreamStateChanged( CMceMediaStream& aStream )
         TRAP_IGNORE( StartTimerL( 
             KSVPTerminatingTime, KSVPRemoteEndDiedExpired ) )
         }
+    else if ( CMceMediaStream::EStreaming == aStream.State() )
+        {
+        SVPDEBUG1("CSVPEmergencySession::StreamStateChanged() - EStreaming")
+        StopTimer( KSVPRemoteEndDiedExpired );
+        }
     }
 
 // ---------------------------------------------------------------------------

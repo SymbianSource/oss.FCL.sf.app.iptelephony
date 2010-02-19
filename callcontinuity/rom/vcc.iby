@@ -27,10 +27,10 @@ file=ABI_DIR\BUILD_DIR\vccutils.dll 			SHARED_LIB_DIR\vccutils.dll
 data=ZSYSTEM\install\vcc_stub.sis 			System\Install\vcc_stub.sis
 
 // wpvccprovisioning
-ECOM_PLUGIN_UDEB(wpvccadapter.dll,wpvccadapter.rsc)
+ECOM_PLUGIN(wpvccadapter.dll,wpvccadapter.rsc)
 
 // nsmldmvccadapter
-ECOM_PLUGIN_UDEB(nsmldmvccadapter.dll,nsmldmvccadapter.rsc)
+ECOM_PLUGIN(nsmldmvccadapter.dll,nsmldmvccadapter.rsc)
 
 // vcchotrigger
 file=ABI_DIR\BUILD_DIR\vcchotrigger.dll        		SHARED_LIB_DIR\vcchotrigger.dll

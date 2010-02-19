@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -151,27 +151,9 @@ CCSCServiceView::~CCSCServiceView()
     
     delete iSettingsUi;
     delete iContainer;
-      
+    delete iEngTimer;
+    
     CSCDEBUG( "CCSCServiceView::~CCSCServiceView - end" );
-    }
-    
-    
-// ---------------------------------------------------------------------------
-// Updates container data because of layout change.
-// ---------------------------------------------------------------------------
-//
-void CCSCServiceView::UpdateLayout( TInt aType )
-    {
-    CSCDEBUG( "CCSCServiceView::UpdateLayout - begin" );
-        
-    if ( iContainer )
-        {
-        iContainer->SetRect( ClientRect() );
-        TRAP_IGNORE( iContainer->UpdateServiceViewL() );
-        iContainer->HandleResourceChange( aType );
-        }
-    
-    CSCDEBUG( "CCSCServiceView::UpdateLayout - end" );
     }
 
 
@@ -513,70 +495,68 @@ void CCSCServiceView::SetTitlePaneTextL() const
 TBool CCSCServiceView::HandleServiceConfigurationL( TUid aUid )
     {
     CSCDEBUG( "CCSCServiceView::HandleServiceConfigurationL" );
-     
+    
     TInt initializedCount( iServicePluginHandler.PluginCount( 
             CCSCEngServicePluginHandler::EInitialized ) );
-     
+    
     TBool canceled( EFalse );
     TServicePluginInfo pluginInfo;
-     
+    
+    iUid = aUid;
+    
     if ( KNullUid != aUid ) 
         {
         for ( TInt i( 0 ) ; i < initializedCount ; i++ )
             {            
             pluginInfo = iServicePluginHandler.ItemFromPluginInfoArray( i );
-             
+            
             if ( aUid == pluginInfo.iPluginsUid && !pluginInfo.iProvisioned )
                 {                
                 iStartupHandler.ResetUid( CCSCEngStartupHandler::EPluginUid );
-                 
+                
                 iOfferedPluginUids.Append( pluginInfo.iPluginsUid );
-                            
-                CCSCNoteUtilities::TCSCNoteType 
-                    type = CCSCNoteUtilities::ECSCConfigureServiceQuery;
-                                                     
-                if ( CCSCNoteUtilities::ShowCommonQueryL( 
-                    type, pluginInfo.iProviderName ) )
-                    {        
-                    iServicePluginHandler.DoProvisioningL( 
-                        pluginInfo.iPluginsUid, KCSCServiceViewId );
-                    }
-                else
-                    {                    
-                    canceled = ETrue;
-                    }
+                
+                iPluginInfo = pluginInfo;
+                
+                iNextPluginIndex = i;
+                
+                delete iEngTimer;
+                iEngTimer = NULL;
+                iEngTimer = CCSCEngTimer::NewL( *this );
+                
+                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
+                
+                break;
                 }
             }   
-         
+        
         }
     else
         {
         for ( TInt j( 0 ) ; j < initializedCount ; j++ )
             {            
             pluginInfo = iServicePluginHandler.ItemFromPluginInfoArray( j );                      
-             
+            
             if ( !pluginInfo.iProvisioned )
                 {   
                 iOfferedPluginUids.Append( pluginInfo.iPluginsUid );
-                                  
-                CCSCNoteUtilities::TCSCNoteType type = 
-                    CCSCNoteUtilities::ECSCConfigureServiceQuery;
-                                                           
-                if ( CCSCNoteUtilities::ShowCommonQueryL( 
-                    type, pluginInfo.iProviderName ) )
-                    {        
-                    iServicePluginHandler.DoProvisioningL( 
-                        pluginInfo.iPluginsUid, KCSCServiceViewId );
-                    }
-                else
-                    {                    
-                    canceled = ETrue;
-                    }
+                
+                iPluginInfo = pluginInfo;
+                
+                iNextPluginIndex = j;
+                
+                delete iEngTimer;
+                iEngTimer = NULL;
+                iEngTimer = CCSCEngTimer::NewL( *this );
+
+                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
+                
+                break;
                 }
             }
         }
-     
-    return canceled;     
+    
+    return canceled;
     }
 
 
@@ -790,12 +770,10 @@ void CCSCServiceView::DoActivateL( const TVwsViewId& aPrevViewId,
             {
             // launched from active idle
             iStartupHandler.SetStartedFromHomescreen( ETrue );
-            ExecuteStartupActionsL( EFalse, ETrue );
             }
         else
             {
             iStartupHandler.SetStartedFromHomescreen( EFalse );
-            ExecuteStartupActionsL();
             }
         }
 
@@ -824,4 +802,59 @@ void CCSCServiceView::DoDeactivate()
     
     CSCDEBUG( "CCSCServiceView::DoDeactivate - end" );
     }
+	
+	
+// ---------------------------------------------------------------------------
+// From class MCSCEngTimerObserver.
+// CCSCServiceView::TimerExpired
+// ---------------------------------------------------------------------------
+//
+void CCSCServiceView::TimerExpired()
+    {
+    CSCDEBUG( "CCSCServiceView::TimerExpired - begin" );
     
+    iStartupHandler.ResetUid( CCSCEngStartupHandler::EPluginUid );
+    iOfferedPluginUids.Append( iPluginInfo.iPluginsUid );
+    
+    CCSCNoteUtilities::TCSCNoteType 
+        type = CCSCNoteUtilities::ECSCConfigureServiceQuery;
+    
+    if ( CCSCNoteUtilities::ShowCommonQueryL( 
+       type, iPluginInfo.iProviderName ) )
+       {        
+       iServicePluginHandler.DoProvisioningL( 
+               iPluginInfo.iPluginsUid, KCSCServiceViewId );
+       }
+   
+    iNextPluginIndex++;
+    TInt pluginCount = iServicePluginHandler.PluginCount( 
+            CCSCEngServicePluginHandler::EInitialized );
+    
+    for ( ; iNextPluginIndex < pluginCount; iNextPluginIndex++ )
+        {
+        CSCDEBUG2( "CCSCServiceView::TimerExpired -iNextPluginIndex = %d",
+            iNextPluginIndex );
+        
+        iPluginInfo =
+            iServicePluginHandler.ItemFromPluginInfoArray( iNextPluginIndex );
+        
+        if ( KNullUid != iUid )
+            {
+            if ( iUid == iPluginInfo.iPluginsUid && !iPluginInfo.iProvisioned )
+                {
+                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
+                break;
+                }
+            }
+        else
+            {
+            if ( !iPluginInfo.iProvisioned )
+                {
+                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
+                break;
+                }
+            }
+        }
+    CSCDEBUG( "CCSCServiceView::TimerExpired - end" );
+    }
+	

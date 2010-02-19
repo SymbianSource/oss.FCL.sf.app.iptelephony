@@ -211,7 +211,6 @@ RemoteSessionHoldL( CSVPHoldContext& aContext,
         // Not hold request
         SVPDEBUG1( "CSVPHoldConnectedState::RemoteSessionHoldL:");
         SVPDEBUG1( "Not hold request" );
-        
         User::Leave( KErrSVPHoldNotHoldRequest );
         }
     
