@@ -66,4 +66,5 @@ LIBRARY       cmmanager.lib
 LIBRARY       WEPSecuritySettingsUi.lib
 LIBRARY       WPASecuritySettingsUi.lib
 LIBRARY       commsdat.lib
+LIBRARY       ecom.lib
 

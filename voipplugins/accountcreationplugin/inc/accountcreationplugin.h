@@ -169,6 +169,12 @@ private: // data
      * Not own.
      */
     const MAiwNotifyCallback* iNotifyCallback;
+    
+    /**
+     * Handle to AIW callback notifier.
+     * Own.
+     */
+    CAiwGenericParamList* iCBEventParamList;
 
     /**
      * Handle to provider list view.

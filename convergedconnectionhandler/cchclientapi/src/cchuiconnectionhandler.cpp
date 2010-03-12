@@ -102,6 +102,9 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
     // Security mode of the WLAN network
     TWlanConnectionSecurityMode securityMode; 
     
+    // Flag for determining if hidden wlan
+    TBool hiddenWlan( EFalse );
+    
     CCHUIDEBUG( 
         "CCchUiConnectionHandler::SearchAccessPointsL - begin search wlan" );
         
@@ -117,6 +120,27 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
     
     CCHUIDEBUG( 
       "CCchUiConnectionHandler::SearchAccessPointsL - search wlan finished" ); 
+    
+    // Check if hidden wlan
+    TUint32 easyWlanId( 0 );
+    easyWlanId = iCmManagerExt.EasyWlanIdL();
+    
+    if ( easyWlanId )
+        {
+        RCmConnectionMethodExt cmConnMethodExt = 
+            iCmManagerExt.ConnectionMethodL( easyWlanId );
+        CleanupClosePushL( cmConnMethodExt );
+        
+        if ( cmConnMethodExt.GetBoolAttributeL( CMManager::EWlanScanSSID ) )
+            {
+        CCHUIDEBUG( 
+             "CCchUiConnectionHandler::SearchAccessPointsL - hidden wlan" );
+        
+            hiddenWlan = ETrue;
+            }
+        
+        CleanupStack::PopAndDestroy( &cmConnMethodExt );
+        }
     
     HBufC* ssid16 = HBufC::NewL( KSsidLength );
     CleanupStack::PushL( ssid16 );
@@ -157,7 +181,11 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
         TBool alreadyExists = EFalse;
 
         TInt iapId = AddNewConnectionMethodL( 
-            newDestination, *ssid16, securityMode, alreadyExists, EFalse );
+            newDestination, 
+            *ssid16, 
+            securityMode,
+            alreadyExists,
+            hiddenWlan );
         
         if ( KErrCancel == iapId )
             {
@@ -191,7 +219,11 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
         
         TBool alreadyExists = EFalse;
         TInt iapId = AddNewConnectionMethodL( 
-            destination, *ssid16, securityMode, alreadyExists, EFalse );
+            destination,
+            *ssid16,
+            securityMode,
+            alreadyExists, 
+            hiddenWlan );
         
         CleanupStack::PopAndDestroy( &destination );
         CleanupStack::PopAndDestroy( ssid16 );
@@ -228,6 +260,17 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
             }
         
         SetSnapToUseL( aServiceId, aSnapId ); 
+        }
+    
+    // Reset Easy Wlan EWlanScanSSID parameter to EFalse
+    if ( easyWlanId && hiddenWlan )
+        {
+        RCmConnectionMethodExt cmConnMethodExt = 
+            iCmManagerExt.ConnectionMethodL( easyWlanId );
+        CleanupClosePushL( cmConnMethodExt );
+        cmConnMethodExt.SetBoolAttributeL( CMManager::EWlanScanSSID, EFalse );
+        cmConnMethodExt.UpdateL();
+        CleanupStack::PopAndDestroy( &cmConnMethodExt );
         }
     
     CCHUIDEBUG( "CCchUiConnectionHandler::SearchAccessPointsL - OUT" );

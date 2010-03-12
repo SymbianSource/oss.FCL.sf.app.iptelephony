@@ -25,6 +25,8 @@
 #include <cmpluginwlandef.h>
 #include <WPASecuritySettingsUI.h>
 #include <WEPSecuritySettingsUI.h>
+#include <EapSettings.h>
+#include <EapType.h>
 
 #include "voipxmlutils.h"
 #include "voipxmliaphandler.h"
@@ -65,6 +67,9 @@ void CVoipXmlIapHandler::ConstructL()
     iCurrentIap.iSecurityType = CMManager::EWlanSecModeOpen;
     iCurrentIap.iNetworkMode  = CMManager::EInfra;
     iCurrentIap.iWepAuthMode  = CWEPSecuritySettings::EAuthOpen;
+    iCurrentIap.iEapType      = EAPSettings::EEapNone;
+    iCurrentIap.iEapUsername  = NULL;
+    iCurrentIap.iEapPassword  = NULL;
     }
 
 // ---------------------------------------------------------------------------
@@ -100,6 +105,7 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
         case EName:
             {
             TInt err( KErrNotFound );
+            //lint -e{960} No need for else statement here
             if ( EDestination == aType )
                 {
                 delete iDestinationName;
@@ -118,32 +124,38 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EType:
             {
+            TBuf<KMaxNodeValueLength> value;
+            value.Copy( aValue );
+            value.UpperCase();
+
+            if ( EEap == aType )
+                {
+                if ( 0 == value.Compare( KEapTypeLeap ) )
+                    {
+                    iCurrentIap.iEapType = EAPSettings::EEapLeap;
+                    }
+                }
+
             if ( EWlan != aType )
                 {
                 break;
                 }
-            TBuf<KMaxNodeValueLength> value;
-            value.Copy( aValue );
-            value.UpperCase();
+            //lint -e{960} No need for else statement here
             if ( 0 == value.Compare( KSecurityTypeWep ) )
                 {
                 iCurrentIap.iSecurityType = CMManager::EWlanSecModeWep;
-                iSettingsSet = ETrue;
                 }
             else if ( 0 == value.Compare( KSecurityTypeWpa ) )
                 {
                 iCurrentIap.iSecurityType = CMManager::EWlanSecModeWpa;
-                iSettingsSet = ETrue;
                 }
             else if ( 0 == value.Compare( KSecurityTypeWpa2 ) )
                 {
                 iCurrentIap.iSecurityType = CMManager::EWlanSecModeWpa2;
-                iSettingsSet = ETrue;
                 }
             else if ( 0 == value.Compare( KSecurityType8021x ) )
                 {
                 iCurrentIap.iSecurityType = CMManager::EWlanSecMode802_1x;
-                iSettingsSet = ETrue;
                 }
             break;
             }
@@ -151,8 +163,8 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             {
             if ( EWlan == aType && !iCurrentIap.iSsid )
                 {
-                TRAPD( err, iCurrentIap.iSsid = aValue.AllocL() );
-                if ( KErrNone == err )
+                iCurrentIap.iSsid = aValue.Alloc();
+                if ( iCurrentIap.iSsid )
                     {
                     iSettingsSet = ETrue;
                     }
@@ -165,7 +177,6 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
                 KErrNone == VoipXmlUtils::DesToInt( aValue, intValue ) )
                 {
                 iCurrentIap.iHidden = intValue;
-                iSettingsSet = ETrue;
                 }
             break;
             }
@@ -178,15 +189,14 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             TBuf<KMaxNodeValueLength> value;
             value.Copy( aValue );
             value.LowerCase();
+            //lint -e{960} No need for else statement here
             if ( 0 == value.Compare( KNetworkModeInfra ) )
                 {
                 iCurrentIap.iNetworkMode = CMManager::EInfra;
-                iSettingsSet = ETrue;
                 }
             else if ( 0 == value.Compare( KNetworkModeAdhoc ) )
                 {
                 iCurrentIap.iNetworkMode = CMManager::EAdhoc;
-                iSettingsSet = ETrue;
                 }
             break;
             }
@@ -194,11 +204,7 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             {
             if ( EWlan == aType && !iCurrentIap.iPreSharedKey )
                 {
-                TRAPD( err, iCurrentIap.iPreSharedKey = aValue.AllocL() );
-                if ( KErrNone == err )
-                    {
-                    iSettingsSet = ETrue;
-                    }
+                iCurrentIap.iPreSharedKey = aValue.Alloc();
                 }
             break;
             }
@@ -211,15 +217,14 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             TBuf<KMaxNodeValueLength> value;
             value.Copy( aValue );
             value.LowerCase();
+            //lint -e{960} No need for else statement here
             if ( 0 == value.Compare( KWepAuthModeOpen ) )
                 {
                 iCurrentIap.iWepAuthMode = CWEPSecuritySettings::EAuthOpen;
-                iSettingsSet = ETrue;
                 }
             else if ( 0 == value.Compare( KWepAuthModeShared ) )
                 {
                 iCurrentIap.iWepAuthMode = CWEPSecuritySettings::EAuthShared;
-                iSettingsSet = ETrue;
                 }
             break;
             }
@@ -229,7 +234,6 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
                 KErrNone == VoipXmlUtils::DesToInt( aValue, intValue ))
                 {
                 iCurrentIap.iCurrentWepKey.iLength = intValue;
-                iSettingsSet = ETrue;
                 }
             break;
             }
@@ -238,7 +242,22 @@ void CVoipXmlIapHandler::SetSetting( TInt aType, TInt aParam,
             if ( EWepKey == aType && KMaxWepKeyDataLength >= aValue.Length() )
                 {
                 iCurrentIap.iCurrentWepKey.iData.Copy( aValue );
-                iSettingsSet = ETrue;
+                }
+            break;
+            }
+        case EUsername:
+            {
+            if ( EEap == aType )
+                {
+                iCurrentIap.iEapUsername = aValue.Alloc();
+                }
+            break;
+            }
+        case EPassword:
+            {
+            if ( EEap == aType )
+                {
+                iCurrentIap.iEapPassword = aValue.Alloc();
                 }
             break;
             }
@@ -281,6 +300,7 @@ TUint32 CVoipXmlIapHandler::SettingsId()
 //
 void CVoipXmlIapHandler::SettingsEnd( TInt aType )
     {
+    //lint -e{960} No need for else statement here
     if ( EWepKey == aType && iCurrentIap.iWepKeys.Count() < KMaxWepKeyCount )
         {
         TInt keyDataLength = iCurrentIap.iCurrentWepKey.iData.Length();
@@ -358,6 +378,18 @@ void CVoipXmlIapHandler::ResetCurrentIap( TBool aCloseArray )
     iCurrentIap.iSecurityType = CMManager::EWlanSecModeOpen;
     iCurrentIap.iNetworkMode = CMManager::EInfra;
     iCurrentIap.iWepAuthMode = CWEPSecuritySettings::EAuthOpen;
+
+    iCurrentIap.iEapType = EAPSettings::EEapNone;
+    if ( iCurrentIap.iEapUsername )
+        {
+        delete iCurrentIap.iEapUsername;
+        iCurrentIap.iEapUsername = NULL;
+        }
+    if ( iCurrentIap.iEapPassword )
+        {
+        delete iCurrentIap.iEapPassword;
+        iCurrentIap.iEapPassword = NULL;
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -389,6 +421,16 @@ void CVoipXmlIapHandler::ResetTempIapArray( TBool aCloseArray )
             {
             iIaps[counter]->iWepKeys.Close();
             }
+        if ( iIaps[counter]->iEapUsername )
+            {
+            delete iIaps[counter]->iEapUsername;
+            iIaps[counter]->iEapUsername = NULL;
+            }
+        if ( iIaps[counter]->iEapPassword )
+            {
+            delete iIaps[counter]->iEapPassword;
+            iIaps[counter]->iEapPassword = NULL;
+            }
         }
     iIaps.ResetAndDestroy();
     if ( aCloseArray )
@@ -413,6 +455,8 @@ void CVoipXmlIapHandler::AddCurrentIapL()
     iap->iSsid = HBufC::NewLC( KMaxNodeValueLength ); // CS:1
     iap->iName = HBufC::NewLC( KMaxNodeValueLength ); // CS:2
     iap->iPreSharedKey = HBufC::NewLC( KMaxNodeValueLength ); // CS:3
+    iap->iEapUsername = HBufC::NewLC( KMaxNodeValueLength ); // CS:4
+    iap->iEapPassword = HBufC::NewLC( KMaxNodeValueLength ); // CS:5
 
     iap->iSsid->Des().Copy( iCurrentIap.iSsid->Des() );
     if ( iCurrentIap.iName )
@@ -423,10 +467,22 @@ void CVoipXmlIapHandler::AddCurrentIapL()
         {
         iap->iName->Des().Copy( iCurrentIap.iSsid->Des() );
         }
+
     if ( iCurrentIap.iPreSharedKey )
         {
         iap->iPreSharedKey->Des().Copy( iCurrentIap.iPreSharedKey->Des() );
         }
+
+    iap->iEapType = iCurrentIap.iEapType;
+    if ( iCurrentIap.iEapUsername )
+        {
+        iap->iEapUsername->Des().Copy( iCurrentIap.iEapUsername->Des() );
+        }
+    if ( iCurrentIap.iEapPassword )
+        {
+        iap->iEapPassword->Des().Copy( iCurrentIap.iEapPassword->Des() );
+        }
+
     iap->iHidden = iCurrentIap.iHidden;
     iap->iNetworkMode = iCurrentIap.iNetworkMode;
     iap->iSecurityType = iCurrentIap.iSecurityType;
@@ -437,7 +493,7 @@ void CVoipXmlIapHandler::AddCurrentIapL()
         iap->iWepKeys.Append( iCurrentIap.iWepKeys[counter] );
         }
     iIaps.AppendL( iap );
-    CleanupStack::Pop( 3, iap->iSsid );
+    CleanupStack::Pop( 5, iap->iSsid );
     }
 
 // ---------------------------------------------------------------------------
@@ -526,6 +582,7 @@ void CVoipXmlIapHandler::StoreSettingsL()
 TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager, 
     TTemporaryIap aTempIap )
     {
+    DBG_PRINT( "CVoipXmlIapHandler::CreateIapL - begin" );
     RCmConnectionMethodExt newConnMethod = 
         aCmManager.CreateConnectionMethodL( KUidWlanBearerType );
     CleanupClosePushL( newConnMethod ); // CS:1
@@ -545,11 +602,13 @@ TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager,
     TUint32 wlanId = newConnMethod.GetIntAttributeL( 
         CMManager::EWlanServiceId );
     TUint32 iapId = newConnMethod.GetIntAttributeL( CMManager::ECmIapId );
-
+    TUint32 iapServiceId = newConnMethod.GetIntAttributeL( 
+        CMManager::ECmIapServiceId );
     CleanupStack::PopAndDestroy( &newConnMethod ); // CS:0
 
     if ( aTempIap.iSecurityType == CMManager::EWlanSecModeWep )
         {
+        DBG_PRINT( "   secMode WEP" );
         CMDBSession* db = CMDBSession::NewLC( CMDBSession::LatestVersion() );
         // CS:1
         CWEPSecuritySettings* wepSecSettings = 
@@ -562,18 +621,55 @@ TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager,
                 counter, aTempIap.iWepKeys[counter].iData, 
                 aTempIap.iWepKeys[counter].iHex ) );
             }
-        wepSecSettings->SaveL( wlanId, *db );             
-        // wepSecSettings, db 
+        wepSecSettings->SaveL( wlanId, *db );
+        // wepSecSettings, db
         CleanupStack::PopAndDestroy( 2, db ); // CS:0
         }
-    else if ( aTempIap.iSecurityType == CMManager::EWlanSecMode802_1x ||
-        aTempIap.iSecurityType == CMManager::EWlanSecModeWpa ||
-        aTempIap.iSecurityType == CMManager::EWlanSecModeWpa2 )
+    else if ( CMManager::EWlanSecModeWpa == aTempIap.iSecurityType ||
+        CMManager::EWlanSecModeWpa2 == aTempIap.iSecurityType )
         {
-        CMDBSession* db = CMDBSession::NewLC( CMDBSession::LatestVersion() );
-        // CS:1
+        DBG_PRINT( "   secMode WPA/WPA2" );
+        CMDBSession* db = CMDBSession::NewLC( 
+            CMDBSession::LatestVersion() ); // CS:1
         CWPASecuritySettings* wpaSecSettings = 
             CWPASecuritySettings::NewL( ESecurityModeWpa );
+        CleanupStack::PushL( wpaSecSettings ); // CS:2
+
+        if ( EAPSettings::EEapNone == aTempIap.iEapType )
+            {
+            DBG_PRINT( "   EapType none" );
+            User::LeaveIfError( wpaSecSettings->SetWPAPreSharedKey( 
+                aTempIap.iPreSharedKey->Des() ));
+            }
+        else if ( EAPSettings::EEapLeap == aTempIap.iEapType )
+            {
+            DBG_PRINT( "   eapType Leap" );
+            TBuf8<KMaxNodeValueLength> eapId;
+            eapId.Copy( KEapLeapId, KEapChars );
+            CEapType* eapType = CEapType::NewL( eapId, ELan, iapServiceId );
+            CleanupStack::PushL( eapType ); // CS:3
+            EAPSettings* eapSettings = new (ELeave) EAPSettings();
+            CleanupStack::PushL( eapSettings ); // CS:4
+            eapSettings->iEAPType = EAPSettings::EEapLeap;
+            eapSettings->iUsername.Copy( aTempIap.iEapUsername->Des() );
+            eapSettings->iUsernamePresent = ETrue;
+            eapSettings->iPassword.Copy( aTempIap.iEapPassword->Des() );
+            eapSettings->iPasswordPresent = ETrue;
+            eapType->SetConfigurationL( *eapSettings );
+            CleanupStack::PopAndDestroy( 2, eapType );
+            wpaSecSettings->SetWPAEnabledEAPPlugin( eapId );
+            }
+        wpaSecSettings->SaveL( wlanId, *db, ESavingBrandNewAP, 0 );
+        // wpaSecSettings, db
+        CleanupStack::PopAndDestroy( 2, db ); // CS:0
+        }
+    else if ( CMManager::EWlanSecMode802_1x == aTempIap.iSecurityType )
+        {
+        DBG_PRINT( "   secMode 802.1X" );
+        CMDBSession* db = CMDBSession::NewLC( 
+            CMDBSession::LatestVersion() ); // CS:1
+        CWPASecuritySettings* wpaSecSettings = 
+            CWPASecuritySettings::NewL( ESecurityMode8021x );
         CleanupStack::PushL( wpaSecSettings ); // CS:2
         User::LeaveIfError( wpaSecSettings->SetWPAPreSharedKey( 
             aTempIap.iPreSharedKey->Des() ));
@@ -581,6 +677,7 @@ TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager,
         // wpaSecSettings, db
         CleanupStack::PopAndDestroy( 2, db ); // CS:0
         }
+    DBG_PRINT( "CVoipXmlIapHandler::CreateIapL - end" );
     return iapId;
     }
 

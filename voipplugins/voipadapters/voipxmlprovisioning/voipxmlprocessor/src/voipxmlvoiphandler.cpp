@@ -938,7 +938,7 @@ void CVoipXmlVoipHandler::ResetTempSpSettings()
     {
     iSpSettings.iAutoAcceptBuddies = EFalse;
     iSpSettings.iAutoEnable        = EFalse;
-    iSpSettings.iResubrcribe = KErrNotFound;
+    iSpSettings.iResubrcribe = KDefaultResubscribe;
     if ( iSpSettings.iBrandingUri )
         {
         delete iSpSettings.iBrandingUri;
@@ -1076,6 +1076,7 @@ void CVoipXmlVoipHandler::SetSpSettingsL()
     TBool vmbx( EFalse );
 
     // Set MWI URI if present.
+    //lint -e{960} No need for else statement here
     if ( iSpSettings.iMwiUri )
         {
         property->SetName( ESubPropertyVMBXMWIAddress );
@@ -1107,14 +1108,12 @@ void CVoipXmlVoipHandler::SetSpSettingsL()
         vmbx = ETrue;
         }
 
-    if ( KErrNotFound != iSpSettings.iResubrcribe )
+    if ( vmbx )
         {
         property->SetName( ESubPropertyVMBXMWISubscribeInterval );
         property->SetValue( iSpSettings.iResubrcribe );
         spSettings->AddOrUpdatePropertyL( serviceId, *property );
-        }
-    if ( vmbx )
-        {
+
         property->SetName( ESubPropertyVMBXSettingsId );
         property->SetValue( iEntry->iIds[0].iProfileId );
         spSettings->AddOrUpdatePropertyL( serviceId, *property );

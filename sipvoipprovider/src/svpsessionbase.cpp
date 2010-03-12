@@ -1540,6 +1540,8 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
     {
     SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange(aStream,aSink) In" )
     
+    CMceSession::TState sessionState = CMceSession::ETerminated;
+    
     if ( &aStream )
         {
         SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSink) stream state=%d",
@@ -1550,8 +1552,8 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
     
     if ( &aStream && aStream.Session() )
         {
-        SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSink) session state=%d",
-                aStream.Session()->State() )
+        sessionState = aStream.Session()->State();
+        SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSink) session state=%d", sessionState )
         }
     
     if ( &aSink )
@@ -1560,7 +1562,7 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
                 aSink.IsEnabled() )
 
         if ( HasHoldController() && ESVPConnected == HoldController().HoldState() && 
-             !aSink.IsEnabled() && CMceSession::EEstablished == aStream.Session()->State() ) 
+             !aSink.IsEnabled() && CMceSession::EEstablished == sessionState )
             {
             // Hold state is connected but sink is disabled -> try enable after a while
             SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - Resume ICMP, Sink" )
@@ -1580,6 +1582,8 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
     {
     SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange(aStream,aSource) In" )
     
+    CMceSession::TState sessionState = CMceSession::ETerminated;
+    
     if ( &aStream )
         {
         SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSource) stream state=%d",
@@ -1590,8 +1594,8 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
     
     if ( &aStream && aStream.Session() )
         {
-        SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSource) session state=%d",
-                aStream.Session()->State() )
+        sessionState = aStream.Session()->State();
+        SVPDEBUG2( "CSVPSessionBase::HandleStreamStateChange(aStream,aSource) session state=%d", sessionState )
         }
     
     if ( &aSource )
@@ -1600,7 +1604,7 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
                 aSource.IsEnabled() )
 
         if ( HasHoldController() && ESVPConnected == HoldController().HoldState() && 
-             !aSource.IsEnabled() && CMceSession::EEstablished == aStream.Session()->State() )
+             !aSource.IsEnabled() && CMceSession::EEstablished == sessionState )
             {
             // Hold state is connected but source is disabled -> try enable after a while
             SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - Resume ICMP, Source" )

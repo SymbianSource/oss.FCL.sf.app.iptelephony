@@ -207,8 +207,10 @@ void CCSCServiceView::HandleCommandL( TInt aCommand )
             break;         
         // Exit menu command.    
         case EAknSoftkeyExit:
-        case EAknSoftkeyBack:
             AppUi()->HandleCommandL( EEikCmdExit );
+            break;           
+        case EAknSoftkeyBack:
+            AppUi()->HandleCommandL( EAknSoftkeyBack );
             break;
         // Let appui handle other commands.    
         default:

@@ -65,6 +65,9 @@ void CAccountCreationPlugin::ConstructL()
     iServiceHandler = CAiwServiceHandler::NewL();
 
     iEikEnv = CEikonEnv::Static();
+    
+    iCBEventParamList = CAiwGenericParamList::NewL();
+    iCBEventParamList->Reset();
 
     ACPLOG( "CAccountCreationPlugin::ConstructL end" );
     }
@@ -98,6 +101,7 @@ CAccountCreationPlugin::~CAccountCreationPlugin()
         }
  
 	iEikEnv = NULL;
+	delete iCBEventParamList;
 
     ACPLOG( "CAccountCreationPlugin::~CAccountCreationPlugin end" );
     }
@@ -134,13 +138,12 @@ void CAccountCreationPlugin::SendInitializedCallbackL() const
     variant.Set( placing );
     TAiwGenericParam genericParamPlace( EGenericParamError, variant );
     paramList.AppendL( genericParamPlace );
-
+	
     // Send callback to the customer application.
-    CAiwGenericParamList* nullList = NULL;
     callback->HandleNotifyL( 
         KAiwCmdCSCUiExtensionPlugins,
         KAiwEventStarted,
-        *nullList,
+        *iCBEventParamList,
         paramList );
 
     ACPLOG( "CAccountCreationPlugin::SendInitializedCallbackL end" );
@@ -165,11 +168,10 @@ void CAccountCreationPlugin::SendCompletedCallbackL() const
     paramList.AppendL( genericParamUid );
 
     // Send callback to the customer application.
-    CAiwGenericParamList* nullList = NULL;
     callback->HandleNotifyL( 
         KAiwCmdCSCUiExtensionPlugins,
         KAiwEventStopped,
-        *nullList,
+        *iCBEventParamList,
         paramList );
 
     ACPLOG( "CAccountCreationPlugin::SendCompletedCallbackL end" );
@@ -194,11 +196,10 @@ void CAccountCreationPlugin::SendErrorCallbackL() const
     paramList.AppendL( genericParamUid );
 
     // Send callback to the customer application.
-    CAiwGenericParamList* nullList = NULL;
     callback->HandleNotifyL( 
         KAiwCmdCSCUiExtensionPlugins,
         KAiwEventError,
-        *nullList,
+        *iCBEventParamList,
         paramList );
 
     ACPLOG( "CAccountCreationPlugin::SendErrorCallbackL end" );

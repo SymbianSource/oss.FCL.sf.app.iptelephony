@@ -29,6 +29,9 @@
 #include <xSPViewServices.h>
 #include <AiwServiceHandler.h>
 #include <mspnotifychangeobserver.h>
+#include <gsfwviewuids.h>
+#include <apgwgnam.h>
+#include <csc.hlp.hrh>
 
 #include "cscappui.h"
 #include "csclogger.h"
@@ -45,6 +48,7 @@
 #include "cscenguiextensionpluginhandler.h"
 
 const TInt KMaxParamLength = 255;
+const TInt KGSChildAppWindowGroupNameLength = 100;
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -190,12 +194,19 @@ void CCSCAppUi::HandleCommandL( TInt aCommand )
     
     switch ( aCommand )
         {
-        case EEikCmdExit:
-        case EAknSoftkeyExit:
         case EAknSoftkeyBack:
-        case EAknCmdExit:
+            {
             Exit();
             break;
+            }
+        case EEikCmdExit:
+        case EAknSoftkeyExit:
+        case EAknCmdExit:
+            {
+            ExitGSIfParentL();
+            Exit();
+            break;
+            }
         default:
             break;
         }
@@ -456,4 +467,51 @@ void CCSCAppUi::SnapCheckL( TUint aServiceId ) const
     CleanupStack::PopAndDestroy( destHandler );
     
     CSCDEBUG( "CCSCAppUi::SnapCheckL - end" );  
+    }
+
+// ---------------------------------------------------------------------------
+// Check if GS has to be closed
+// ---------------------------------------------------------------------------
+//
+TBool CCSCAppUi::ExitGSIfParentL()
+    {
+    TBool ret = EFalse;
+    
+    RWsSession ws  = CEikonEnv::Static()->WsSession();
+    TApaTaskList taskList( ws );
+    TApaTask gstask = taskList.FindApp( KUidGS  );
+
+    if ( gstask.Exists() )
+        {
+        TInt gswgid = gstask.WgId();
+        RArray<RWsSession::TWindowGroupChainInfo> wgrp;
+        ws.WindowGroupList( &wgrp );
+        TInt i = 0;
+
+        // Loop window groups, find GS's child app
+        for ( i=0; i < wgrp.Count() ; ++i )
+            {
+            TBuf< KGSChildAppWindowGroupNameLength > name;
+            ws.GetWindowGroupNameFromIdentifier( wgrp[i].iId , name );
+            RWsSession::TWindowGroupChainInfo wginfo = wgrp[i];
+            if ( wginfo.iParentId == gswgid ) // Child of GS found
+                {
+                CApaWindowGroupName* windowName1 =
+                    CApaWindowGroupName::NewLC( ws, wginfo.iId ); // CS:1
+                TUid embeddeeuid;
+                embeddeeuid = windowName1->AppUid();
+
+                // Check if CSC is the child of GS
+                if ( KUidCscHelp == embeddeeuid )
+                    {
+                    ret = ETrue;
+                    gstask.EndTask();
+                    }
+                CleanupStack::PopAndDestroy( windowName1 );  // CS:0
+                }
+            }
+        wgrp.Close();
+        }
+    
+    return ret;
     }

@@ -81,6 +81,7 @@ void CCSCSettingsUiMainView::ConstructL()
     iTitlePane = static_cast<CAknTitlePane*> 
         ( statusPane->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
         
+    iImToneSelectionListOpen = EFalse;
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::ConstructL - end" );
     }
 
@@ -670,51 +671,60 @@ void CCSCSettingsUiMainView::ShowVccPrefServiceSettingPageL()
 // ---------------------------------------------------------------------------
 void CCSCSettingsUiMainView::ShowImToneSelectionListL()
     {    
-    CMediaFileList* list = CMediaFileList::NewL();
-    CleanupStack::PushL( list );
-
-    HBufC* popupTitle = StringLoader::LoadLC( 
-        R_CSCSETTINGSUI_IM_TONE_POPUP_HEADING );
+    CSCSETUIDEBUG( "CCSCSettingsUiMainView::ShowImToneSelectionListL - begin" );
     
-    HBufC* noTone = StringLoader::LoadLC( 
-        R_CSCSETTINGSUI_NO_IM_TONE_TEXT );
+    if ( !iImToneSelectionListOpen )
+        {
+        iImToneSelectionListOpen = ETrue;
+        CMediaFileList* list = CMediaFileList::NewL();
+        CleanupStack::PushL( list );
+      
+        HBufC* popupTitle = StringLoader::LoadLC( 
+            R_CSCSETTINGSUI_IM_TONE_POPUP_HEADING );
         
-    list->SetAttrL( 
-        CMediaFileList::EAttrAutomatedType,
-        CDRMHelper::EAutomatedTypeIMAlert );
+        HBufC* noTone = StringLoader::LoadLC( 
+            R_CSCSETTINGSUI_NO_IM_TONE_TEXT );
         
-    list->SetNullItemL( 
-        *noTone,
-        KNullDesC, 
-        CMediaFileList::EMediaFileTypeAudio,
-        CMediaFileList::ENullItemIconOff );
-    
-    list->SetAttrL( CMediaFileList::EAttrTitle, *popupTitle );
-
-    TBuf<KCSCMaxImToneLength> toneName;
-    TInt nullItem = KErrNotFound;    
-    
-    TBool result = list->ShowMediaFileListL(
-        &toneName, &nullItem , NULL, NULL );
-  
-    CleanupStack::PopAndDestroy( noTone );
-    CleanupStack::PopAndDestroy( popupTitle );
-    CleanupStack::PopAndDestroy( list );
-    
-    if ( result )
-        {
-        iContainer->SaveImTonePathL( toneName );
+        list->SetAttrL( 
+            CMediaFileList::EAttrAutomatedType,
+            CDRMHelper::EAutomatedTypeIMAlert );
+        
+        list->SetNullItemL( 
+            *noTone,
+            KNullDesC, 
+            CMediaFileList::EMediaFileTypeAudio,
+            CMediaFileList::ENullItemIconOff );
+        
+        list->SetAttrL( CMediaFileList::EAttrTitle, *popupTitle );
+        
+        TBuf<KCSCMaxImToneLength> toneName;
+        TInt nullItem = KErrNotFound;    
+        
+        TBool result = list->ShowMediaFileListL(
+            &toneName, &nullItem , NULL, NULL );
+       
+        CleanupStack::PopAndDestroy( noTone );
+        CleanupStack::PopAndDestroy( popupTitle );
+        CleanupStack::PopAndDestroy( list );
+        
+        if ( result )
+            {
+            iContainer->SaveImTonePathL( toneName );
+            }
+        else if( KErrNotFound != nullItem )
+            {
+            iContainer->SaveImTonePathL( KNullDesC );
+            }
+        else
+            {
+            // do nothing
+            }
+        
+        iContainer->UpdateContainerL();
+        iImToneSelectionListOpen = EFalse;
         }
-    else if( KErrNotFound != nullItem )
-        {
-        iContainer->SaveImTonePathL( KNullDesC );
-        }
-    else
-        {
-        // do nothing
-        }
     
-    iContainer->UpdateContainerL();
+    CSCSETUIDEBUG( "CCSCSettingsUiMainView::ShowImToneSelectionListL - end" );
     }
 
 

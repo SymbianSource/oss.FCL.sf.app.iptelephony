@@ -60,14 +60,14 @@ EXPORT_C CVoipXmlParser* CVoipXmlParser::NewLC()
 //
 void CVoipXmlParser::ConstructL()
     {
-DBG_PRINT( "CVoipXmlParser::ConstructL begin" );
+    DBG_PRINT( "CVoipXmlParser::ConstructL begin" );
 
     iParser = CMDXMLParser::NewL( this );
     iParamHandler = CVoipXmlParamHandler::NewL();
     iDescription = HBufC::NewL( 0 );
     iBrandUrl = HBufC::NewL( 0 );
 
-DBG_PRINT( "CVoipXmlParser::ConstructL end" );
+    DBG_PRINT( "CVoipXmlParser::ConstructL end" );
     }
 
 // ---------------------------------------------------------------------------
@@ -236,6 +236,7 @@ void CVoipXmlParser::ParseDescription( CMDXMLElement& aXmlElement )
         nodeName.Copy( node->NodeName() );
         nodeName.LowerCase();
         CMDXMLNode* child = node->FirstChild();
+        //lint -e{960} No need for else statement here
         if ( KNodeConfDescription() == nodeName && child && 
             CMDXMLNode::ETextNode == child->NodeType() )
             {
@@ -356,6 +357,7 @@ void CVoipXmlParser::ParseSettings( CMDXMLNode* aXmlNode )
             element = NULL;
             element = static_cast<CMDXMLElement*>( node );
 
+            //lint -e{960} No need for else statement here
             if ( KNodeParam() == nodeName )
                 {
                 TPtrC nameVal;

@@ -36,6 +36,8 @@
 #include <sdpcodecstringconstants.h>
 #include <sdpattributefield.h>
 #include <sipstrings.h>
+#include <sipallowheader.h>
+#include <sipsupportedheader.h>
 
 //For checking dynamic voip status and MuS availability
 #include <featmgr.h>
@@ -59,7 +61,9 @@ _LIT8( KMediaSubtypeSdp, "sdp" );            	// For content-type header checks
 _LIT8( KSendOnly, "sendonly" );            		// For attribute checks
 _LIT8( KApplicationAttr, "application" );   	// For attribute checks
 _LIT8( KXApplicationAttr, "X-application" );	// For attribute checks
-_LIT8( KNokiaRtvs, "com.nokia.rtvs" );       	// For attribute checks 
+_LIT8( KNokiaRtvs, "com.nokia.rtvs" );       	// For attribute checks
+_LIT8( KSIPMethodsInAllowHeader, "INVITE,ACK,CANCEL,OPTIONS,BYE,PRACK,SUBSCRIBE,REFER,NOTIFY,UPDATE");	// SIP Methods allowed by various plugins
+_LIT8( KSIPExtensionsSupported, "100rel,timer,sec-agree"); //Extensions supported by various plugins
 
 /**
  * Cleanup function for RPointerArray
@@ -469,8 +473,29 @@ RPointerArray<CSdpMediaField> CSipMXResolver::SupportedSdpMediasL()
 // ---------------------------------------------------------------------------
 // 
 void CSipMXResolver::AddClientSpecificHeadersForOptionsResponseL(
-    RPointerArray<CSIPHeaderBase>& /*aHeaders*/ )
+    RPointerArray<CSIPHeaderBase>& aHeaders )
     {
+    SIPMXRLOG( "[SIPMXRESOLVER] -> \
+    CSipMXResolver::AddClientSpecificHeadersForOptionsResponseL()" )
+	//Add Allow Header		
+	RPointerArray<CSIPAllowHeader> allowheaders = 
+	    CSIPAllowHeader::DecodeL(KSIPMethodsInAllowHeader);
+	TInt count = allowheaders.Count();
+	for(TInt i = 0; i<count; i++)
+		{
+		User::LeaveIfError(aHeaders.Append(allowheaders[i]));
+		}
+	allowheaders.Reset();
+
+	//Add Supported Header
+	RPointerArray<CSIPSupportedHeader> supportedheaders = 
+	    CSIPSupportedHeader::DecodeL(KSIPExtensionsSupported);
+	count = supportedheaders.Count();
+	for(TInt j = 0; j<count; j++)
+		{
+		User::LeaveIfError(aHeaders.Append(supportedheaders[j]));
+		}
+	supportedheaders.Reset();
     }
 
 

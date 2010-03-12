@@ -143,7 +143,7 @@ RESOURCE MENU_PANE r_csc_serviceview_menu
 RESOURCE AVKON_VIEW r_csc_view_service
     {
     menubar = r_csc_serviceview_menubar;
-    cba = R_AVKON_SOFTKEYS_OPTIONS_EXIT;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
     }
 
 //----------------------------------------------------

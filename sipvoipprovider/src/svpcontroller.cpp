@@ -2226,8 +2226,15 @@ void CSVPController::CreateNewTransferSessionL( TInt aSessionIndex,
     // Get VoIP profile by service id
     reg->FindByServiceIdL( callParams.ServiceId(), entryArray );
     // Take first entry from array
-    CRCSEProfileEntry* entry = entryArray[0];
-    
+    CRCSEProfileEntry* entry = NULL;
+    if (entryArray.Count() > 0)
+        {
+        entry = entryArray[0];
+        }
+    else
+        {
+        User::Leave(KErrNotFound);
+        }
     // array for provisioned data
     CDesC8ArrayFlat* userAgentHeaders = new( ELeave )CDesC8ArrayFlat( 4 );
     CleanupStack::PushL( userAgentHeaders );

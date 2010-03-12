@@ -628,7 +628,7 @@ void CScpServiceManager::GetServiceNetworkInfoL( TUint aServiceId,
     CScpSipConnection* sipConnection = GetSipConnectionL( aServiceId,
                                                           aSubServiceType, 
                                                           sipConnectionCreated );
-
+    
     TInt result = sipConnection->GetIap( aIapId );
     if( result != KErrNone )
         {
@@ -640,7 +640,9 @@ void CScpServiceManager::GetServiceNetworkInfoL( TUint aServiceId,
         {
         aSnapId = 0;
         }
-
+		
+    aPasswordSet = sipConnection->IsPasswordSet(); 
+    
     if( sipConnectionCreated )
         {
         delete sipConnection;
@@ -681,8 +683,6 @@ void CScpServiceManager::GetServiceNetworkInfoL( TUint aServiceId,
             aSnapLocked = EFalse;
             }
         }
-
-    aPasswordSet = sipConnection->IsPasswordSet(); 
         
     if( serviceCreated )
         {

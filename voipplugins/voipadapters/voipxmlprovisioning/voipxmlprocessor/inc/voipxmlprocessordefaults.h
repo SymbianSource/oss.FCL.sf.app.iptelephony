@@ -49,6 +49,7 @@ _LIT( KSettingsTypeRegistrar,             "registrar" );
 _LIT( KSettingsTypeAdditionalStun,        "additionalstun" );
 _LIT( KSettingsTypeWepKey,                "wepkey" );
 _LIT( KSettingsTypeDestination,           "destination" );
+_LIT( KSettingsTypeEap,                   "eap" );
 // Parameter names (i.e. supported values for 'value' attribute).
 // Generic.
 _LIT( KParamValueName,                    "name" );
@@ -141,6 +142,7 @@ const TUint KComma = ',';
 // ==============================
 //
 _LIT( KILbc, "ILBC" );
+const TInt KDefaultResubscribe = 600;
 
 // ==============================
 // SIP constants
@@ -209,7 +211,8 @@ _LIT( KNetworkModeAdhoc,     "adhoc" );
 _LIT( KSecurityTypeWep,      "WEP" );
 _LIT( KSecurityTypeWpa,      "WPA" );
 _LIT( KSecurityTypeWpa2,     "WPA2" );
-_LIT( KSecurityType8021x,    "801X" );
+_LIT( KSecurityType8021x,    "8021X" );
+_LIT( KEapTypeLeap,          "LEAP" );
 _LIT( KWepAuthModeOpen,      "open" );
 _LIT( KWepAuthModeShared,    "shared" );
 
@@ -233,7 +236,8 @@ enum TSettingsType
     EProxy,
     ERegistrar,
     EAdditionalStun,
-    EWepKey
+    EWepKey,
+    EEap
     };
 
 // Enumeration for parameters.

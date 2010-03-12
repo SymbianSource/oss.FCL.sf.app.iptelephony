@@ -148,6 +148,10 @@ void CVoipXmlParamHandler::SettingsStart( const TDesC& aType )
         {
         iSettingsType = EDestination;
         }
+    else if ( KSettingsTypeEap() == type )
+        {
+        iSettingsType = EEap;
+        }
     else
         {
         iSettingsType = EUnknown;
@@ -220,6 +224,7 @@ void CVoipXmlParamHandler::HandleParameter( const TDesC& aParam,
         case EWlan:
         case EWepKey:
         case EDestination:
+        case EEap:
             {
             TInt param = ConvertParameter( aParam );
             iIapHandler->SetSetting( iSettingsType, param, aValue );

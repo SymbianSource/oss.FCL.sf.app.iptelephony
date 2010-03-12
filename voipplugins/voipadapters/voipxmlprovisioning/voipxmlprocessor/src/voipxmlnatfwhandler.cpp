@@ -104,6 +104,7 @@ void CVoipXmlNatFwHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EUri:
             {
+            //lint -e{960} No need for else statement here
             if ( ENatFw == aType )
                 {
                 iStunSrvAddr->Des().Copy( aValue );
@@ -118,6 +119,7 @@ void CVoipXmlNatFwHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EPort:
             {
+            //lint -e{960} No need for else statement here
             if ( ENatFw == aType && KErrNone == VoipXmlUtils::Des8ToInt( 
                 aValue, intVal ) )
                 {
@@ -161,6 +163,7 @@ void CVoipXmlNatFwHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EUsername:
             {
+            //lint -e{960} No need for else statement here
             if ( ENatFw == aType )
                 {
                 iStunSrvUsername->Des().Copy( aValue );
@@ -175,6 +178,7 @@ void CVoipXmlNatFwHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EPassword:
             {
+            //lint -e{960} No need for else statement here
             if ( ENatFw == aType )
                 {
                 iStunSrvPassword->Des().Copy( aValue );

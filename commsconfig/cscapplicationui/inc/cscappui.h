@@ -194,6 +194,13 @@ NONSHARABLE_CLASS( CCSCAppUi ) : public CAknViewAppUi,
          * @param aServiceId service id
          */
         void SnapCheckL( TUint aServiceId ) const;
+        
+        /*
+         * Exits GS application if needed
+         *
+         * @since S60 3.2
+         */
+        TBool ExitGSIfParentL();
             
     private: // data
                        

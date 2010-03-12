@@ -207,6 +207,7 @@ TInt CScpPresenceHandler::DisableSubService()
         if ( iReqIdArray.Count() )
             {
             iDisableAfterXimpRequestsCompleted = ETrue;
+            StartForcedDisableTimer( CScpPresenceHandler::ForcePresenceServiceDisable );
             }
         else
             {
@@ -244,7 +245,13 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
         if ( EScpNetworkLost == aEvent )
             {
             SCPLOGSTRING( "CScpPresenceHandler - EScpNetworkLost -> unbind" );
-            TRAP_IGNORE( HandleDeregistrationL( EFalse ) );
+            TRAPD( err, HandleDeregistrationL( EFalse ) );
+            
+            if ( KErrNotReady == err )
+                {
+                SCPLOGSTRING( "CScpPresenceHandler - EScpNetworkLost -> note ready: unbind" );
+                TRAP_IGNORE( ServerUnBindL() );
+                }
             }
         
         if ( EScpRoaming == aEvent )
@@ -298,6 +305,15 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
                 {
                 CancelDisableTimer();
                 }
+            
+            // If this flag is still true, it could be that presence server
+            // has not given answer -> ximp requests cannot be completed.
+            // But still have to unbind from ximp context
+            if ( iDisableAfterXimpRequestsCompleted )
+                {
+                TRAP_IGNORE( ServerUnBindL() );
+                }
+            
             // When SIP is deregistered, change presence state to no bind
             iPresenceState = ENoBind;
             }
@@ -411,6 +427,7 @@ void CScpPresenceHandler::DeregisterNow()
     
     CancelDisableTimer();
   
+    iReqIdArray.Reset();
     iPresenceState = ENoBind;
 
     // Check if disable was not requested
@@ -913,7 +930,7 @@ void CScpPresenceHandler::HandleRequestCompleteEvent( const MXIMPBase& aEvent )
     if ( iDisableAfterXimpRequestsCompleted && !iReqIdArray.Count() )
         {
         iDisableAfterXimpRequestsCompleted = EFalse;
-        DisableSubService();
+        DeregisterNow();
         }
     
     SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent OUT" ); 

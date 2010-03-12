@@ -23,6 +23,9 @@
 
 class RCmManagerExt;
 
+const TUint8 KEapLeapId[] = { 0xfe, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x11 };
+const TInt KEapChars = 8;
+
 class TWepKey
     {
 public:
@@ -78,6 +81,18 @@ struct TTemporaryIap
      * Array of WEP keys.
      */
     RArray<TWepKey> iWepKeys;
+    /**
+     * EAP type.
+     */
+    TInt iEapType;
+    /**
+     * EAP username.
+     */
+    HBufC* iEapUsername;
+    /**
+     * EAP password.
+     */
+    HBufC* iEapPassword;
     };
 
 /**

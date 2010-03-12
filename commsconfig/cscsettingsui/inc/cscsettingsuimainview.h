@@ -267,6 +267,8 @@ NONSHARABLE_CLASS( CCSCSettingsUiMainView ) : public CAknView,
         CAknNavigationControlContainer* iNaviPane;
         
         CAknNavigationDecorator* iNaviDecorator;
+        
+        TBool iImToneSelectionListOpen;
 
 #ifdef _DEBUG
     friend class UT_cscsettingsui;

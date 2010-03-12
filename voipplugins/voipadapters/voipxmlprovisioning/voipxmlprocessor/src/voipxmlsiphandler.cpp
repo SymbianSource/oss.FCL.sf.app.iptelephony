@@ -234,6 +234,7 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
                 tempBuf.Copy( KSip() );
                 }
             tempBuf.Append( aValue );
+            //lint -e{960} No need for else statement here
             if ( EProxy == aType )
                 {
                 iProxyUri->Des().Copy( tempBuf );
@@ -248,6 +249,7 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
             }
         case ETransport:
             {
+            //lint -e{960} No need for else statement here
             if ( EProxy == aType )
                 {
                 iProxyTransport = ValidateTransport( aValue );
@@ -264,6 +266,7 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
             {
             TInt value;
             TInt err = VoipXmlUtils::Des8ToInt( aValue, value );
+            //lint -e{960} No need for else statement here
             if ( EProxy == aType && KErrNone == err )
                 {
                 iProxyPort = value;
@@ -289,6 +292,7 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EUsername:
             {
+            //lint -e{960} No need for else statement here
             if ( EProxy == aType )
                 {
                 if ( TSIPProfileTypeInfo::EInternet == 
@@ -323,6 +327,7 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
             }
         case EPassword:
             {
+            //lint -e{960} No need for else statement here
             if ( EProxy == aType )
                 {
                 iProfile->SetParameter( KSIPOutboundProxy, KSIPDigestPassword,
@@ -365,6 +370,7 @@ TInt CVoipXmlSipHandler::StoreSettings()
         tempBuf.Copy( KColon() );
         tempBuf.AppendNum( iProxyPort );
         }
+    //lint -e{960} No need for else statement here
     if ( EUdp == iProxyTransport )
         {
         tempBuf.Append( KTransport() );
@@ -398,6 +404,7 @@ TInt CVoipXmlSipHandler::StoreSettings()
         tempBuf.Copy( KColon() );
         tempBuf.AppendNum( iRegistrarPort );
         }
+    //lint -e{960} No need for else statement here
     if ( EUdp == iRegistrarTransport )
         {
         tempBuf.Append( KTransport() );
