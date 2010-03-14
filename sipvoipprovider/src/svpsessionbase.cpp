@@ -3099,6 +3099,43 @@ void CSVPSessionBase::SetUpdatedSession( CMceInSession* aUpdatedSession )
     delete iSession;
     iSession = aUpdatedSession;
 
+	// lets check should mic be muted 
+    const RPointerArray<CMceMediaStream>& streamsArray = iSession->Streams(); 
+    const TInt streamCount( streamsArray.Count() );
+    if ( streamCount && iMuted )
+        {
+        SVPDEBUG1( "CSVPSessionBase::SetUpdatedSession Mic should be muted" )
+        
+        if ( IsMobileOriginated() ) 
+            {
+            for ( TInt i = 0; i < streamCount; i++ )
+                {
+                if ( streamsArray[i]->Source()->IsEnabled() )
+                    {
+                    SVPDEBUG1( "CSVPSessionBase::SetUpdatedSession Mic is not muted" )
+                    SVPDEBUG1( " -> disable mic" )
+                    streamsArray[i]->Source()->DisableL();
+                    }
+                else 
+                    {
+                    SVPDEBUG1( "CSVPSessionBase::SetUpdatedSession Mic is already" )
+                    SVPDEBUG1( " muted -> no need to disable mic" )
+                    }
+                }
+            }
+        else
+            {
+            // mute mic source
+            for ( TInt i = 0; i < streamCount; i++ )
+                {
+                if ( streamsArray[i]->BoundStreamL().Source()->IsEnabled() )
+                    {
+                    streamsArray[i]->BoundStreamL().Source()->DisableL();
+                    }
+                }
+            }
+        }
+
     // Update changed session also to the transfercontroller
     if ( iTransferController )
         {

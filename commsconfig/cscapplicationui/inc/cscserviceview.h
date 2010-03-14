@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,6 +21,7 @@
 
 #include <aknview.h>
 #include "mcscservicecontainerobserver.h"
+#include "mcscengtimerobserver.h"
 
 class CCSCAppUi;
 class CCSCDialog;
@@ -43,7 +44,8 @@ class CCSCSettingsUi;
  */
 NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
                                        public MEikListBoxObserver,
-                                       public MCSCServiceContainerObserver
+                                       public MCSCServiceContainerObserver,
+                                       public MCSCEngTimerObserver
     {
     public:
 
@@ -98,17 +100,8 @@ NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
          * @since S60 v5.1
          */
         void InitializeWithStartupParametersL();
-                            
-        /**
-         * Updates container data because of layout change.
-         *
-         * @since S60 v3.2
-         * @param aType for layout change type
-         */ 
-        void UpdateLayout( TInt aType );
         
-         
-       
+        
         // from base class CAknView
         
         /**
@@ -214,7 +207,8 @@ NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
          * @since S60 v3.2
          */         
         void UpdateCbaL();
-                
+        
+		
     protected:
               
         // from base class MEIkListBoxObserver
@@ -230,8 +224,7 @@ NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
         void HandleListBoxEventL( CEikListBox* aListBox, 
                                   TListBoxEvent aEventType );    
                                   
-        
-        
+		
     private:
         
         
@@ -300,6 +293,16 @@ NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
         void DoDeactivate();
         
         
+        // from base class MCSCEngTimerObserver
+        
+        /**
+         * From MCSCEngTimerObserver.
+         *
+         * @since S60 v5.0
+         */
+        void TimerExpired();
+         
+		
     private: // data
                            
         /**
@@ -358,6 +361,27 @@ NONSHARABLE_CLASS( CCSCServiceView ) : public CAknView,
          * Array for already offered to configure plugin uids
          */
         RArray<TUid> iOfferedPluginUids;
+        
+        /**
+         * Pointer to timer
+         * Own.
+         */
+        CCSCEngTimer* iEngTimer;
+        
+        /**
+         * Plugin info.
+         */
+        TServicePluginInfo iPluginInfo;
+        
+        /**
+         * Next plugin index.
+         */
+        TUint iNextPluginIndex;
+		
+        /**
+         * Uid.
+         */
+        TUid iUid;
         
 #ifdef _DEBUG
     friend class UT_CSC;

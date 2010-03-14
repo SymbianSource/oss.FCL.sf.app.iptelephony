@@ -62,7 +62,6 @@ void CVccDirector::ConstructL()
     {
     RUBY_DEBUG_BLOCKL( "CVccDirector::ConstructL" );
 
-    iSvpLoaded = EFalse;
     FillCallProviderArrayL();
     
     // Create the HO-trigger and connect to the wlan network
@@ -143,7 +142,7 @@ void CVccDirector::FillCallProviderArrayL()
     //creating cs and sipvoipproviders
     
     //List implementations
-    //Only load cs plugin in the boot. SVP will be loaded when needed.
+
     RImplInfoPtrArray implementations;
     TCleanupItem arrayCleanup( PointerArrayCleanup, &implementations );
     CleanupStack::PushL( arrayCleanup );
@@ -154,7 +153,7 @@ void CVccDirector::FillCallProviderArrayL()
         {
         RUBY_DEBUG1( "- for loop counter value: %d", i );
         CImplementationInformation *info = implementations[i];
-        if ( info->ImplementationUid().iUid == KCSCallProviderPlugId )
+        if ( IsVccOwnedPlugin ( info->ImplementationUid().iUid ) )
             {
             CConvergedCallProvider* provider =
                 CConvergedCallProvider::NewL( info->ImplementationUid() );
@@ -167,8 +166,6 @@ void CVccDirector::FillCallProviderArrayL()
         }
     
     CleanupStack::PopAndDestroy();//implementations
-  
-    TRAP_IGNORE( CheckVoipEnabledL(  VccSettingsReader::VoIPServiceIdL() ) );
 	}
 
 // ---------------------------------------------------------------------------
@@ -674,10 +671,9 @@ void CVccDirector::PropertyChangedL( const TUid /*aCategoryId*/,
 // Only VCC service changes are notified
 // -----------------------------------------------------------------------------
 //
-void CVccDirector::HandleNotifyChange( TServiceId aServiceId )
+void CVccDirector::HandleNotifyChange( TServiceId /*aServiceId*/ )
     {
     RUBY_DEBUG_BLOCK( "CVccDirector::HandleNotifyChange" );
-    CheckVoipEnabledL( aServiceId );
     
     if( !IsPluginInitialized())
     	RetryInitialization();
@@ -978,91 +974,4 @@ void CVccDirector::CreateConferenceL( MCCPConferenceCall& aConferenceCall )
     RUBY_DEBUG_BLOCK( "CVccDirector::CreateConferenceL" );
     iConference = CVccConferenceCall::NewL( aConferenceCall, iPerfArray );
     aConferenceCall.AddObserverL( *iConference );
-    }
-
-// -----------------------------------------------------------------------------
-// CVccDirector::CheckVoipEnabledL
-// -----------------------------------------------------------------------------
-//
-void CVccDirector::CheckVoipEnabledL( TServiceId aServiceId )
-    {
-    RUBY_DEBUG_BLOCK( "CVccDirector::CheckVoipEnabledL" );
-    
-    TInt vccService = VccSettingsReader::VccServiceIdL();
-    TInt voipService = 0;
-    if( vccService )
-        {
-        voipService = VccSettingsReader::VoIPServiceIdL();
-        }
-    if( voipService == aServiceId )
-        {
-        RUBY_DEBUG0( "CVccDirector::HandleNotifyChange -- VoIP Service" );
-        CSPProperty* property = CSPProperty::NewLC();
-        CSPSettings* settings = CSPSettings::NewLC();
-        settings->FindPropertyL( aServiceId,
-                    ESubPropertyVoIPEnabled, *property );
-            
-        TOnOff enabled( EOONotSet );
-        property->GetValue( enabled );
-            
-        CleanupStack::PopAndDestroy( settings );
-        CleanupStack::PopAndDestroy( property );
-        //if voip is enabled load also SVP and put it into providers array
-        if( enabled && !iSvpLoaded )
-            {
-            RUBY_DEBUG0( "CVccDirector::HandleNotifyChange -- VoIP enabled, load SVP" );
-            RImplInfoPtrArray implementations;
-            TCleanupItem arrayCleanup( PointerArrayCleanup, &implementations );
-            CleanupStack::PushL( arrayCleanup );
-
-            CConvergedCallProvider::ListImplementationsL( implementations );
-                 
-            for( TInt i = 0; i < implementations.Count(); i++ )
-                {
-                RUBY_DEBUG1( "- for loop counter value: %d", i );
-                CImplementationInformation *info = implementations[i];
-                if( info->ImplementationUid().iUid == KSipVoipCallProviderPlugId )
-                    {
-                    CConvergedCallProvider* provider =
-                         CConvergedCallProvider::NewL( info->ImplementationUid() );
-                    CleanupStack::PushL( provider );
-                           
-                    User::LeaveIfError( iProviders.Append( provider ) );
-                            
-                    CleanupStack::Pop( provider );  //provider
-                        
-                    if( iDtmfProvider )
-                        {
-                        provider->DTMFProviderL( *iDtmfProvider );
-                        }
-                    }
-                }
-                iSvpLoaded = ETrue;
-                CleanupStack::PopAndDestroy();  //implementations
-            }
-            //if voip is disabled, destroy SVP and remove it from providers array.
-        else if( !enabled )
-            {
-            RUBY_DEBUG0( "CVccDirector::HandleNotifyChange -- VoIP disabled, destroy SVP" );
-                            
-            for( TInt i = 0; i < iProviders.Count(); i++ )
-                {
-                if( iProviders[ i ]->Uid().iUid == KSipVoipCallProviderPlugId )
-                    {
-                    delete iProviders[ i ];
-                    iProviders.Remove( i );
-                    iProviders.Compress();
-                    for( TInt a = 0; a < iInitialisedPlugins.Count(); a++ )
-                        {
-                        if( iInitialisedPlugins[ a ] == KSipVoipCallProviderPlugId )
-                            {
-                            iInitialisedPlugins.Remove( a );
-                            iInitialisedPlugins.Compress();
-                            }
-                        }
-                    iSvpLoaded = EFalse;
-                    }
-                }
-            }
-        }
     }

@@ -1591,11 +1591,137 @@ void CWPVoIPItem::SavingFinalizedL()
 
         TUint32 snapId( 0 );
         err = sipManagedProf->GetParameter( KSIPSnapId, snapId );
+                
         if ( KErrNone == err )
             {
             iSnapId = snapId;
             iSnapIdSet = ETrue;
             }
+        else if ( KErrNotFound == err )
+            {
+            TUint32 iapId( 0 );
+            err = sipManagedProf->GetParameter( KSIPAccessPointId, iapId );
+            
+            if ( KErrNone == err )
+                {
+                // Copy connection method to default SNAP
+                RCmManagerExt cmManager;
+                CleanupClosePushL( cmManager );
+                cmManager.OpenL();
+                
+                TCmDefConnValue defConn;
+                cmManager.ReadDefConnL( defConn );
+                iSnapId = defConn.iId;  
+                iSnapIdSet = ETrue;
+                
+                RCmDestinationExt defaultSnap;
+                CleanupClosePushL( defaultSnap );
+                defaultSnap = cmManager.DestinationL( iSnapId );
+                
+                RCmConnectionMethodExt connection = 
+                    cmManager.ConnectionMethodL( iapId );
+                CleanupClosePushL( connection );
+                
+                // Get connection name
+                HBufC* connectionName = 
+                    connection.GetStringAttributeL( CMManager::ECmName );
+                CleanupStack::PushL( connectionName );   
+                
+                RBuf parsedConnectionName;
+                CleanupClosePushL( parsedConnectionName );
+                parsedConnectionName.CreateL( connectionName->Des().Length() );
+                
+                // Parse possible unique number from end of connection
+                // method name. accesspoint(xx) --> accesspoint
+                TInt pos = connectionName->Des().Locate( '(' );
+                if ( KErrNotFound != pos )
+                    {
+                    parsedConnectionName.Copy( 
+                        connectionName->Des().Left( pos ) );
+                    }
+                else
+                    {
+                    parsedConnectionName.Copy( 
+                        connectionName->Des() );
+                    }  
+                
+                // Check if connection method already exists in default snap
+                TBool matchFound( EFalse );
+                TInt conMethodCount = defaultSnap.ConnectionMethodCount();
+                
+                for ( TInt i( 0 ) ; 
+                    i < conMethodCount && matchFound == 0; i ++ )
+                    {
+                    RCmConnectionMethodExt cm = 
+                        defaultSnap.ConnectionMethodL( i );
+                    CleanupClosePushL( cm );
+                        
+                    HBufC* cmName = 
+                        cm.GetStringAttributeL( CMManager::ECmName );
+                    CleanupStack::PushL( cmName );    
+   
+                    RBuf parsedCmName;
+                    CleanupClosePushL( parsedCmName );
+                    parsedCmName.CreateL( cmName->Des().Length() );
+                    
+                    // Parse possible unique number from end of connection
+                    // method name. accesspoint(xx) --> accesspoint
+                    TInt pos = cmName->Des().Locate( '(' );
+                    if ( KErrNotFound != pos )
+                        {
+                        parsedCmName.Copy( cmName->Des().Left( pos ) );
+                        }
+                    else
+                        {
+                        parsedCmName.Copy( cmName->Des() );
+                        }   
+                    
+                    // Compare connection method names
+                    if ( parsedConnectionName.Compare( parsedCmName ) == 0 )
+                        {
+                        matchFound = ETrue;
+                        }
+
+                    CleanupStack::PopAndDestroy( &parsedCmName );
+                    CleanupStack::PopAndDestroy( cmName );
+                    CleanupStack::PopAndDestroy( &cm );
+                    }
+                
+                CleanupStack::PopAndDestroy( &parsedConnectionName );
+                CleanupStack::PopAndDestroy( connectionName );
+                
+                // Add copy only if not already exists with same name
+                if ( !matchFound )
+                    {
+                    defaultSnap.AddConnectionMethodL( 
+                        connection.CreateCopyL() );
+                    }
+                
+                // Change seamlessness level for linked WLAN IAP so that
+                // roaming is allowed without asking it from the user.
+                TUint32 bearerType = connection.GetIntAttributeL( 
+                    CMManager::ECmBearerType );
+                
+                if ( KUidWlanBearerType == bearerType )
+                    {
+                    connection.SetIntAttributeL( 
+                        CMManager::ECmSeamlessnessLevel, 
+                        CMManager::ESeamlessnessShowprogress );
+                    }
+                
+                defaultSnap.UpdateL();
+                
+                CleanupStack::PopAndDestroy( &connection );
+                CleanupStack::PopAndDestroy( &defaultSnap );
+                CleanupStack::PopAndDestroy( &cmManager );
+
+                // Update sip profile to use default snap
+                sipManagedProf->SetParameter( KSIPAccessPointId, (TUint32)0 );
+                sipManagedProf->SetParameter( KSIPSnapId, iSnapId );
+                sipReg->SaveL( *sipManagedProf );
+                }
+            }
+        
         CleanupStack::PopAndDestroy( sipManagedProf ); // CS:3
         CleanupStack::Pop( sipProf ); // CS:2
         sipProf = NULL;

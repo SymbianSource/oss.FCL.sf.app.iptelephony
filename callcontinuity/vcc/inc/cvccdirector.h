@@ -463,13 +463,7 @@ private:
      */
     void CreateConferenceL( MCCPConferenceCall& aConferenceCall );
     
-    /*
-     * Check if Voip was enabled/disabled and load/destroy it
-     * @since S60 3.2
-     * @param aConferenceCall Created conference
-     */
-    void CheckVoipEnabledL( TServiceId aServiceId );
-    
+   
     
 private: // data
 
@@ -551,8 +545,7 @@ private: // data
      */
     CVccDtmfProvider* iDtmfProvider;
     
-    TBool iSvpLoaded;
-    
+     
 	friend class T_CVccDirector;
     friend class T_CVccDTMFProvider;
 	};
