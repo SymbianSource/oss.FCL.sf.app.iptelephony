@@ -120,6 +120,14 @@ public:
      * @param aIapId access point id to be removed
      */            
     void RemoveConnectionL( const TDesC& aServiceName, TInt aIapId );
+    
+    /**
+     * Returns ETrue if wlan search (query) is ongoing.
+     *
+     * @since S60 5.0
+     * @return ETrue if wlan search ongoing.
+     */ 
+    TBool SearchWlanOngoing();
        
 private:
 
@@ -233,6 +241,11 @@ private: // data
      * Own.
      */
     RConnectionMonitor iConnMon;
+    
+    /**
+     * Flag for determining if search wlan search (query) is ongoing
+     */
+    TBool iSearchWlanOngoing;
     
     CCHUI_UNIT_TEST( UT_CchUi )
     };

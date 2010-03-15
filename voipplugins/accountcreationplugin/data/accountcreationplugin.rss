@@ -109,11 +109,13 @@ RESOURCE MENU_PANE r_acp_provider_list_menu
           {
           command = EAknSoftkeySelect;
           txt = qtn_voip_option_service_details;
+          flags = EEikMenuItemSpecific;
           },
         MENU_ITEM
           {
           command = EAcpDownload;
           txt = qtn_voip_option_service_download_service;
+          flags = EEikMenuItemSpecific;
           },
         MENU_ITEM 
           { 

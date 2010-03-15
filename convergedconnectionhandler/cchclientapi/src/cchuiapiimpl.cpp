@@ -1142,9 +1142,10 @@ void CCchUiApiImpl::DoHandleServiceErrorL(
         }
     
     // Check that dialog showing is allowed.
-    __ASSERT_ALWAYS( StateIsAllowed( state ) || 
-            KCCHErrorInvalidSettings == aServiceStatus.Error(),
-        User::Leave( KErrNotSupported ) );
+    __ASSERT_ALWAYS( ( StateIsAllowed( state ) || 
+       KCCHErrorInvalidSettings == aServiceStatus.Error() ) &&
+       !iConnectionHandler->SearchWlanOngoing(),
+       User::Leave( KErrNotSupported ) );
     
     switch ( aServiceStatus.Error() )
         {

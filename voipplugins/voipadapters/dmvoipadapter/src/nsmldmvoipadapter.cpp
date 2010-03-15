@@ -1585,8 +1585,7 @@ void CNSmlDmVoIPAdapter::UpdateLeafObjectL(
         else if ( KNSmlDMVoIPUsedSIPProfileId() == uriSeg )
             {
             TUint32 profileId = SetSipRefL( aObject ); 
-            // SIP profile ID's start from 2.
-            if ( profileId > 1 )
+            if ( profileId > 0 )
                 {
                 if ( KErrNotFound == spSettingsId )
                     {

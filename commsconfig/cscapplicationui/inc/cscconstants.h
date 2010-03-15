@@ -30,6 +30,9 @@ const TUid KAccountCreationPluginUID = { 0x2000BEF1 };
 // Advanced settings plugin UID
 const TUid KAdvancedSettingsPluginUID = { 0x1028331D };
 
+// Help context UID
+const TUid KCscHelpUid = { 0x1020E566 };
+
 // Filename and path for bitmaps and icons.
 _LIT( KDriveZ, "z:" );
 _LIT( KCSCAifFile, "csc_aif.mif");

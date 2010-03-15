@@ -92,6 +92,10 @@ TInt CVccTransferProvider::AttendedTransfer( MCCPCall& aTransferTargetCall )
             target = targetCall->PrimaryCall();
             }
         }
+    else
+        {
+        return KErrNotReady;
+        }
     return iCallTransferProvider->AttendedTransfer( *target );
     }
 

@@ -63,6 +63,16 @@ public:
     TInt DisplayNameFromUri( const TDesC& aData, RBuf& aDisplayname ) const;
     
     /**
+     * Parses displayname part from uri.
+     * @leave Leaves with system wide error.
+     * @param aData - Original uri.
+     * @param aDisplayname - Uris displayname part if found from
+     *                       original uri.
+     * @param aResult - Result of operation, KErrNone if success.
+     */ 
+    void DisplayNameFromUriL( const TDesC& aData, RBuf& aDisplayname, TInt& aResult ) const;
+    
+    /**
      * Checks sip uri for spaces in begin and end of string.
      * @leave Leaves on failure.
      * @param aOriginal - Original sip uri.

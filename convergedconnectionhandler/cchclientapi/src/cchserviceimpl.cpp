@@ -24,6 +24,7 @@
 #include "cchimpl.h"
 #include "cchclientobserver.h"
 #include "cchclientserverinternal.h"
+#include "cchserviceimplasynchroniser.h"
 
 #ifdef CCHAPI_USE_CCHUI
 #include "cchuiprivateapi.h"
@@ -79,6 +80,7 @@ CCchServiceImpl::~CCchServiceImpl()
     	RemoveObserver();
     	}
     delete iObserver;
+    delete iAsynchroniser;
     }
 
 // ---------------------------------------------------------------------------
@@ -90,6 +92,7 @@ void CCchServiceImpl::ConstructL()
     {
     CCHLOGSTRING( "CCchServiceImpl::ConstructL: IN" );
     iObserver = CCchClientObserver::NewL( *this );
+    iAsynchroniser = CCchServiceImplAsynchroniser::NewL(iCch, iServiceId, iCchUi );
     CCHLOGSTRING( "CCchServiceImpl::ConstructL: OUT" );
     }
 // ---------------------------------------------------------------------------
@@ -134,26 +137,9 @@ TInt CCchServiceImpl::Enable( TCCHSubserviceType aType )
     {
     CCHLOGSTRING( "CCchServiceImpl::Enable: IN" );
 	
-    TRequestStatus status = KErrNone;
-	TServiceSelection selection( iServiceId, aType );
-    iCch.CchClient().EnableService( selection, status, EFalse );
-    //even the cchclient api seems to be asynchronous, 
-	//this method is completed immediately
-	User::WaitForRequest( status );
-    CCHLOGSTRING( "CCchServiceImpl::Enable: OUT" );
-    
-    if ( iCch.ConnectivityDialogsAllowed() )
-        {        
-        TRAPD( err, iCchUi.ManualEnableResultL( 
-            iServiceId, status.Int() ) );
-        
-        if( err != KErrNone )
-            {
-            return KErrNotReady;
-            }
-        }
-    
-    return status.Int();
+    iAsynchroniser->Enable(aType);
+	CCHLOGSTRING( "CCchServiceImpl::Enable: OUT" );
+    return KErrNone;
     }
 
 // ---------------------------------------------------------------------------
@@ -163,15 +149,10 @@ TInt CCchServiceImpl::Enable( TCCHSubserviceType aType )
 TInt CCchServiceImpl::Disable( TCCHSubserviceType aType )
     {
     CCHLOGSTRING( "CCchServiceImpl::Disable: IN" );
-    
-    TRequestStatus status = KErrNone;
-	TServiceSelection selection( iServiceId, aType );
-    iCch.CchClient().DisableService( selection, status );
-    //even the cchclient api seems to be asynchronous, 
-	//this method is completed immediately
-	User::WaitForRequest( status );
+  
+    iAsynchroniser->Disable(aType);
     CCHLOGSTRING( "CCchServiceImpl::Disable: OUT" );
-    return status.Int();
+    return KErrNone;
     }
 
 // ---------------------------------------------------------------------------

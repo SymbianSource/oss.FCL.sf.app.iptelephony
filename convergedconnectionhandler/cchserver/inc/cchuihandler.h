@@ -192,11 +192,6 @@ private: // data
      * Note handler
      */
     CCchNoteHandler* iNoteHandler;
-
-    /**
-     * Are we out of cs network?
-     */
-    TBool iVoIPEmergencyNoteState;
     
     /**
      * ETel observer

@@ -30,7 +30,7 @@
 
 class CCchClientObserver;
 class CCchImpl;
-
+class CCchServiceImplAsynchroniser;
 #ifdef CCHAPI_USE_CCHUI
 class CCchUiPrivateApi;
 #else 
@@ -269,6 +269,11 @@ private: // data
 	 * CCH connectivity UI handling private API
 	 */	
 	CCchUiPrivateApi& iCchUi;
+	
+	/**
+	 * CCH server request handler
+	 */	
+	CCchServiceImplAsynchroniser* iAsynchroniser;
 
 #ifdef CCHUNITTEST
     friend class UT_CCchService;

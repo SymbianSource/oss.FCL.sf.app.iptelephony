@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -459,6 +459,26 @@ void CScpProfileHandler::SetSipProfileReserved( TUint32 aProfileId, TBool aReser
     }
 
 // -----------------------------------------------------------------------------
+// CScpProfileHandler::StartAlrMigration
+// -----------------------------------------------------------------------------
+//
+void CScpProfileHandler::StartAlrMigration( TUint32 aProfileId )
+    {
+    SCPLOGSTRING2( "CScpProfileHandler::StartMigrtion profile: %i", aProfileId );
+    SCPLOGSTRING2( "CScpProfileHandler::StartMigrtion iNewAlrIapId: %i", iNewAlrIapId );
+    
+    TRAP_IGNORE(
+       iAlrController->AllowMigrationL( aProfileId, iNewAlrIapId ) );
+    
+    CScpSipConnection* sipConnection( NULL );
+    
+    sipConnection = GetSipConnection( aProfileId );
+    sipConnection->SetProfileCurrentlyRoaming();
+    
+    SCPLOGSTRING( "CScpProfileHandler::StartMigrtion -exit" );
+    }
+
+// -----------------------------------------------------------------------------
 // CScpProfileHandler::AlrEvent
 // -----------------------------------------------------------------------------
 //
@@ -502,13 +522,29 @@ void CScpProfileHandler::AlrEvent( MSipProfileAlrObserver::TEvent aEvent,
                     }
                 else
                     {
-                    sipConnection->SetProfileCurrentlyRoaming();
+                    iAlrAllowedToStartImmediately = ETrue;
 
-                    TRAP_IGNORE(
-                        iAlrController->AllowMigrationL( aProfileId, aIapId ) );
+                    for ( TInt i = 0; i < iObservers.Count(); i++ )
+                        {
+                        if ( !iObservers[ i ]->IsSipProfileAllowedToStartAlr() )
+                            {
+                            iAlrAllowedToStartImmediately = EFalse;
+                            break;
+                            }
+                        }
+                    if ( iAlrAllowedToStartImmediately )
+                        {
+                        TRAP_IGNORE(
+                            iAlrController->AllowMigrationL( aProfileId, aIapId ) );
+                        sipConnection->SetProfileCurrentlyRoaming();
+                        }
+                    else
+                        {
+                        iNewAlrIapId = aIapId;
+                        sipConnection->HandleMigrationStarted();
+                        }
                     }
                 }
-
             break;
             }
 
@@ -519,11 +555,10 @@ void CScpProfileHandler::AlrEvent( MSipProfileAlrObserver::TEvent aEvent,
             {
             sipConnection = GetSipConnection( aProfileId );
             
-            if( sipConnection )
+            if( sipConnection && iAlrAllowedToStartImmediately )
                 {
                 sipConnection->HandleMigrationStarted();
                 }
-            
             break;
             }
         
@@ -596,6 +631,15 @@ void CScpProfileHandler::HandleSipConnectionEvent( TUint32 aProfileId,
         }
     }
 
+// -----------------------------------------------------------------------------
+// CScpProfileHandler::IsSipProfileAllowedToStartAlr
+// -----------------------------------------------------------------------------
+//
+TBool CScpProfileHandler::IsSipProfileAllowedToStartAlr()
+    {
+    return ETrue;
+    }
+    
 // -----------------------------------------------------------------------------
 // CScpProfileHandler::VmbxInterfaceL
 // -----------------------------------------------------------------------------

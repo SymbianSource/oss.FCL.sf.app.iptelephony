@@ -42,7 +42,8 @@ CCchUiConnectionHandler::CCchUiConnectionHandler(
     CCchUiCchHandler& aCchHandler,
     CCchUiSpsHandler& aSpsHandler ):
     iCCHHandler( aCchHandler ),
-    iSpsHandler( aSpsHandler )
+    iSpsHandler( aSpsHandler ),
+    iSearchWlanOngoing( EFalse )
     {
     }
 
@@ -108,9 +109,14 @@ void CCchUiConnectionHandler::SearchAccessPointsL(
     CCHUIDEBUG( 
         "CCchUiConnectionHandler::SearchAccessPointsL - begin search wlan" );
         
+    // Set flag which indicates that search wlan query is open
+    iSearchWlanOngoing = ETrue;
+    
     TBool ret = iConnUiUtils->SearchWLANNetwork( 
         ssid, connectionMode, securityMode );
         
+    iSearchWlanOngoing = EFalse;
+    
     if ( !ret )
         {        
         //ret is ETrue if user pressed OK softkey. Otherwise leave
@@ -715,6 +721,19 @@ void CCchUiConnectionHandler::RemoveConnectionL(
     
     CCHUIDEBUG( "CCchUiConnectionHandler::RemoveConnectionL - OUT" );
     }
+
+// ---------------------------------------------------------------------------
+// Returns ETrue if wlan search (query) is ongoing.
+// ---------------------------------------------------------------------------
+//
+TBool CCchUiConnectionHandler::SearchWlanOngoing()
+    {    
+    CCHUIDEBUG2( "CCchUiConnectionHandler::SearchWlanOngoing ongoing=%d",
+        iSearchWlanOngoing );
+    
+    return iSearchWlanOngoing;
+    }
+
 
 // ---------------------------------------------------------------------------
 // Creates service snap

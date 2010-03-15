@@ -29,7 +29,6 @@
 #include "cchservicenotifier.h"
 #include "cchclientserver.h"
 #include "cchcommdbwatcherobserver.h"
-#include "cchphonestartupmonitor.h"
 
 // CONSTANTS
 // None
@@ -48,7 +47,6 @@ class CSPNotifyChange;
 class CCchUIHandler;
 class CCchWlanExtension;
 class CCCHCommDbWatcher;
-class CCCHPhoneStartupMonitor;
 
 // DATA TYPES
 typedef RPointerArray<CCCHServiceInfo> RServiceArray;
@@ -392,16 +390,38 @@ private:
     void CancelPluginUnloadTimer();
     
     /**
+     * Starts handle notify delay timer
+     * @param aFunction The function to call after the time out
+     */
+    void StartHandleNotifyDelayTimer();
+
+    /**
+     * Cancels the handler notify delay timer
+     */
+    void CancelHandleNotifyDelayTimer();
+    
+    /**
      * Plugin unload callback
      * @param aSelf this object
      */
     static TInt PluginUnloadEvent( TAny* aSelf );
     
     /**
+     * Handle notify event callback
+     * @param aSelf this object
+     */
+    static TInt HandleNotifyEvent( TAny* aSelf );
+    
+    /**
      * Handles plugin unload event
      */
     void HandlePluginUnload();
-        
+    
+    /**
+     * Handles delayed notify event
+     */
+    void HandleDelayedNotifyEvent();
+    
     /**
      * From MCCHCommDbWatcherObserver, handles commsdb events
      */
@@ -455,11 +475,6 @@ private: // data
     CCchUIHandler*                  iCchUIHandler;
     
     /**
-     * Phone startup monitor. Owned.
-     */
-    CCchPhoneStartupMonitor *       iPhoneStartupMonitor;
-    
-    /**
      * Connection recovery timer. Owned.
      */
     CPeriodic* iConnectionRecoveryTimer;
@@ -468,6 +483,11 @@ private: // data
      * Plugin unload timer. Owned.
      */
     CPeriodic* iPluginUnloadTimer;
+    
+    /**
+     * Handle notify delay timer. Owned.
+     */
+    CPeriodic* iHandleNotifyDelayTimer;
     
     /**
      * Recovery trial counter
@@ -498,6 +518,11 @@ private: // data
      * Disable SPSettings notifications
      */
     TBool iCancelNotify;
+    
+    /**
+     * Service id of delayed handle notify event
+     */
+    TServiceId iDelayedHandleNotifyServiceId;
     };
 
 #endif // C_CCHSERVICEHANDLER_H

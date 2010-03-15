@@ -68,6 +68,13 @@ NONSHARABLE_CLASS( CCSCSettingsUiMainView ) : public CAknView,
          * @since S60 v3.2
          */
         void UpdateSoftkeysL( );
+        
+        /**
+         * Resets service settings when switching services.
+         * 
+         * @since S60 v5.2
+         */
+        void ResetViewL();
 
         
         // from base class CAknView

@@ -119,6 +119,12 @@ void CCSCSettingsUiImpl::InitializeL(
         iMainView = CCSCSettingsUiMainView::NewL( *iModel );
         AppUi()->AddViewL( iMainView ); // ownership is transferred
         }
+    else
+        {
+        // Already initialised. Reset view since we're probably switching
+        // between different service settings.
+        iMainView->ResetViewL();
+        }
     
     // Set initialization information data. The function leaves if given 
     // service does not exist.

@@ -118,9 +118,17 @@ void TVccStateCalling::CallStateChanged( CVccPerformer& aContext,
         RUBY_DEBUG0( "TVccStateCalling::CallStateChanged - swap the calls" );
         
 		aContext.SetCall(aContext.SecondaryCall());
-		TRAP_IGNORE( aContext.Notifier().NotifySubscriberL( EVccCsToPsHoInprogress, 
-		                                       KErrNone ) );
 		
+		if ( aContext.Parameters().CallType() == CCPCall::ECallTypePS )
+            {
+            TRAP_IGNORE( aContext.Notifier().NotifySubscriberL( EVccCsToPsHoInprogress, 
+                                                   KErrNone ) );            
+            }
+        else
+            {
+            TRAP_IGNORE( aContext.Notifier().NotifySubscriberL( EVccPsToCsHoInprogress, 
+                                                       KErrNone ) );
+            }
 		//-> Set Next State - if the call is idle just destroy call object and 
 		//go to init-state
 		__ASSERT_DEBUG( aContext.SecondaryCall() != NULL, 

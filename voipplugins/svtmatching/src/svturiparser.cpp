@@ -95,81 +95,114 @@ TInt CSvtUriParser::DisplayNameFromUri(
         const TDesC& aData, 
         RBuf& aDisplayname ) const
     {
-    TInt ret( KErrNotFound );
+    TInt result = KErrNotFound;
+
+    TRAPD( err, DisplayNameFromUriL( aData, aDisplayname, result ) );
+    if ( err )
+        {
+        result = err;
+        }
+    return result;
+    }
+
+// ---------------------------------------------------------------------------
+// The inner logic for resolving display name from sip uri
+// ---------------------------------------------------------------------------
+//
+void CSvtUriParser::DisplayNameFromUriL(
+        const TDesC& aData,
+        RBuf& aDisplayname,
+        TInt& aResult ) const
+    {
+    aResult = KErrNotFound;
     
-    TPtrC resultStr( aData );
+    TPtrC preResultStr( aData );
     aDisplayname.Close();
     
-    // resolves potential SIP Display info and removes it from uri
-    // also possible "<" and ">" character are removed around the SIP uri
-    TInt uriStartIndex = resultStr.LocateReverse( KStartBracket );      
-    TInt uriEndIndex = resultStr.LocateReverse( KEndBracket );       
+    HBufC* tempBuffer = preResultStr.AllocLC(); // CS:1
+    tempBuffer->Des().TrimAll();
     
-    if ( uriStartIndex > uriEndIndex )
+    if ( tempBuffer->Length() )
         {
-        // Start and end separators in wrong order: "xxxx>xxxx<xxx"
-        return KErrArgument;
-        }
+        TPtrC resultStr( tempBuffer->Des() );
+
+        // resolves potential SIP Display info and removes it from uri
+        // also possible "<" and ">" character are removed around the SIP uri
+        TInt uriStartIndex = resultStr.LocateReverse( KStartBracket );      
+        TInt uriEndIndex = resultStr.LocateReverse( KEndBracket );       
         
-    if ( KErrNotFound != uriStartIndex && KErrNotFound != uriEndIndex )
-        {
-        // brackets found so modify descriptor and save the display info
-        
-        // check if there is anything before "<" if there is use
-        // it as displayname if match op fails.
-        if ( uriStartIndex > 1 )
-            {        
-            TPtrC tempStr( resultStr.Left( uriStartIndex ) );          
-            // remove possible quotation marks from displayname
-            TInt index = tempStr.Locate( KQuotationMark );
-            if ( KErrNotFound != index )
+        if ( KErrNotFound != uriStartIndex && KErrNotFound != uriEndIndex )
+            {
+            if ( uriStartIndex < uriEndIndex )
                 {
-                // marks have to be removed
-                tempStr.Set( tempStr.Mid( ++index ) );    
-                if ( tempStr[tempStr.Length() - 1] == KQuotationMark )
-                    {
-                    tempStr.Set( tempStr.Left( tempStr.Length() - 1 ) );
-                    }
+                // brackets found so modify descriptor and save the display info
+                
+                // check if there is anything before "<" if there is use
+                // it as displayname if match op fails.
+                if ( uriStartIndex > 1 )
+                    {        
+                    TPtrC tempStr( resultStr.Left( uriStartIndex ) );          
+                    // remove possible quotation marks from displayname
+                    TInt index = tempStr.Locate( KQuotationMark );
+                    if ( KErrNotFound != index )
+                        {
+                        // marks have to be removed
+                        tempStr.Set( tempStr.Mid( ++index ) );    
+                        if ( tempStr[tempStr.Length() - 1] == KQuotationMark )
+                            {
+                            tempStr.Set( tempStr.Left( tempStr.Length() - 1 ) );
+                            }
+                        }
+                    aResult = aDisplayname.Create( tempStr );
+                    }                      
                 }
-            ret = aDisplayname.Create( tempStr );
-            }                      
-        }        
-    else 
-        {
-        // it is also possible that displayname is included 
-        // in, in case that there is no brackets around the uri. So if there is something
-        // inside quotationMarks it should be used as displayname
-
-        // check if displayname is found
-        TInt displayNameStart = resultStr.Locate( KQuotationMark );
-        TInt displayNameEnd = resultStr.LocateReverse( KQuotationMark );
-
-        if ( displayNameStart != KErrNotFound 
-            && displayNameEnd != KErrNotFound 
-            && displayNameStart < displayNameEnd )
-            {
-            // displayname is included
-            // ++, to remove quotationMark from the start
-            ret = aDisplayname.Create( resultStr.Mid( ++displayNameStart, 
-                // -1, to remove quotationMark from the end
-                displayNameEnd - displayNameStart - 1 ) );  
-            }                                
-        else
-            {
-            // check if there is spaces in the uri, if there is
-            // everything before it belongs to display name                
-            TInt index = resultStr.LocateReverse( KSpaceMark );
-            
-            if ( KErrNotFound != index )            
+            else
                 {
-                // set displayname
-                ret = aDisplayname.Create( resultStr.Left( index ) );
-                }            
-
-            }
-        }
+                // Start and end separators in wrong order: "xxxx>xxxx<xxx"
+                aResult = KErrArgument;
+                }
+            }        
+        else 
+            {
+            // it is also possible that displayname is included 
+            // in, in case that there is no brackets around the uri. So if there is something
+            // inside quotationMarks it should be used as displayname
     
-    return ret;
+            // check if displayname is found
+            TInt displayNameStart = resultStr.Locate( KQuotationMark );
+            TInt displayNameEnd = resultStr.LocateReverse( KQuotationMark );
+    
+            if ( displayNameStart != KErrNotFound 
+                && displayNameEnd != KErrNotFound 
+                && displayNameStart < displayNameEnd )
+                {
+                // displayname is included
+                // ++, to remove quotationMark from the start
+                aResult = aDisplayname.Create( resultStr.Mid( ++displayNameStart, 
+                    // -1, to remove quotationMark from the end
+                    displayNameEnd - displayNameStart - 1 ) );  
+                }                                
+            else
+                {
+                // check if there is spaces in the uri, if there is
+                // everything before it belongs to display name                
+                TInt index = resultStr.LocateReverse( KSpaceMark );
+                
+                if ( KErrNotFound != index )            
+                    {
+                    // set displayname
+                    aResult = aDisplayname.Create( resultStr.Left( index ) );
+                    }            
+                }
+             }
+        }
+    else
+        {
+        // Invalid data length
+        aResult = KErrArgument;
+        }
+
+    CleanupStack::PopAndDestroy( tempBuffer ); // CS:0
     }
 
 // ---------------------------------------------------------------------------

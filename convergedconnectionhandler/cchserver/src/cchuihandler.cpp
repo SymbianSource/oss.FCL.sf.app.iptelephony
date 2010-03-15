@@ -172,7 +172,6 @@ void CCchUIHandler::SetIndicatorStateL( TInt aIndicator,
 void CCchUIHandler::MobileNetworkNoService(  )
     {
     CCHLOGSTRING( "CCchUIHandler::MobileNetworkNoService" );
-    TRAP_IGNORE( ShowEmergencyWarningNoteL( EFalse ) );
     }
 
 // ---------------------------------------------------------------------------
@@ -205,18 +204,9 @@ void CCchUIHandler::HandleVoipStateChangedL( TBool aStatus )
              KCCHVoIPEmergencyWarningShown, emergencyWarningShown );
         if( err == KErrNone )
             {
-            if ( !iVoIPEmergencyNoteState )
-                {
-                iVoIPEmergencyNoteState = 
-                    iCchEtelNetworkStatusNotifier->IsNetworkStatusNoService();    
-                }
             if( !emergencyWarningShown )
                 {
                 ShowEmergencyWarningNoteL( ETrue );
-                }
-            else if( iVoIPEmergencyNoteState )
-                {
-                ShowEmergencyWarningNoteL( EFalse );
                 }
             }
         }
@@ -302,20 +292,7 @@ void CCchUIHandler::ShowEmergencyWarningNoteL( TBool aVoIPEnabledFirstTime )
                 SecondaryDisplay::ECmdShowVoipEmergencyCallReadinessQuery );
             iServer.SetVoIPEmergencyNoteShown( ETrue );
             }
-        else
-            {
-            TInt voIPEmergencyNoteDoNotShow( 0 );
-            iCchRepository->Get( 
-                KCCHVoIPShowEmergencyWarningOnOff, voIPEmergencyNoteDoNotShow );
-            if ( voIPEmergencyNoteDoNotShow && !iServer.VoIPEmergencyNoteShown() )
-                {
-                iServer.SetVoIPEmergencyNoteShown( ETrue );
-                iNoteHandler->LaunchGlobalNoteL(
-                    R_QTN_VOIP_EM_CALL_ERROR_NOTE_NO_CS, 
-                    R_AVKON_SOFTKEYS_OK_EMPTY,
-                    SecondaryDisplay::ECmdShowVoipEmergencyCallErrorNoteNoCsQuery );
-                }
-            }
+
         }
     } 
 

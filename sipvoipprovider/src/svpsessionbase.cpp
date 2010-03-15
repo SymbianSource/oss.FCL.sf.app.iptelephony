@@ -284,7 +284,13 @@ void CSVPSessionBase::TimedOut( TInt aTimerId )
             }
         
         ExecCbCallStateChanged( MCCPCallObserver::ECCPStateDisconnecting );
-        ExecCbCallStateChanged( MCCPCallObserver::ECCPStateIdle );
+
+        TRAPD( errTimer, StartTimerL( KSVPTerminatingTime, KSVPRemoteEndDiedExpired ));
+	    if ( errTimer )
+		    {
+			SVPDEBUG2("CSVPSessionBase::No Answer timer leave with error code %d",
+			        errTimer )
+            }
         }
     
     if ( KSVPTerminationTimerExpired == aTimerId )

@@ -28,15 +28,16 @@
 #include <coecntrl.h>
 #include <AknsUtils.h>
 #include <cchclient.h>
-#include <csc.hlp.hrh>
 #include <akncontext.h>
 #include <AknIconArray.h>
 #include <StringLoader.h>
 #include <aknViewAppUi.h>
 #include <AiwServiceHandler.h>
 #include <mspnotifychangeobserver.h>
-#include <data_caging_path_literals.hrh>
 #include <cscengsettingscleanupplugininterface.h>
+
+#include <csxhelp/voip.hlp.hrh>
+#include <data_caging_path_literals.hrh>
 
 #include "mcscservicecontainerobserver.h"
 #include "csclogger.h"
@@ -789,7 +790,7 @@ TInt CCSCServiceContainer::CountComponentControls() const
 void CCSCServiceContainer::GetHelpContext( 
     TCoeHelpContext& aContext ) const
     {
-    aContext.iMajor = KUidCscHelp;
+    aContext.iMajor = KCscHelpUid;
     aContext.iContext = KVOIP_HLP_CSC;
     }
 

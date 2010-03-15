@@ -31,7 +31,7 @@ CAPABILITY              CAP_SERVER NetworkControl
 VENDORID                VID_DEFAULT
 SOURCEPATH              ../src
 SOURCE                  cchconnmonhandler.cpp
-SOURCE			cchcommdbwatcher.cpp
+SOURCE                  cchcommdbwatcher.cpp
 SOURCE                  cchrequeststorage.cpp
 SOURCE                  cchspshandler.cpp
 SOURCE                  cchserverbase.cpp
@@ -50,7 +50,6 @@ SOURCE                  cchwlanextension.cpp
 SOURCE                  cchwakeupeventnotifier.cpp
 SOURCE                  cchstartupcounter.cpp
 SOURCE                  cchactivescheduler.cpp
-SOURCE                  cchphonestartupmonitor.cpp
 
 START RESOURCE ../data/cch.rss
 HEADER
@@ -67,7 +66,7 @@ APP_LAYER_SYSTEMINCLUDE
 LIBRARY                 euser.lib
 LIBRARY                 flogger.lib         // for logging purposes
 LIBRARY                 connmon.lib
-LIBRARY			cmmanager.lib
+LIBRARY                 cmmanager.lib
 LIBRARY                 ecom.lib            // for plug-ins
 LIBRARY                 serviceprovidersettings.lib
 LIBRARY                 aknnotify.lib

@@ -984,7 +984,7 @@ void CScpServiceManager::SetUsernameAndPasswordToXdmL(
             }
         }
     
-    if ( aSetUsername )
+    if ( service && aSetUsername )
         {
         iSettingHandler->UpdateXdmUsernameL( 
             *service,
@@ -992,7 +992,7 @@ void CScpServiceManager::SetUsernameAndPasswordToXdmL(
             aUsername );
         }
     
-    if ( aSetPassword )
+    if ( service && aSetPassword )
         {
         iSettingHandler->UpdateXdmPasswordL(
             *service, 

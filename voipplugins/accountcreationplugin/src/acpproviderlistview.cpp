@@ -467,7 +467,7 @@ void CAcpProviderListView::HandleListBoxEventL(
     switch ( aEventType )
         {
         case EEventEnterKeyPressed:
-        case EEventItemDoubleClicked:
+        case EEventItemSingleClicked:
             HandleCommandL( EAknSoftkeySelect );
             break;
         default:

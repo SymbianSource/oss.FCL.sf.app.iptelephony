@@ -986,7 +986,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
     TLex8 lex( aStorageIdValue );
     User::LeaveIfError( lex.Val( storageId, EDecimal ) );
 
-
     const TInt itemCount = iDatas.Count();
 
     //lint -e{961} No need for else statement here
@@ -999,9 +998,7 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
 
             TBuf8<KTempStringlength> userAgentHeader;
             iDatas[itemIndex]->GetUserAgentHeaderL( userAgentHeader );
-            // SIPProfileId must be bigger than 1 because otherwise
-            // cSIPManagedProfileRegistry->ProfileL will leave.
-            if ( setOk && storageId > 1 )
+            if ( setOk && storageId > 0 )
                 {
                 TUint32 itemId = iDatas[itemIndex]->ItemId();
                 if ( TUint( KNotSaved ) != itemId )
@@ -1021,7 +1018,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                     rcseReg->UpdateL( itemId, *rcseProf );
                     CleanupStack::PopAndDestroy( 2, rcseReg );
                     }
-                
 
                 // Then set SIP user-agent header
                 DBG_PRINT(
@@ -1051,7 +1047,7 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                     User::LeaveIfError( cSIPManagedProfile->SetParameter( 
                         KSIPHeaders, *uahArray ) );
                     }
-                
+
                 cSIPManagedProfileRegistry->SaveL( *cSIPManagedProfile );
                 uahArray->Reset();
                 CleanupStack::PopAndDestroy( uahArray ); // CS:5
@@ -1067,7 +1063,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                 } // if ( matches ... )
             } // for
         }
-
     else if ( KErrNone == KSCCPAppID8().CompareF( tmpAppId->Des() ) )
         {
         for ( TInt itemIndex = 0; itemIndex < iDatas.Count(); itemIndex++ )
@@ -1076,7 +1071,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                 aAppRef );
             }
         }
-
     else if ( KErrNone == KNATFWAppID8().CompareF( tmpAppId->Des() ) )
         {
         for ( TInt itemIndex = 0; itemIndex < iDatas.Count(); itemIndex++ )
@@ -1085,7 +1079,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                 aAppRef );
             }
         }
-
     else if ( KErrNone == KPresenceAppId8().CompareF( tmpAppId->Des() ) )
         {
         for ( TInt itemIndex = 0; itemIndex < iDatas.Count(); itemIndex++ )
@@ -1094,7 +1087,6 @@ void CWPVoIPAdapter::SettingsSavedL ( const TDesC8& aAppIdOfSavingItem,
                 storageId, aAppRef );
             }
         }
-
     else if ( KErrNone == KSNAPAppID8().CompareF( tmpAppId->Des() ) )
         {
         for ( TInt itemIndex = 0; itemIndex < iDatas.Count(); itemIndex++ )

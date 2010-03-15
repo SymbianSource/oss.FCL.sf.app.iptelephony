@@ -640,13 +640,19 @@ TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager,
             DBG_PRINT( "   EapType none" );
             User::LeaveIfError( wpaSecSettings->SetWPAPreSharedKey( 
                 aTempIap.iPreSharedKey->Des() ));
+            wpaSecSettings->SaveL( wlanId, *db, ESavingBrandNewAP, 0 );
             }
         else if ( EAPSettings::EEapLeap == aTempIap.iEapType )
             {
             DBG_PRINT( "   eapType Leap" );
+
             TBuf8<KMaxNodeValueLength> eapId;
             eapId.Copy( KEapLeapId, KEapChars );
-            CEapType* eapType = CEapType::NewL( eapId, ELan, iapServiceId );
+            User::LeaveIfError( 
+                wpaSecSettings->SetWPAEnabledEAPPlugin( eapId ) );
+            wpaSecSettings->SaveL( wlanId, *db, ESavingBrandNewAP, 0 );
+
+            CEapType* eapType = CEapType::NewL( eapId, ELan, wlanId );
             CleanupStack::PushL( eapType ); // CS:3
             EAPSettings* eapSettings = new (ELeave) EAPSettings();
             CleanupStack::PushL( eapSettings ); // CS:4
@@ -656,10 +662,8 @@ TUint32 CVoipXmlIapHandler::CreateIapL( RCmManagerExt& aCmManager,
             eapSettings->iPassword.Copy( aTempIap.iEapPassword->Des() );
             eapSettings->iPasswordPresent = ETrue;
             eapType->SetConfigurationL( *eapSettings );
-            CleanupStack::PopAndDestroy( 2, eapType );
-            wpaSecSettings->SetWPAEnabledEAPPlugin( eapId );
+            CleanupStack::PopAndDestroy( 2, eapType ); // CS:2
             }
-        wpaSecSettings->SaveL( wlanId, *db, ESavingBrandNewAP, 0 );
         // wpaSecSettings, db
         CleanupStack::PopAndDestroy( 2, db ); // CS:0
         }

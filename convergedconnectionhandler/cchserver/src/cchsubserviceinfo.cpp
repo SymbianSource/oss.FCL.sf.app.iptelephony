@@ -149,10 +149,9 @@ void CCCHSubserviceInfo::SetType( const TCCHSubserviceType aType )
 // ---------------------------------------------------------------------------
 //
 TCCHSubserviceType CCCHSubserviceInfo::Type()
-    {
-    GetServiceNetworkInfo();
-    return iType;
-    }
+    { 
+	return iType;
+	}
     
 // ---------------------------------------------------------------------------
 // CCCHSubserviceInfo::SetState

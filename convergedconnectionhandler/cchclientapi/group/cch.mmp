@@ -41,6 +41,7 @@ SOURCE                  cchuiconnectionhandler.cpp
 SOURCE                  cchuiglobalqueryhandler.cpp
 SOURCE                  cchuiclientobserver.cpp
 SOURCE                  cchuitimer.cpp
+SOURCE			cchserviceimplasynchroniser.cpp
 
 USERINCLUDE             ../inc
 USERINCLUDE             ../../inc           // CCH's internal headers

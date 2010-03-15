@@ -40,6 +40,7 @@ START RESOURCE          ../data/cchuinotif.rss
 HEADER
 TARGETPATH              APP_RESOURCE_DIR
 // LANG                 SC
+LANGUAGE_IDS
 END // RESOURCE
 
 USERINCLUDE     		../inc

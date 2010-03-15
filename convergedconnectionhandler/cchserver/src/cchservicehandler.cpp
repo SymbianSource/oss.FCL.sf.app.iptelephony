@@ -48,6 +48,9 @@ const TInt KCCHFourthRecovery   = 60000000;
 const TInt KCCHFifthRecovery    = 60000000;
 
 const TInt KCCHPluginUnloadTimeout = 5000000;
+
+const TInt KCCHHandleNotifyDelay = 1000000;
+
 // MACROS
 // None
 
@@ -89,10 +92,10 @@ void CCCHServiceHandler::ConstructL()
     {
     iNotifier = CSPNotifyChange::NewL( *this );
     iCchUIHandler = CCchUIHandler::NewL( iServer, *this );
-    iPhoneStartupMonitor = CCchPhoneStartupMonitor::NewL( *iCchUIHandler );
     iConnectionRecoveryTimer = CPeriodic::NewL( CPeriodic::EPriorityStandard );
     iCommDbWatcher = CCCHCommDbWatcher::NewL( *this );
     iPluginUnloadTimer = CPeriodic::NewL( CPeriodic::EPriorityStandard );
+    iHandleNotifyDelayTimer = CPeriodic::NewL( CPeriodic::EPriorityStandard );
     iRecoveryInterval.Append( KCCHFirstRecovery );
     iRecoveryInterval.Append( KCCHSecondRecovery );
     iRecoveryInterval.Append( KCCHThirdRecovery );
@@ -134,10 +137,10 @@ CCCHServiceHandler::~CCCHServiceHandler()
         iCchUIHandler->Destroy();
         }
 
-    delete iPhoneStartupMonitor;
     delete iWlanExtension;
     delete iConnectionRecoveryTimer;
     delete iPluginUnloadTimer;
+    delete iHandleNotifyDelayTimer;
     delete iCommDbWatcher;
 
     if( iNotifier )
@@ -523,6 +526,44 @@ void CCCHServiceHandler::CancelPluginUnloadTimer()
     }
 
 // -----------------------------------------------------------------------------
+// CCCHServiceHandler::StartHandleNotifyDelayTimer
+// -----------------------------------------------------------------------------
+//
+void CCCHServiceHandler::StartHandleNotifyDelayTimer( )
+    {
+    CCHLOGSTRING2( "CCCHServiceHandler[0x%x]::StartHandleNotifyDelayTimer; IN", this );
+    
+    CancelHandleNotifyDelayTimer();
+    if( !iHandleNotifyDelayTimer->IsActive() )
+        {
+        iHandleNotifyDelayTimer->Start( 
+            KCCHHandleNotifyDelay , 
+            0, 
+            TCallBack( CCCHServiceHandler::HandleNotifyEvent, this ) );
+        
+        CCHLOGSTRING( "CCCHServiceHandler::StartHandleNotifyDelayTimer; timer started");
+        }
+    
+    CCHLOGSTRING( "CCCHServiceHandler::StartHandleNotifyDelayTimer; OUT" );   
+    }
+
+// -----------------------------------------------------------------------------
+// CCCHServiceHandler::CancelHandleNotifyDelayTimer
+// -----------------------------------------------------------------------------
+//
+void CCCHServiceHandler::CancelHandleNotifyDelayTimer()
+    {
+    CCHLOGSTRING2( "CCCHServiceHandler[0x%x]::CancelHandleNotifyDelayTimer; IN", this );
+
+    if( iHandleNotifyDelayTimer->IsActive() )
+        {
+        iHandleNotifyDelayTimer->Cancel();
+        }
+    
+    CCHLOGSTRING( "CCCHServiceHandler::CancelHandleNotifyDelayTimer; OUT" );        
+    }
+
+// -----------------------------------------------------------------------------
 // CCCHServiceHandler::PluginUnloadEvent
 // -----------------------------------------------------------------------------
 //
@@ -532,6 +573,21 @@ TInt CCCHServiceHandler::PluginUnloadEvent( TAny* aSelf )
     CCCHServiceHandler* self = static_cast<CCCHServiceHandler*>( aSelf );
     self->HandlePluginUnload();
     CCHLOGSTRING( "CCCHServiceHandler::PluginUnloadEvent; OUT" );
+    return 0;
+    }
+
+// -----------------------------------------------------------------------------
+// CCCHServiceHandler::HandleNotifyEvent
+// -----------------------------------------------------------------------------
+//
+TInt CCCHServiceHandler::HandleNotifyEvent( TAny* aSelf )
+    {
+    CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyEvent; IN" );
+  
+    CCHLOGSTRING( "CCCHServiceHandler::PluginUnloadEvent; IN" );
+    CCCHServiceHandler* self = static_cast<CCCHServiceHandler*>( aSelf );
+    self->HandleDelayedNotifyEvent();
+    CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyEvent; OUT" );
     return 0;
     }
 
@@ -547,6 +603,63 @@ void CCCHServiceHandler::HandlePluginUnload()
     TRAP_IGNORE( UnloadDisabledPluginsL( ) );
     
     CCHLOGSTRING( "CCCHServiceHandler::HandlePluginUnload OUT" );
+    }
+
+// -----------------------------------------------------------------------------
+// CCCHServiceHandler::HandleDelayedNotifyEvent
+// -----------------------------------------------------------------------------
+//
+void CCCHServiceHandler::HandleDelayedNotifyEvent()
+    {
+    CCHLOGSTRING2( "CCCHServiceHandler[0x%x]::HandleDelayedNotifyEvent IN",
+                   this );
+    
+    iDelayedHandleNotifyServiceId = 0;
+    CancelHandleNotifyDelayTimer();
+    
+    TServiceSelection selection;
+    selection.iServiceId = iDelayedHandleNotifyServiceId;
+    TInt index( ServiceExist( selection ) );
+
+    TRAPD( err, 
+        {
+        if ( KErrNotFound != index )
+            {
+            iServices[ index ]->UpdateL( ETrue );
+            }
+        else
+            {
+            TCCHService service;
+            iServer.SPSHandler().GetServiceInfoL( 
+                iDelayedHandleNotifyServiceId, service );
+            AddServiceL( service );
+            } 
+        } );
+
+    //Check if service is already marked as enabled, and enable it
+    if ( KErrNone == err )
+        {
+        index = ServiceExist( selection );
+        if ( KErrNotFound != index )
+            {
+            if( iServices[ index ]->StartupFlagSet() && 
+                ECCHEnabled != iServices[ index ]->GetState() )
+                {
+                iCancelNotify = EFalse;
+                EnableService( selection, EFalse );
+                iCancelNotify = ETrue;
+                }
+            }
+        }
+        
+     // If service has removed, err must be other than none 
+     // and we have to update all services
+    if ( KErrNone != err )
+        {
+        TRAP_IGNORE( UpdateL( ETrue ) );
+        }
+                
+    CCHLOGSTRING( "CCCHServiceHandler::HandleDelayedNotifyEvent OUT" );
     }
 
 // ---------------------------------------------------------------------------
@@ -1522,49 +1635,11 @@ TInt CCCHServiceHandler::FindService( TUint32 aServiceId ) const
 //
 void CCCHServiceHandler::HandleNotifyChange( TServiceId aServiceId )
     {
-    CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyChange: IN" );
-    TServiceSelection selection;
-    selection.iServiceId = aServiceId;
-    TInt index( ServiceExist( selection ) );
-    TRAPD( err, 
-        {
-        if ( KErrNotFound != index )
-            {
-            iServices[ index ]->UpdateL( ETrue );
-            }
-        else
-            {
-            TCCHService service;
-            iServer.SPSHandler().GetServiceInfoL( aServiceId, service );
-            AddServiceL( service );
-            } 
-        } );
+    CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyChange IN" );
     
-    //Check if service is already marked as enabled, and enable it
-    if ( KErrNone == err )
-        {
-        index = ServiceExist( selection );
-        if ( KErrNotFound != index )
-            {
-            CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyChange: service found" );
-            if( iServices[ index ]->StartupFlagSet() && 
-                ECCHEnabled != iServices[ index ]->GetState() )
-                {
-                CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyChange: enabling..." );
-                iCancelNotify = EFalse;
-                EnableService( selection, EFalse );
-                iCancelNotify = ETrue;
-                }
-            }
-        }
-    
-    // If service has removed, err must be other than none 
-    // and we have to update all services
-    if ( KErrNone != err )
-        {
-        TRAP_IGNORE( UpdateL( ETrue ) );
-        }
-    CCHLOGSTRING( "CCCHServiceHandler::HandleNotifyChange: OUT" );
+    CancelHandleNotifyDelayTimer();
+    StartHandleNotifyDelayTimer();
+    iDelayedHandleNotifyServiceId = aServiceId;
     }
 
 // ---------------------------------------------------------------------------

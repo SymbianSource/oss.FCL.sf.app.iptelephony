@@ -915,4 +915,30 @@ void CCSCSettingsUiMainView::HandleSettingsUiExitL()
        
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::HandleSettingsUiExitL - OUT" );
     }
- 
+
+// ---------------------------------------------------------------------------
+// CCSCSettingsUiMainView::ResetViewL
+// Resets service settings when switching services
+// ---------------------------------------------------------------------------
+//
+void CCSCSettingsUiMainView::ResetViewL()
+    {
+    CSCSETUIDEBUG( "CCSCSettingsUiMainView::ResetViewL - IN" );
+
+    // Create container when view is activated.
+    if ( !iContainer )
+        {
+        iContainer = new (ELeave) CCSCSettingsUiMainContainer( iModel );
+        iContainer->SetMopParent( this );
+        iContainer->ConstructL( ClientRect() );
+        AppUi()->AddToStackL( *this, iContainer );
+        iContainer->ListBox()->SetListBoxObserver( this );
+        }
+
+    SetTitleTextL();
+    UpdateSoftkeysL();
+    iContainer->UpdateContainerL();
+
+    CSCSETUIDEBUG( "CCSCSettingsUiMainView::ResetViewL - OUT" );
+    }
+

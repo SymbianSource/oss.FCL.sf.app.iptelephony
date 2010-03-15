@@ -22,9 +22,7 @@
 PRJ_EXPORTS
 ../rom/cch.iby CORE_APP_LAYER_IBY_EXPORT_PATH( cch.iby )
 
-// Temporarily move resource iby to core due missing localization
-//../rom/cchresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( cchresources.iby )
-../rom/cchresources.iby CORE_APP_LAYER_IBY_EXPORT_PATH( cchresources.iby )
+../rom/cchresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( cchresources.iby )
 
 #include "../cchserver/group/bld.inf"
 #include "../cchclient/group/bld.inf"

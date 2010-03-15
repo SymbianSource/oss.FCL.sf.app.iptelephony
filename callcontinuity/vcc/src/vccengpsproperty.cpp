@@ -87,6 +87,7 @@ void CVccEngPsProperty::NotifySubscriberL( TVccHoStatus aStatus,
 		case EVccCsToPsHoStarted:
 		case EVccPsToCsHoStarted:
 		case EVccCsToPsHoInprogress:
+		case EVccPsToCsHoInprogress:
 		case EVccCsToPsHoSuccessful:
 		case EVccCsToPsHoFailure:
         case EVccHoUnavailable:

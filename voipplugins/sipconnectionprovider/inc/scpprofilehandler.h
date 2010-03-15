@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -206,6 +206,13 @@ public:
                                   const TDesC8& aPassword,
                                   TBool aSetPassword );
     
+    /**
+     * Informs SIP to allow ALR migration
+	 *
+     * @param aProfileId SIP profile ID
+     */    
+    void StartAlrMigration( TUint32 aProfileId );
+    
 #ifdef _DEBUG
     void GetDebugInfo( TDes& aInfo ) const;
 #endif                                          
@@ -286,6 +293,14 @@ private: // Functions from base classes
      */  
     void HandleSipConnectionEvent( TUint32 aProfileId,
                                    TScpConnectionEvent aSipEvent );
+    
+    /**
+     * Query is starting to ALR allowed.
+     * Client can start ALR later if needed to do something first
+     * 
+     * @return ETrue if allowed.
+     */
+    TBool IsSipProfileAllowedToStartAlr();
    
 private:
 
@@ -350,6 +365,16 @@ private:
      */
     CIpVmbxInterface* iVmbxInterface;
 
+    /**
+	 * New IapId received in ALR event
+	 */
+    TUint iNewAlrIapId;
+    
+    /**
+     * Is ALR Migration Allowed To Start Immediately
+     */
+    TBool iAlrAllowedToStartImmediately;
+    
 // This need to be cleaned to separate macro/header
 #ifdef _DEBUG
     friend class T_CScpServiceManager;

@@ -273,7 +273,7 @@ void CAcpHttpHandler::StartConnectionL()
     TCommDbConnPref pref;
     pref.SetDirection( ECommDbConnectionDirectionOutgoing );
     pref.SetBearerSet( KCommDbBearerLAN | KCommDbBearerCSD |
-        KCommDbBearerWcdma );
+        KCommDbBearerWcdma | KCommDbBearerWLAN );
     
     // Show connection prompt only once.
     if ( !iPromptShown )

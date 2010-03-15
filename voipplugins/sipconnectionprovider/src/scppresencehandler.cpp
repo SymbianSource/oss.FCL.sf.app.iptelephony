@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -39,7 +39,7 @@
 #include <ximpcontext.h>
 #include <ximpstatus.h>
 #include <pressettingsapi.h> //presence settings
-#include <XdmSettingsApi.h>
+#include <xdmsettingsapi.h>
 #include <cvimpstsettingsstore.h>
 
 #include "scppresencehandler.h"
@@ -322,6 +322,14 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
     SCPLOGSTRING( "CScpPresenceHandler::HandleSipConnectionEvent OUT" );
     }    
 
+// -----------------------------------------------------------------------------
+// CScpPresenceHandler::HandleSipConnectionEvent
+// -----------------------------------------------------------------------------
+//
+TBool CScpPresenceHandler::IsSipProfileAllowedToStartAlr()
+    {
+    return EFalse;
+    }
 
 // ======================= From MXIMPContextObserver ===========================
 
@@ -695,7 +703,6 @@ MPresenceInfo* CScpPresenceHandler::CreateInfoLC( TBool aState )
     
     MPresenceInfoFieldValueEnum* enumField2 = 
         iFeature->PresenceObjectFactory().NewEnumInfoFieldLC();
-    
     TInt availabilityEnum(0);
     RBuf customMessage;
     CleanupClosePushL( customMessage );
@@ -910,8 +917,19 @@ void CScpPresenceHandler::HandleRequestCompleteEvent( const MXIMPBase& aEvent )
     // Unbind request complete
     else if ( reqType == EUnBindReq && EUnBinding == iPresenceState )
         {
-        SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent status offline" );       
-        DeregisterNow();
+        SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent status offline" );
+        
+        // Do not send info to our client if roaming is ongoing 
+        if ( !iSubService.IsRoaming() )
+            {
+            DeregisterNow();
+            }
+		// Inform SIP to start ALR migration
+        else
+            {
+            iSubService.ProfileHandler().StartAlrMigration( iSubService.SipProfileId() );
+            }
+        
         SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent status offline end" );
         }
     

@@ -31,7 +31,6 @@
 #include <mspnotifychangeobserver.h>
 #include <gsfwviewuids.h>
 #include <apgwgnam.h>
-#include <csc.hlp.hrh>
 
 #include "cscappui.h"
 #include "csclogger.h"
@@ -502,7 +501,7 @@ TBool CCSCAppUi::ExitGSIfParentL()
                 embeddeeuid = windowName1->AppUid();
 
                 // Check if CSC is the child of GS
-                if ( KUidCscHelp == embeddeeuid )
+                if ( KUidCSCApp == embeddeeuid )
                     {
                     ret = ETrue;
                     gstask.EndTask();
@@ -513,5 +512,35 @@ TBool CCSCAppUi::ExitGSIfParentL()
         wgrp.Close();
         }
     
+    return ret;
+    }
+
+// ---------------------------------------------------------------------------
+// Handle view change messages (e.g. from MeCo)
+// ---------------------------------------------------------------------------
+//
+MCoeMessageObserver::TMessageResponse CCSCAppUi::HandleMessageL(
+    TUint32 /*aClientHandleOfTargetWindowGroup*/, TUid aMessageUid,
+    const TDesC8& aMessageParameters )
+    {
+    CSCDEBUG( "CCSCAppUi::HandleMessageL - begin" ); 
+
+    MCoeMessageObserver::TMessageResponse ret = EMessageNotHandled;
+
+    if ( TUid::Uid( KUidApaMessageSwitchOpenFileValue ) == aMessageUid &&
+        aMessageParameters.Length() &&
+        aMessageParameters.Length() <= KMaxParamLength )
+        {
+        TBuf<KMaxParamLength> params;
+        params.Copy( aMessageParameters );  
+        iStartupHandler->SetStartupParametersL( params );
+            
+        iServiceView->InitializeWithStartupParametersL();
+        iServiceView->ExecuteStartupActionsL( EFalse, EFalse );
+        
+        ret = EMessageHandled;
+        }
+
+    CSCDEBUG( "CCSCAppUi::HandleMessageL - end" ); 
     return ret;
     }

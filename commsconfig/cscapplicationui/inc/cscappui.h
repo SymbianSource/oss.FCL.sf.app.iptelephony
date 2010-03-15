@@ -183,8 +183,14 @@ NONSHARABLE_CLASS( CCSCAppUi ) : public CAknViewAppUi,
          */
         void NotifyConnectionEvent( 
             CCSCEngConnectionHandler::TConnectionEvent aConnectionEvent );
-        
-        
+
+        /**
+         * From MCoeMessageObserver.
+         */
+        MCoeMessageObserver::TMessageResponse HandleMessageL(
+            TUint32 aClientHandleOfTargetWindowGroup, TUid aMessageUid,
+            const TDesC8& aMessageParameters);
+
     private:
             
         /*

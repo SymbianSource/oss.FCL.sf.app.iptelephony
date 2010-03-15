@@ -19,14 +19,15 @@
 #include <aknlists.h>
 #include <coecntrl.h>
 #include <cchclient.h>
-#include <csc.hlp.hrh>
 #include <cmmanagerext.h>
 #include <StringLoader.h>
 #include <spdefinitions.h>
 #include <cscsettingsui.rsg>
 #include <aknlistquerydialog.h>
 #include <cvimpstsettingsstore.h>
+#include <csxhelp/voip.hlp.hrh>
 
+#include "cscconstants.h"
 #include "cscsettingsui.hrh"
 #include "cscsettingsuimodel.h"
 #include "cscsettingsuilogger.h"
@@ -290,7 +291,7 @@ CCoeControl* CCSCSettingsUiMainContainer::ComponentControl(
 void CCSCSettingsUiMainContainer::GetHelpContext( 
     TCoeHelpContext& aContext ) const
     {
-    aContext.iMajor = KUidCscSettingsUiHelp;
+    aContext.iMajor = KCscHelpUid;
     aContext.iContext = KSERVTAB_HLP_SETTINGS;
     }
 
