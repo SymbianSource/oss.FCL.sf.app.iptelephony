@@ -130,7 +130,7 @@ class VccSettingsReader
       * @since S60 v3.2
       * @return Service id if entry is found, otherwise KErrNotFound
       */     
-     static TInt VccSettingsReader::VccServiceIdL();
+     static TInt VccServiceIdL();
      
      /**
       * Gets service id that is mapped for the specified VCC call provider 
@@ -141,7 +141,7 @@ class VccSettingsReader
       * @since S60 v3.2
       * @return Service id if entry is found, otherwise KErrNotFound
       */     
-     static TInt VccSettingsReader::ServiceIdL( TInt aCallProviderPluginUid );
+     static TInt ServiceIdL( TInt aCallProviderPluginUid );
 private:
 
     /**

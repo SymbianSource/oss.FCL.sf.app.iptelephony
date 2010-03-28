@@ -207,7 +207,7 @@ public: // New functions
      * @param aServiceId Service which to be checked
      * @return A state of the service.
      */
-    TCCHSubserviceState CCCHServiceHandler::ServiceState(
+    TCCHSubserviceState ServiceState(
             const TUint aServiceId );
     
     /** 

@@ -147,7 +147,7 @@ public:
     * @since Series60 3.2
     * @return ETrue Refenrence to hold controller
     */    
-    CSVPHoldController& CSVPEmergencySession::HoldController() const;
+    CSVPHoldController& HoldController() const;
 
     /**
     * Handles hold session state changes

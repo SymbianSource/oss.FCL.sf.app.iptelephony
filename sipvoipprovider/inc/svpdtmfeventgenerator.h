@@ -39,7 +39,7 @@ public:
     /**
      * Two-phased constructor.
      */
-    static CSVPDTMFEventGenerator* CSVPDTMFEventGenerator::NewL( MSVPDTMFEventObserver& aObserver );
+    static CSVPDTMFEventGenerator* NewL( MSVPDTMFEventObserver& aObserver );
     
     /**
      * Destructor.

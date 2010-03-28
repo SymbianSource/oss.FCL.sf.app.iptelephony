@@ -832,8 +832,8 @@ private: // new methods
     * @param aNewSVPSession The new established session.
     * @param aOldSVPSession The old transfered session.
     */
-    void CSVPController::CheckCallEventToBeSent( CSVPSessionBase* aNewSVPSession, 
-                                                 CSVPSessionBase* aOldSVPSession ) const;
+    void CheckCallEventToBeSent( CSVPSessionBase* aNewSVPSession, 
+                                 CSVPSessionBase* aOldSVPSession ) const;
 
 private:
 
