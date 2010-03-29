@@ -218,7 +218,7 @@ _LIT8( KSVPMessageSipfrag, "message/sipfrag;version=2.0");
 _LIT8( KSVPSubsStateTerminated,   "Subscription-State: terminated;reason=noresource");
 
 _LIT( KSVPS60,"S60" );
-_LIT( KSVPCopyright, "©" );
+_LIT( KSVPCopyright, "\xa9" );
 _LIT(KSVPSalesModelFileName, "\\resource\\versions\\model.txt");
 
 // Emergency constants
