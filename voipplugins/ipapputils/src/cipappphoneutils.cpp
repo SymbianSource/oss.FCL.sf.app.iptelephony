@@ -27,7 +27,7 @@ const TInt KHwVersionIn3rdRow = 4;
 _LIT8( KSVPSpaceMark, " " );
 _LIT8( KSVPLineFeed, "\n" );
 _LIT( KSVPSalesModelFileName, "\\resource\\versions\\model.txt" );
-_LIT( KSVPCopyright, "©" );
+_LIT( KSVPCopyright, "\xa9" );
 _LIT( KSVPCopyright2, "(C)" );
 _LIT( KSVPCopyright3, "(c)" );
 _LIT( KSVPSpace2, " " );
