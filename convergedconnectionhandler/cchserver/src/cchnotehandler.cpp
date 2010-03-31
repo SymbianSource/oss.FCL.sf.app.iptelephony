@@ -31,7 +31,7 @@
 #include "cchlogger.h"
 
 _LIT( KCchResourceDir, "\\resource\\apps\\" );
-_LIT( KCchResourceFileName, "cch.r??" );
+_LIT( KCchResourceFileName, "cch.r*" );
 
 // ============================ MEMBER FUNCTIONS ===============================
 

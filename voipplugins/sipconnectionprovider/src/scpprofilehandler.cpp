@@ -471,9 +471,12 @@ void CScpProfileHandler::StartAlrMigration( TUint32 aProfileId )
        iAlrController->AllowMigrationL( aProfileId, iNewAlrIapId ) );
     
     CScpSipConnection* sipConnection( NULL );
-    
     sipConnection = GetSipConnection( aProfileId );
-    sipConnection->SetProfileCurrentlyRoaming();
+    
+    if ( sipConnection )
+        {
+        sipConnection->SetProfileCurrentlyRoaming();
+        }
     
     SCPLOGSTRING( "CScpProfileHandler::StartMigrtion -exit" );
     }

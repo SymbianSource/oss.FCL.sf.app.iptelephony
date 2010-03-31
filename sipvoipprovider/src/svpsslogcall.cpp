@@ -211,10 +211,16 @@ HBufC* CSVPSSLogCall::FindContactTitleL( const TDesC& aSipUri )
                         {
                         SVPDEBUG1("CSVPSSLogCall::FindContactTitleL, manyCompleteMatches");
                         manyCompleteMatches = ETrue;
+                        
+                        // Set to NULL if multiple matches                     
+                        if ( title )
+                            {
+                            delete title;
+                            title = NULL;
+                            }       
                         }
                     else
-                        {
-    					iLogEvent->SetContact( contactId ); // Set aItem based on complete match.
+                        {					
 						title = tempContactItem->GetContactTitleL();
                         compId = contactId;
                         ind = count;
@@ -224,6 +230,12 @@ HBufC* CSVPSSLogCall::FindContactTitleL( const TDesC& aSipUri )
             }
         contactId = iter->NextL();
         }
+    
+    // Set contact if only one match found
+    if ( compId && !manyCompleteMatches )
+        {
+        iLogEvent->SetContact( compId );
+        } 
 
     CleanupStack::PopAndDestroy( iter );
     CleanupStack::PopAndDestroy( contacts );
@@ -277,8 +289,8 @@ void CSVPSSLogCall::HandleCallLoggingL( const TDesC8& aFrom )
         SVPDEBUG1("  CSVPSSLogCall::HandleCallLoggingL, URI address is seen" );
         HBufC* contactName = FindContactTitleL( number );
 	    if ( contactName )
-		    { //  Phonebook contact id has been found
-		    //tempBufTwo.Copy( contactName->Des() );
+		    { 
+	        //  Phonebook contact id has been found
 		    tempBufTwo.Copy( number );
 		    iLogEvent->SetRemoteParty( contactName->Des() );
 	        }
@@ -287,7 +299,13 @@ void CSVPSSLogCall::HandleCallLoggingL( const TDesC8& aFrom )
 	       	tempBufTwo.Copy( number );
 	       	iLogEvent->SetRemoteParty( number );
 	        }
-	    delete contactName;
+	    
+	    if ( contactName )
+	        {
+	        delete contactName;
+	        contactName = NULL;
+	        }
+	    
 	    tempBufOne.Append( tempBufTwo );             
 	    tempBufTwo.Zero();
 	    tempBufOne.Append( KLogFieldDelimiter() );

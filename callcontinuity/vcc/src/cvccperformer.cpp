@@ -673,13 +673,12 @@ void CVccPerformer::HandoverReady()
     ActivateTrigger( ETrue );
     //get new service id for voip call and set it to parameters
     //this is used later for loading correct CTI plugins
-    TInt id = KErrNotFound;
-    TRAP( id, VccSettingsReader::VoIPServiceIdL() );
-    RUBY_DEBUG1( "CVccPerformer::HandoverReady() -- new Service Id: %d", id );    
+    TInt VoIPServiceId(KErrNotFound);
+    TRAP_IGNORE( VoIPServiceId = VccSettingsReader::VoIPServiceIdL() );
+    RUBY_DEBUG1( "CVccPerformer::HandoverReady() -- new Service Id: %d", VoIPServiceId );
     CCCPCallParameters* params = NULL;
-    //TRAP_IGNORE( CCCPCallParameters::NewL() );
     TRAP_IGNORE( params = iPrimaryCall->Parameters().CloneL() );
-    params->SetServiceId( id );  //iServiceId = id;
+    params->SetServiceId( VoIPServiceId );
     iPrimaryCall->SetParameters( *params );
     //inform through phone engine to phone about call bubble update needs
     MCCPCallObserver::TCCPCallEvent event = 

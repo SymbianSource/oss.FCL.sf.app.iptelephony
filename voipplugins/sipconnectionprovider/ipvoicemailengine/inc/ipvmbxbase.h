@@ -98,11 +98,6 @@ public:
     void DeleteEvent();
 
     /**
-     * Update status of voice mails.
-     */
-    static TInt ReSubscribe( TAny* aThis );
-
-    /**
      * Cancel resubscribe timer
      */
     void Cancel();
@@ -185,17 +180,6 @@ private:    // Data
     CMceManager& iMceManager;
 
     /**
-     * Re SUBSCRIBE timer
-     * Own.
-     */
-    CDeltaTimer* iReSubscribe;
-
-    /**
-     * Re SUBSCRIBE period
-     */
-    TTimeIntervalMicroSeconds iReSubscribePeriod;
-
-    /**
      * State of base class
      */
     TIpVmbxBaseStates iState;
@@ -229,12 +213,6 @@ private:    // Data
      * Message sender
      */
     CIpVmbxEngine& iVmbxEngine;
-
-    /**
-     * Re subscribe callback
-     */
-    TDeltaTimerEntry iUpdateEvent;
-
 
     EUNIT_IMPLEMENTATION
     };

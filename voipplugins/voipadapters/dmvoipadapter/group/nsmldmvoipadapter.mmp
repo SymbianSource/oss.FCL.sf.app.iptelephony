@@ -55,6 +55,8 @@ LIBRARY        bafl.lib
 LIBRARY        cone.lib
 LIBRARY        nsmldmiapmatcher.lib
 LIBRARY        serviceprovidersettings.lib
+LIBRARY        presencesettingsapi.lib
+LIBRARY        nsmldmclientserverutils.lib
 LIBRARY        ipapputils.lib
 LIBRARY        featmgr.lib
 LIBRARY        vimpstsettings.lib // For setting IM tone.

@@ -140,8 +140,6 @@ void CSVPMoSession::ConstructL(
             {
             // set crypto contexts
             SetCryptoContextL();
-            // Set AVP to use instead of SAVP
-            iSession->SetModifierL( KMceSecureSession, KMceSecurePlainAVP );
             // set secured flag to ETrue to indicate that this is secure session
             SetSecurePreferred( ETrue );
             // set iSecured flag so UI can show right icon
@@ -158,8 +156,6 @@ void CSVPMoSession::ConstructL(
             {
             // set crypto contexts
             SetCryptoContextL();
-            // Set AVP to use instead of SAVP
-            iSession->SetModifierL( KMceSecureSession, KMceSecurePlainAVP );
             // set secure mandatory flag ETrue, only secure session allowed       
             SetSecureMandatory( ETrue );
             // set iSecured flag so UI can show right icon
@@ -291,13 +287,37 @@ HBufC8* CSVPMoSession::CompleteUriL( const TDesC8& aRecipient,
                                      TBool aUserEqualsPhoneRequired )
     {
     SVPDEBUG1( "CSVPMoSession::CompleteUriL In" )
-   
+
     // create instance of uri parser
     CSVPUriParser* uriParser = CSVPUriParser::NewLC();
-     
-    const TDesC8* userAor = NULL;
-    aSIPProfile.GetParameter( KSIPUserAor, userAor );
     
+    HBufC8* userAor( NULL );
+    const MDesC8Array* aors( NULL ); // Array of registered address of records
+    
+    TInt result = aSIPProfile.GetParameter( KSIPRegisteredAors, aors );
+    
+    if ( !aors || aors->MdcaCount() == KErrNone )
+        {
+        SVPDEBUG1( "CSVPMoSession::CompleteUriL - registered aors array empty" )
+        const TDesC8* userAorStr = NULL;
+        result = aSIPProfile.GetParameter( KSIPUserAor, userAorStr );
+        SVPDEBUG2( "CSVPMoSession::CompleteUriL - KSIPUserAor result: %d", result )
+        userAor = HBufC8::NewLC( userAorStr->Length() );
+        userAor->Des().Copy( *userAorStr );
+        }
+    else
+        {
+        #ifdef _DEBUG
+            TBuf<KSvpMaxDebugBufferSize> tmpUri;
+            for ( TInt i = 0; i < aors->MdcaCount(); i++ )
+                {
+                tmpUri.Copy( aors->MdcaPoint( i ) );
+                SVPDEBUG3( "CSVPMoSession::CompleteUriL - registered AOR[%d]: %S", i, &tmpUri )
+                }
+        #endif
+        userAor = HBufC8::NewLC( aors->MdcaPoint( 0 ).Length() );
+        userAor->Des().Copy( aors->MdcaPoint( 0 ) );
+        }
     // set service id to uri parser, needed for setting user=phone
     uriParser->SetUserEqualsPhoneRequiredL( aUserEqualsPhoneRequired );
     
@@ -321,7 +341,7 @@ HBufC8* CSVPMoSession::CompleteUriL( const TDesC8& aRecipient,
         SVPDEBUG1( "CSVPMoSession::CompleteUriL Completing SIPS URI..." )
         uri = uriParser->CompleteSecureSipUriL( aRecipient, *userAor );
         }
-  
+    CleanupStack::PopAndDestroy( userAor );
     CleanupStack::PopAndDestroy( uriParser );
     
     SVPDEBUG1( "CSVPMoSession::CompleteUriL Out" )

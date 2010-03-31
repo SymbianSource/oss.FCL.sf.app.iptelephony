@@ -19,9 +19,9 @@
 #ifndef VOIPXMLPARSER_H
 #define VOIPXMLPARSER_H
 
-#include <GMXMLParser.h>
-#include <GMXMLElement.h>
-#include <GMXMLNode.h>
+#include <gmxmlparser.h>
+#include <gmxmlelement.h>
+#include <gmxmlnode.h>
 
 #include "voipxmlparamhandler.h"
 

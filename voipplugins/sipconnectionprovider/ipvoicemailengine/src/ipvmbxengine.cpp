@@ -418,11 +418,17 @@ void CIpVmbxEngine::EventReceivedL( const TDesC8& aRecipient8 )
 //
 void CIpVmbxEngine::UnsubscribeProfileL( TUint32 aServiceProviderId )
     {
+    IPVMEPRINT2( "CIpVmbxEngine::UnsubscribeProfileL: %d - IN", 
+	    aServiceProviderId );
+    
     CIpVmbxBase* subscription( SubscriptionByProvider( aServiceProviderId ) );
     if ( !subscription )
         {
         User::Leave( KErrNotFound );
         }
+    
+    IPVMEPRINT2( "CIpVmbxEngine::UnsubscribeProfileL: state=%d",
+	    subscription->State() );
 
     switch( subscription->State() )
         {

@@ -76,7 +76,13 @@ public:
      * Destructor.
      */
     virtual ~CScpPresenceHandler();
-
+    
+    /**
+     * Update XDM settings access point.
+     * XDM AP should be the same as SIP profile.
+     */    
+    void UpdateXdmSettingsL();
+    
 public: // From CScpServiceHandlerBase
     
     /**
@@ -146,12 +152,6 @@ private:
      * Symbian second phase constructor.
      */
     void ConstructL();
-    
-    /**
-     * Update XDM settings access point.
-     * XDM ap should be same as sip profile.
-     */      
-    void UpdateXdmSettingsL();
     
     /**
      * Binds SCP's presence context.
@@ -282,6 +282,12 @@ private: // data
      * after all Ximp requests are completed.
      */
     TBool iDisableAfterXimpRequestsCompleted;
+    
+    /**
+     * Flag for indicating if network is lost and roaming is
+     * concluded to be ongoing
+     */
+    TBool iNetworkLostRoamingOngoing;
     
 #ifdef _DEBUG
     friend class T_CScpPresenceHandler;

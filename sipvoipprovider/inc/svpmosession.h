@@ -288,7 +288,7 @@ private: // new private methods
     * @return HBufC8* constructed uri
     */
     HBufC8* CompleteUriL( const TDesC8& aRecipient, 
-                          const CSIPProfile&,
+                          const CSIPProfile& aSipProfile,
                           const TUint32& aSecurityStatus,
                           TBool aUserEqualsPhoneRequired );
 

@@ -197,9 +197,14 @@ void CVccDirector::InitializeL( const MCCPObserver& aMonitor,
     	User::Leave( KErrNotFound );
     	}
 	
+    iMandatoryPluginFailedError = KErrNone;
+
     //MT: setting CVccDirector as observer to plugin
     Initialize( *this, aSsObserver );
-    
+
+    // Leave if mandatory plugins failed
+    User::LeaveIfError( iMandatoryPluginFailedError );
+
     // save CCP monitor ; CCCEPluginMCCPObserver
     const MCCPCSObserver& obs = static_cast<const MCCPCSObserver&>( aMonitor );
     iCCPObserver = const_cast<MCCPCSObserver*>(&obs);
@@ -229,19 +234,28 @@ TBool CVccDirector::Initialize( const MCCPObserver& aMonitor,
     	
         TRAPD( err, InitializeL( aMonitor, aSsObserver, *(iProviders[ i ]) ) );
         RUBY_DEBUG1( "initialization err = %d", err );
-        switch( err )
-			{
-			case KErrNone:
-				iInitialisedPlugins.Append(  pluginUid.iUid );
-				//fall-through
-			case KErrAlreadyExists:
-				RUBY_DEBUG0( "-- VCC plugin initialization OK" );
-				break;
-			default:
-				RUBY_DEBUG0( "-- VCC plugin initialization FAILED" );
-				initSucceeded = EFalse;
-				break;
-			}
+        if ( KErrNone != err && KCSCallProviderPlugId == pluginUid.iUid ) // CS plugin mandatory
+            {
+            RUBY_DEBUG0( "-- Mandatory VCC plugin initialization FAILED" );    
+            initSucceeded = EFalse; 
+            iMandatoryPluginFailedError = err;
+            }
+        else
+            {
+            switch( err )
+                {
+                case KErrNone:
+                    iInitialisedPlugins.Append(  pluginUid.iUid );
+                    //fall-through
+                case KErrAlreadyExists:
+                    RUBY_DEBUG0( "-- VCC plugin initialization OK" );
+                    break;
+                default:
+                    RUBY_DEBUG0( "-- VCC plugin initialization FAILED" );
+                    initSucceeded = EFalse;
+                    break;
+                }
+            }
         }
 	
 	RUBY_DEBUG1( "-- VCC plugin nbr of initialized plugins:%d",

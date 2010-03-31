@@ -47,7 +47,7 @@ TARGETPATH     /private/10003a3f/apps
 END
 
 USERINCLUDE    . 
-USERINCLUDE    ../inc
+USERINCLUDE    ../Inc
 USERINCLUDE    ../../voipxmlprocessor/inc
 
 APP_LAYER_SYSTEMINCLUDE

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -246,7 +246,14 @@ public:
      * @return ETrue when username exists
      */
     TBool IsUsernameSetL() const;
-
+    
+    /**
+     * Checks if SNAP connection method used by the SIP profile is
+     * available
+     * @return ETrue if available
+     */
+    TBool IsSnapConnectionAvailable( TInt aSnapId ) const;
+    
 #ifdef _DEBUG
     void GetInfo( TDes& aInfo ) const;
 #endif
@@ -302,13 +309,6 @@ private:
      */
     TBool IsNetworkConnectionAvailable() const;
 
-    /**
-     * Checks if SNAP connection method used by the sip profile is
-     * available
-     * @return ETrue if available
-     */
-    TBool IsSnapConnectionAvailable( TInt aSnapId ) const;
-    
     /**
      * Checks if IAP connection method used by sip profile is
      * available

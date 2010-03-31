@@ -17,20 +17,20 @@
 
 
 // INCLUDES
-#include <EIKDOC.H>
-#include <stringloader.h>
+#include <eikdoc.h>
+#include <StringLoader.h>
 #include <AknQueryDialog.h>
 #include <VoIPProvisioningApp.rsg>
 #include <aknnotewrappers.h>
 #include <apgcli.h> // RApaLsSession
 #include <bautils.h>
-#include <xspviewservices.h>
-#include <BrowserUiSDKCRKeys.h>
+#include <xSPViewServices.h>
+#include <browseruisdkcrkeys.h>
 #include <pathinfo.h>
-#include <DriveInfo.h>
+#include <driveinfo.h>
 #include <zipfile.h>
 #include <zipfilememberinputstream.h>
-#include <aknwaitdialog.h>
+#include <AknWaitDialog.h>
 
 #include "voipxmlparser.h"
 #include "VoIPProvisioningAppUi.h"

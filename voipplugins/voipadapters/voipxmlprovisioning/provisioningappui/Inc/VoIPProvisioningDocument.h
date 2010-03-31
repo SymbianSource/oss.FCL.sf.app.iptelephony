@@ -26,7 +26,7 @@
 #endif
 
 // INCLUDES
-#include <akndoc.h>
+#include <AknDoc.h>
 
 // FORWARD DECLARATIONS
 class  CEikAppUi;

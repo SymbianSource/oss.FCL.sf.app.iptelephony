@@ -567,8 +567,7 @@ TBool CCSCServiceView::HandleServiceConfigurationL( TUid aUid )
 // ---------------------------------------------------------------------------
 // 
 void CCSCServiceView::ExecuteStartupActionsL( 
-        TBool aForeGroundEvent, 
-        TBool aLaunchedFromAi )
+    TBool /*aForeGroundEvent*/, TBool aLaunchedFromAi )
     {
     CSCDEBUG( "CCSCServiceView::ExecuteStartupActionsL - begin" );
     
@@ -588,10 +587,10 @@ void CCSCServiceView::ExecuteStartupActionsL(
             }
         case  CCSCEngStartupHandler::ERemoveSetupPluginService:
             {
-            if ( KNullUid != pluginUid && !aForeGroundEvent )
+            if ( KNullUid != pluginUid )
                 {
                 TRAPD( err, iContainer->HandleServicePluginRemovationL( 
-                        pluginUid ) );
+                    pluginUid ) );
                 
                 // If error in service plugin removal, close csc.
                 if ( err )

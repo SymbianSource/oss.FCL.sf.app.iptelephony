@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,6 +26,10 @@
 #include "svpsessionbase.h"             // CSVPSessionBase
 #include "svpsipconsts.h"
 #include "svpconsts.h"
+
+// These have to be handled as well
+_LIT8( KSVPNotifyRinging183, "SIP/2.0 183 Ringing" );
+_LIT8( KSVPNotifyOk, "SIP/2.0 200 Ok" );
 
 // ---------------------------------------------------------------------------
 // CSVPTransferController::CSVPTransferController
@@ -225,7 +229,8 @@ void CSVPTransferController::NotifyReceivedL(
                     }
                 }
             }
-        else if ( !content->Find( TPtrC8( KSVPNotifyOK ) ) )
+        else if ( !content->Find( TPtrC8( KSVPNotifyOK ) ) || 
+                  !content->Find( TPtrC8( KSVPNotifyOk ) ) )
             {
             if ( iTransferContext->IsAttended() )
                 {
@@ -254,11 +259,12 @@ void CSVPTransferController::NotifyReceivedL(
                 SVPDEBUG1( "CSVPTransferController::NotifyReceivedL, UnAttended: SIP/2.0 200 OK" );                    
                 }
             }
-        else if ( !content->Find( TPtrC8( KSVPNotifyRinging ) ) &&
-                  !iTransferContext->IsAttended())
+        else if ( ( !content->Find( TPtrC8( KSVPNotifyRinging ) ) || 
+                    !content->Find( TPtrC8( KSVPNotifyRinging183 ) ) ) &&
+                    !iTransferContext->IsAttended())
             {
             // Polycom send Ringing instead of Trying in unattended case.
-            SVPDEBUG1( "CSVPTransferController::NotifyReceivedL, UnAttended and 180 Ringing" );
+            SVPDEBUG1( "CSVPTransferController::NotifyReceivedL, UnAttended and Ringing" );
 
             // Check if 202 Accepted already received
             if ( iAccepted )

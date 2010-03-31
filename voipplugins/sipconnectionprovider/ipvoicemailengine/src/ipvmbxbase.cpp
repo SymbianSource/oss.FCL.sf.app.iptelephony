@@ -28,8 +28,6 @@
 
 const TInt KMinReSubscribeDelta = 600; // 10 min
 const TInt KMaxReSubscribeDelta = 86400; // 24 h
-const TUint32 KServerRefreshInterval = KMaxReSubscribeDelta;
-const TInt KSecondsToMicro = 1000000;
 
 _LIT8( KEventHeader8, "message-summary" );
 
@@ -47,7 +45,6 @@ CIpVmbxBase::CIpVmbxBase(
         iSipProfile( NULL ),
         iMceOutEvent( NULL ),
         iMceManager( aMceManager ),
-        iReSubscribe( NULL ),
         iVmbxEngine( aVmbxEngine )
     {
     }
@@ -59,13 +56,10 @@ CIpVmbxBase::CIpVmbxBase(
 //
 void CIpVmbxBase::ConstructL( TDesC8& aVoiceMailUri8 )
     {
-    iReSubscribe = CDeltaTimer::NewL( CActive::EPriorityIdle );
     if ( iVmbxUri8.MaxLength() >= aVoiceMailUri8.Length() )
         {
         iVmbxUri8.Copy( aVoiceMailUri8 );
         }
-    TCallBack cb( ReSubscribe, this );
-    iUpdateEvent.Set( cb );
     }
 
 
@@ -99,11 +93,6 @@ CIpVmbxBase::~CIpVmbxBase()
     {
     IPVMEPRINT( "CIpVmbxBase::~CIpVmbxBase - IN" );
 
-    if ( iReSubscribe )
-        {
-        iReSubscribe->Remove( iUpdateEvent );
-        }
-    delete iReSubscribe;
     delete iMceOutEvent;
 
     IPVMEPRINT( "CIpVmbxBase::~CIpVmbxBase - OUT" );
@@ -143,8 +132,11 @@ void CIpVmbxBase::SubscribeL( TInt aReSubscribe  )
             aReSubscribe = KMaxReSubscribeDelta;
             }
 
-    iReSubscribePeriod = ( TInt64 ) aReSubscribe * ( TInt64 ) KSecondsToMicro;
-
+    TUint32 resubscribeInterval = ( TUint32 ) aReSubscribe;
+        
+    IPVMEPRINT2( "CIpVmbxAppBase::SubscribeL - resubscribe interval=%d",
+        resubscribeInterval );
+    
     __ASSERT_DEBUG( !iMceOutEvent, Panic( KErrAlreadyExists ) );
 
     if ( !iMceOutEvent )
@@ -154,7 +146,7 @@ void CIpVmbxBase::SubscribeL( TInt aReSubscribe  )
             *iSipProfile,
             iVmbxUri8,
             KEventHeader8,
-            KServerRefreshInterval );
+            resubscribeInterval );
         }
     else
         {
@@ -183,7 +175,6 @@ void CIpVmbxBase::TerminateEventL()
     {
     IPVMEPRINT( "CIpVmbxAppBase::TerminateEventL - IN" );
 
-    iReSubscribe->Remove( iUpdateEvent );
     if ( iMceOutEvent && CMceEvent::EActive == iMceOutEvent->State() )
         {
         iMceOutEvent->TerminateL();
@@ -209,68 +200,6 @@ void CIpVmbxBase::DeleteEvent()
     }
 
 
-// ---------------------------------------------------------------------------
-//
-// ---------------------------------------------------------------------------
-//
-TInt CIpVmbxBase::ReSubscribe( TAny* aThis )
-    {
-    CIpVmbxBase* base = reinterpret_cast<CIpVmbxBase*> ( aThis );
-    __ASSERT_DEBUG( base, Panic( KErrArgument ) );
-    IPVMEPRINT2(
-        "CIpVmbxAppBase::ReSubscribeL - IN state: %d",
-        base->iMceOutEvent->State() );
-
-    if ( base && base->iMceOutEvent )
-        {
-        switch ( base->iMceOutEvent->State() )
-            {
-            case CMceEvent::EActive:
-                {
-                TRAPD( err, base->iMceOutEvent->UpdateL( KServerRefreshInterval ) );
-                if ( err )
-                    {
-                    base->iVmbxEngine.HandleMessage(
-                        base->iServiceProviderId, CIpVmbxEngine::EEngineNetworkError );
-                    }
-                base->iPendingResubscribeCount = 0;
-                if ( !base->iReSubscribe->IsActive() )
-                    {
-                    base->iReSubscribe->QueueLong(
-                        base->iReSubscribePeriod,
-                        base->iUpdateEvent );
-                    }
-                break;
-                }
-            case CMceEvent::EPending:
-                {
-                if ( base->iPendingResubscribeCount++ )
-                    {
-                    // Allows to skip one resubscribe before error occurs
-                    base->iVmbxEngine.HandleMessage(
-                        base->iServiceProviderId,
-                        CIpVmbxEngine::EEngineNetworkLost );
-                    }
-                break;
-                }
-            case CMceEvent::EIdle:
-            case CMceEvent::ETerminated:
-                {
-                base->iVmbxEngine.HandleMessage(
-                    base->iServiceProviderId,
-                    CIpVmbxEngine::EEngineNetworkLost );
-                break;
-                }
-            default:
-                IPVMEPRINT( "Unhandled message!" );
-            }
-        }
-
-    IPVMEPRINT( "CIpVmbxAppBase::ReSubscribeL - OUT" );
-    return KErrNone;
-    }
-
-
 // ----------------------------------------------------------------------------
 //
 // ----------------------------------------------------------------------------
@@ -278,7 +207,6 @@ TInt CIpVmbxBase::ReSubscribe( TAny* aThis )
 void CIpVmbxBase::Cancel()
     {
     iState = EDisabled;
-    iReSubscribe->Remove( iUpdateEvent );
     }
 
 
@@ -309,10 +237,6 @@ const TDesC8& CIpVmbxBase::VmbxUrl() const
 void CIpVmbxBase::SetStateRegistered()
     {
     iState = ERegistered;
-    if ( !iReSubscribe->IsActive() )
-        {
-        iReSubscribe->QueueLong( iReSubscribePeriod, iUpdateEvent );
-        }
     }
 
 

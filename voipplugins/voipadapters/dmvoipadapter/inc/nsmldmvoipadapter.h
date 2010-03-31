@@ -28,6 +28,7 @@ const TUint KMaxTerminalTypeLength = 64;
 const TUint KWlanMacAddressLength  = 50;
 const TUint KPhoneModelLength      = 20;
 const TInt KMaxUriLength           = 64;
+const TInt KMaxDebugPrintLength    = 256;
 
 // CLASS DECLARATION
 class CRCSEProfileRegistry;
@@ -491,7 +492,15 @@ class CNSmlDmVoIPAdapter : public CSmlDmAdapter
          * @return Presence profile ID.
          */
         TUint32 PresenceIdL( const TDesC8& aObject ) const;
-
+		
+        /**
+         * Checks if Presence Settings ID is valid.
+         * @since S60 3.2
+         * @param aSetId Presence Settings ID.
+         * @return ETrue if settings exists, EFalse if not.
+         */
+        TBool IsPresIDValidL( TUint32 aSetId ) const;
+        
         /**
          * Get SNAP ID.
          * @since S60 3.2.

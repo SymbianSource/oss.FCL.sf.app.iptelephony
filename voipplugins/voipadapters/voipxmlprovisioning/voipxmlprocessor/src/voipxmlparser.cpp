@@ -17,11 +17,8 @@
 
 
 #include <e32base.h>
-#include <GMXMLParser.h>
-#include <GMXMLDocument.h>
-#include <GMXMLNode.h>
-#include <GMXMLElement.h>
-#include <GMXMLText.h>
+#include <gmxmldocument.h>
+#include <gmxmltext.h>
 #include <e32cmn.h>
 #include <e32def.h>
 

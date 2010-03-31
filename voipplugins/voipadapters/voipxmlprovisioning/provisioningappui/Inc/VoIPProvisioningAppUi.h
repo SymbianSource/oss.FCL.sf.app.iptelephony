@@ -27,7 +27,7 @@
 
 // INCLUDES
 #include <aknappui.h>
-#include <DownloadMgrClient.h>
+#include <downloadmgrclient.h>
 
 class CAknWaitDialog;
 

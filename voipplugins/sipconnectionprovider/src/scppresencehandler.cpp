@@ -39,7 +39,7 @@
 #include <ximpcontext.h>
 #include <ximpstatus.h>
 #include <pressettingsapi.h> //presence settings
-#include <xdmsettingsapi.h>
+#include <XdmSettingsApi.h>
 #include <cvimpstsettingsstore.h>
 
 #include "scppresencehandler.h"
@@ -78,7 +78,8 @@ CScpPresenceHandler* CScpPresenceHandler::NewL( CScpSubService& aSubService )
 CScpPresenceHandler::CScpPresenceHandler( CScpSubService& aSubService ) :
     CScpServiceHandlerBase( aSubService ),
     iPresenceState( ENoBind ),
-    iDisableAfterXimpRequestsCompleted( EFalse )
+    iDisableAfterXimpRequestsCompleted( EFalse ),
+    iNetworkLostRoamingOngoing( EFalse )
     {
     SCPLOGSTRING2( "CScpPresenceHandler[0x%x]::CScpPresenceHandler", this );
     }
@@ -238,6 +239,8 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
     SCPLOGSTRING4( "CScpPresenceHandler[0x%x]::HandleSipConnectionEvent id: %d event: %d",
                    this, aProfileId, aEvent );
     
+    iNetworkLostRoamingOngoing = EFalse;
+    
     if ( iSubService.SipProfileId() == aProfileId &&
         iSubService.EnableRequestedState() != CScpSubService::EScpNoRequest )
         {
@@ -249,8 +252,22 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
             
             if ( KErrNotReady == err )
                 {
-                SCPLOGSTRING( "CScpPresenceHandler - EScpNetworkLost -> note ready: unbind" );
+                SCPLOGSTRING( "CScpPresenceHandler - EScpNetworkLost -> not ready: unbind" );
                 TRAP_IGNORE( ServerUnBindL() );
+                }
+            
+            TUint32 snapId;
+            CScpProfileHandler& profileHandler = iSubService.ProfileHandler();
+            CScpSipConnection* sipConnection = profileHandler.GetSipConnection( iSubService.SipProfileId() );
+            
+            if ( sipConnection )
+                {
+                TInt error = sipConnection->GetSnap( snapId );
+                
+                if ( !error && sipConnection->IsSnapConnectionAvailable( snapId ) )
+                    {
+                    iNetworkLostRoamingOngoing = ETrue;
+                    }
                 }
             }
         
@@ -918,18 +935,20 @@ void CScpPresenceHandler::HandleRequestCompleteEvent( const MXIMPBase& aEvent )
     else if ( reqType == EUnBindReq && EUnBinding == iPresenceState )
         {
         SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent status offline" );
-        
         // Do not send info to our client if roaming is ongoing 
-        if ( !iSubService.IsRoaming() )
+        if ( !iNetworkLostRoamingOngoing )
             {
-            DeregisterNow();
+            if ( !iSubService.IsRoaming() )
+                {
+                DeregisterNow();
+                }
+            else
+                {
+                // Inform SIP to start ALR migration
+                iSubService.ProfileHandler().StartAlrMigration(
+                    iSubService.SipProfileId() );
+                }
             }
-		// Inform SIP to start ALR migration
-        else
-            {
-            iSubService.ProfileHandler().StartAlrMigration( iSubService.SipProfileId() );
-            }
-        
         SCPLOGSTRING( "CScpPresenceHandler::HandleRequestCompleteEvent status offline end" );
         }
     

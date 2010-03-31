@@ -38,8 +38,11 @@
 #include <spproperty.h>    // For Service Provider Settings.
 #include <featmgr.h>
 #include <nsmldmiapmatcher.h> // For fetching IAP.
+#include <nsmldmuri.h> // for parsing uris
 #include <pathinfo.h> // For getting phone rom root path.
 #include <cvimpstsettingsstore.h> // For IM tone path
+#include <pressettingsset.h> // for checking if presence settings is valid
+#include <pressettingsapi.h> // for checking if presence settings is valid
 
 #include "nsmldmvoipadapter.h"
 #include "cdmvoipspsettings.h"
@@ -4357,10 +4360,12 @@ void CNSmlDmVoIPAdapter::CompleteOutstandingCmdsL()
                         sipProfReg->SaveL( *sipManProf );
                         uahArray->Reset();
                         // uahArray, sipManProf 
-                        CleanupStack::PopAndDestroy( 2, sipManProf ); // CS:2
+                        CleanupStack::PopAndDestroy( uahArray );  // CS:3
+                        CleanupStack::PopAndDestroy( sipManProf );  // CS:2
                         }// if
                     // sipProfReg, sipRegObs
-                    CleanupStack::PopAndDestroy( 2, sipRegObs ); // CS:0
+                    CleanupStack::PopAndDestroy( sipProfReg ); // CS:1
+                    CleanupStack::PopAndDestroy( sipRegObs ); // CS:0
                     sipProf = NULL;
                     }// if
                 }// for
@@ -4812,7 +4817,8 @@ void CNSmlDmVoIPAdapter::CompleteOutstandingCmdsL()
 
             err = spSettings->UpdateEntryL( *spEntry );
             // property, spEntry
-            CleanupStack::PopAndDestroy( 2, spEntry ); // CS:1
+			CleanupStack::PopAndDestroy( property ); // CS:2
+            CleanupStack::PopAndDestroy( spEntry ); // CS:1
             } // for
         CleanupStack::PopAndDestroy( spSettings ); // CS:0
         iSPSettings.ResetAndDestroy();
@@ -5037,7 +5043,8 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetSipIdL( CBufBase& aObject,
         childList->Des().Copy( RemoveLastURISeg ( childList->Des() ) );    
         }
     // childList, result 
-    CleanupStack::PopAndDestroy( 2, result ); //childList
+    CleanupStack::PopAndDestroy( childList ); // CS:1
+    CleanupStack::PopAndDestroy( result ); // CS:0
     result = NULL;
     childList = NULL;
     DBG_PRINT("CNSmlDmVoIPAdapter::GetSipIdL() : end");
@@ -5131,7 +5138,8 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetSccpIdL( CBufBase& aObject,
         childList->Des().Copy( RemoveLastURISeg ( childList->Des() ) );    
         }
     // childList, result 
-    CleanupStack::PopAndDestroy( 2, result ); //childList
+    CleanupStack::PopAndDestroy( childList ); // CS:1
+    CleanupStack::PopAndDestroy( result ); // CS:0
     result = NULL;
     childList = NULL;
     DBG_PRINT("CNSmlDmVoIPAdapter::GetSccpIdL() : end");
@@ -5371,16 +5379,19 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetNatFwUriL(
             {
             aObject.Copy( uri->Des() );
             // luid, uri
-            CleanupStack::PopAndDestroy( 2, uri ); // CS:2
+            CleanupStack::PopAndDestroy( luid ); // CS:3
+            CleanupStack::PopAndDestroy( uri ); // CS:2
             break;
             }
         // luid, uri
-        CleanupStack::PopAndDestroy( 2, uri ); // CS:2
+        CleanupStack::PopAndDestroy( luid ); // CS:3
+        CleanupStack::PopAndDestroy( uri ); // CS:2
         childList->Des().Copy( RemoveLastURISeg( childList->Des() ) );
         }
 
     // childList, result
-    CleanupStack::PopAndDestroy( 2, result ); // CS:0
+    CleanupStack::PopAndDestroy( childList ); // CS:1
+    CleanupStack::PopAndDestroy( result ); // CS:0
     DBG_PRINT("CNSmlDmVoIPAdapter::GetNatFwUriL : end");
     return errorStatus;
     }
@@ -5431,7 +5442,8 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetConRefL( CBufBase& aObject,
         found = ETrue;
         }
     // uri8, iapMatch
-    CleanupStack::PopAndDestroy( 2, iapMatch ); // CS:0
+    CleanupStack::PopAndDestroy( uri8 ); // CS:1
+    CleanupStack::PopAndDestroy( iapMatch ); // CS:0
     DBG_PRINT("CNSmlDmVoIPAdapter::GetConRefL() : end");
     if ( !found )
         {
@@ -5509,15 +5521,18 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetPresenceUriL(
             {
             aObject.Copy( uri->Des() );
             // luid, uri
-            CleanupStack::PopAndDestroy( 2, uri );  // CS:2
+            CleanupStack::PopAndDestroy( luid );  // CS:3
+            CleanupStack::PopAndDestroy( uri );  // CS:2
             break;
             }
         childList->Des().Copy( RemoveLastURISeg( childList->Des() ) );
         // luid, uri
-        CleanupStack::PopAndDestroy( 2, uri );  // CS:2
+        CleanupStack::PopAndDestroy( luid );  // CS:3
+        CleanupStack::PopAndDestroy( uri );  // CS:2
         }
     // childList, result
-    CleanupStack::PopAndDestroy( 2, result );     // CS:0
+    CleanupStack::PopAndDestroy( childList );     // CS:1
+    CleanupStack::PopAndDestroy( result );     // CS:0
     DBG_PRINT("CNSmlDmVoIPAdapter::GetPresenceUriL : end");
     return errorStatus;
     }
@@ -5529,22 +5544,61 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetPresenceUriL(
 //
 TUint32 CNSmlDmVoIPAdapter::PresenceIdL( const TDesC8& aObject ) const
     {
-    DBG_PRINT("CNSmlDmVoIPAdapter::PresenceIdL : begin");
+#ifdef _DEBUG
+    TBuf<KMaxDebugPrintLength> object;
+    object.Copy( aObject );
+    DBG_PRINT2("CNSmlDmVoIPAdapter::PresenceIdL : begin uri: %S", &object );
+#endif
 
     __ASSERT_ALWAYS( iDmCallback != NULL, User::Leave( KErrArgument ) );
+    TPtrC8 uri = RemoveDotSlash( aObject );
 
-    HBufC8* luid = HBufC8::NewLC( KMaxUriLength ); // CS:1
-    luid->Des().Copy( iDmCallback->GetLuidAllocL( aObject )->Des() );
-    if ( luid->Des().Length() )
+    HBufC8* luid = iDmCallback->GetLuidAllocL( uri );
+    CleanupStack::PushL( luid ); //CS:1
+    
+    // check whether above found id is valid or not
+    TUint32 profileId;
+    if ( luid->Length() == KErrNone )
         {
-        TUint32 profileId = DesToTUint( LastURISeg( luid->Des() ) );
+        //try to find it another way
+        if( NSmlDmURI::NumOfURISegs( uri ) > 1 )
+            {
+            TPtrC8 idSegment = NSmlDmURI::URISeg( uri, 2 );
+            TBuf<KMaxDebugPrintLength> tempSegment;
+            tempSegment.Copy( idSegment );
+            DBG_PRINT2("CNSmlDmVoIPAdapter::PresenceIdL - idSegment:%S", &tempSegment );
+            profileId = DesToTUint(idSegment);
+            if(!IsPresIDValidL(profileId))
+                {
+                CleanupStack::PopAndDestroy( luid ); // CS:0
+                DBG_PRINT("CNSmlDmVoIPAdapter::PresenceIdL : ID not valid - return KErrNone");
+                return KErrNone;
+                }
+            CleanupStack::PopAndDestroy( luid ); // CS:0
+            DBG_PRINT2("CNSmlDmVoIPAdapter::PresenceIdL - settingsId found local way:%d", profileId);
+            return profileId;
+            }
         CleanupStack::PopAndDestroy( luid ); // CS:0
-        DBG_PRINT("CNSmlDmVoIPAdapter::PresenceIdL : end");
-        return profileId;
-        }
+        DBG_PRINT("CNSmlDmVoIPAdapter::PresenceIdL : ID not valid, too short uri");
+        return KErrNone;
+        }    
+    profileId = DesToTUint( *luid );
     CleanupStack::PopAndDestroy( luid ); // CS:0
-    DBG_PRINT("CNSmlDmVoIPAdapter::PresenceIdL : end");
-    return KErrNone;
+    DBG_PRINT2("CNSmlDmVoIPAdapter::PresenceIdL : return profleId: %d", profileId );
+    return profileId;
+    }
+
+// -----------------------------------------------------------------------------
+// CPresenceDMAdapter::IsPresIDValidL
+// -----------------------------------------------------------------------------
+//
+TBool CNSmlDmVoIPAdapter::IsPresIDValidL( TUint32 aSetId ) const
+     {
+    TPresSettingsSet tempSet;
+    if ((PresSettingsApi::SettingsSetL( (TInt)aSetId,tempSet)) == KErrNone)
+        return ETrue;
+    DBG_PRINT2(" CNSmlDmVoIPAdapter::IsPresIDValidL - Invalid settings : %d", aSetId );
+    return EFalse;   
     }
 
 // ---------------------------------------------------------------------------
@@ -5620,15 +5674,18 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetSnapUriL( TDes8& aObject,
             {
             aObject.Copy( uri->Des() );
             // luid, uri
-            CleanupStack::PopAndDestroy( 2, uri );  // CS:2
+            CleanupStack::PopAndDestroy( luid );  // CS:3
+            CleanupStack::PopAndDestroy( uri );  // CS:2
             break;
             }
         childList->Des().Copy( RemoveLastURISeg( childList->Des() ) );
         // luid, uri
-        CleanupStack::PopAndDestroy( 2, uri );  // CS:2
+        CleanupStack::PopAndDestroy( luid );  // CS:3
+        CleanupStack::PopAndDestroy( uri );  // CS:2
         }
     // childList, result
-    CleanupStack::PopAndDestroy( 2, result );     // CS:0
+    CleanupStack::PopAndDestroy( childList );  // CS:1
+    CleanupStack::PopAndDestroy( result );  // CS:0
     DBG_PRINT( "CNSmlDmVoIPAdapter::GetSnapUriL - end" );
     return status;
     }

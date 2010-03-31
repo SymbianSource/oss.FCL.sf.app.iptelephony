@@ -43,7 +43,7 @@
 class CVccSignalLevelHandler : public CTimer
     {
 
-private:
+protected:
 
     /** Level of the signal */
     enum TStrengthState
@@ -192,24 +192,19 @@ protected: // data
      */
     TInt32 iStrength;
 
-
-private: // data
-
     /**
      * Flag to determine if the observing/notifications are on or off
      */
     TBool iNotificationsOn;
 
-    /**
-     * Current signal state
+    /* Current operation
+    */
+   TOperation iOperation;
+
+     /* Current signal state
      */
     TStrengthState iState;
-
-    /**
-     * Current operation
-     */
-    TOperation iOperation;
-
+ 
 
     VCC_UNITTEST( UT_CVccWlanSignalLevelHandler )
     VCC_UNITTEST( UT_CVccGsmSignalLevelHandler )

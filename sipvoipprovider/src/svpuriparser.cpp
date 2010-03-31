@@ -154,7 +154,15 @@ HBufC8* CSVPUriParser::CompleteSipUriL(
     SVPDEBUG1( "CSVPUriParser::CompleteSipUriL In" )
     
     // Copy the parameter to a new buffer.
-    HBufC8* uri = aUri.AllocLC();
+    HBufC8* uri = aUri.AllocLC();   // CS: 1
+    
+#ifdef _DEBUG
+    TBuf<KSvpMaxDebugBufferSize> tmpStr;
+    tmpStr.Copy( aAOR );
+    SVPDEBUG2( "CSVPUriParser::CompleteSipUriL IN aAOR: %S", &tmpStr )
+    tmpStr.Copy( aUri );
+    SVPDEBUG2( "CSVPUriParser::CompleteSipUriL IN aURI: %S", &tmpStr )
+#endif // _DEBUG
     
     // Trim ALL white space from URI, even if used as an user name
     uri->Des().TrimAll();
@@ -166,7 +174,7 @@ HBufC8* CSVPUriParser::CompleteSipUriL(
              KErrNotFound != uri->Des().Left( KTelPrefixLength ).Find( KTelPrefix ) &&
              KErrNotFound == uri->Des().Find( KSVPAt ) )
             {
-            CleanupStack::Pop( uri );
+            CleanupStack::Pop( uri );  // CS:0
             return uri;
             }
         
@@ -250,10 +258,13 @@ HBufC8* CSVPUriParser::CompleteSipUriL(
         {
         SVPDEBUG1( "    CSVPUriParser::CompleteSipUriL uri null" )
         }
-
-    CleanupStack::Pop( 1 ); // uri
     
-    SVPDEBUG1( "CSVPUriParser::CompleteSipUriL Out" )
+#ifdef _DEBUG
+    tmpStr.Copy( *uri );
+    SVPDEBUG2( "CSVPUriParser::CompleteSipUriL OUT: %S", &tmpStr )
+#endif // _DEBUG
+    
+    CleanupStack::Pop( 1 ); // uri
     return uri;
     }
 
@@ -286,6 +297,14 @@ HBufC8* CSVPUriParser::CompleteSecureSipUriL(
     
     // Copy the parameter to a new buffer.
     HBufC8* uri = aUri.AllocLC();
+
+#ifdef _DEBUG
+    TBuf<KSvpMaxDebugBufferSize> tmpStr;
+    tmpStr.Copy( aAOR );
+    SVPDEBUG2( "CSVPUriParser::CompleteSecureSipUriL IN aAOR: %S", &tmpStr )
+    tmpStr.Copy( aUri );
+    SVPDEBUG2( "CSVPUriParser::CompleteSecureSipUriL IN aURI: %S", &tmpStr )
+#endif // _DEBUG
     
     // Trim ALL white space from URI, even if used as an user name 
     uri->Des().TrimAll();
@@ -363,10 +382,13 @@ HBufC8* CSVPUriParser::CompleteSecureSipUriL(
         {
         SVPDEBUG1( "    CSVPUriParser::CompleteSecureSipUriL uri null" )
         }
-
-    CleanupStack::Pop( 1 ); // uri
     
-    SVPDEBUG1( "CSVPUriParser::CompleteSecureSipUriL Out" )
+#ifdef _DEBUG
+    tmpStr.Copy( *uri );
+    SVPDEBUG2( "CSVPUriParser::CompleteSecureSipUriL OUT: %S", &tmpStr )
+#endif // _DEBUG
+    
+    CleanupStack::Pop( 1 ); // uri
     return uri;
     }
 
@@ -420,7 +442,7 @@ TBool CSVPUriParser::CheckSipsPrefix( const TDesC8& aUri ) const
     {
     SVPDEBUG1( "CSVPUriParser::CheckSipsPrefix" )
     
-    // The "sip:" prefix is expected to be at the beginning of the URI.
+    // The "sips:" prefix is expected to be at the beginning of the URI.
     return ( 0 == aUri.Find( KSVPSipsPrefix ) );
     }
 
@@ -559,7 +581,7 @@ void CSVPUriParser::AddDomainL(
     
     // Re-allocate the URI
     aUri = aUri->ReAllocL( aUri->Length() + domainBuf->Length() );
-    aUri->Des().Append( domainBuf->Des() ); // Append the domain.
+    aUri->Des().Append( *domainBuf ); // Append the domain.
     
     CleanupStack::PopAndDestroy( domainBuf ); // CS : 0
     

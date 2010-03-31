@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,6 +29,7 @@
 #include "scppresencehandler.h"
 #include "scpimhandler.h"
 #include "scpsubserviceobserver.h"
+#include "scppresencehandler.h"
 
 // -----------------------------------------------------------------------------
 // CScpSubService::NewL
@@ -517,6 +518,17 @@ void CScpSubService::ChangeState( TCCHSubserviceState aState, TInt aError )
                 {
                 iSubServiceState = 
                     TScpStateContainer::Instance( ECCHEnabled );
+					
+                if ( ECCHVoIPSub == iSubServiceType )
+                    {
+                    if ( iService.ContainsSubServiceType( ECCHPresenceSub ) )
+                        {
+                        CScpPresenceHandler* presenceHandler = static_cast<CScpPresenceHandler*>(
+                            &iService.GetSubServiceByType( ECCHPresenceSub )->ServiceHandler() );
+                            
+                        presenceHandler->UpdateXdmSettingsL();
+                        }
+                    }
                 }
                 break;
 

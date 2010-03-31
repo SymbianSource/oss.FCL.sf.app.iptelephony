@@ -34,7 +34,7 @@
 #include "cchuinotifconnectionhandler.h"
 
 _LIT( KResourceDir, "\\resource\\apps\\" );
-_LIT( KResourceFileName, "cchuinotif.r??" );
+_LIT( KResourceFileName, "cchuinotif.r*" );
 
 // SCP-plugin uid for Sip VoIP
 const TInt32 KSipVoIPSubServicePlugId = 0x1027545A;

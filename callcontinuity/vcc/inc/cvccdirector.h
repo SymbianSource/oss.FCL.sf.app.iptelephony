@@ -545,7 +545,12 @@ private: // data
      */
     CVccDtmfProvider* iDtmfProvider;
     
-     
+    /**
+     * Used in initialization logic to inform of
+     * failed converged call provider plugin.
+     */
+    TInt iMandatoryPluginFailedError;
+
 	friend class T_CVccDirector;
     friend class T_CVccDTMFProvider;
 	};

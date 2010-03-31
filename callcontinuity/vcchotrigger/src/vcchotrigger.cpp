@@ -506,6 +506,8 @@ EXPORT_C void CVccHoTrigger::ManualHoCallStarted()
     {
     RUBY_DEBUG_BLOCK( "CVccHoTrigger::ManualHoCallStarted" );
     iManualHoDone = ETrue;
+    //notify Wlan Signal Level Handler so it can stop polling WLAN signal
+    iWlanSignalLevelHandler->SetManualHoDone( ETrue );
     }
 
 // -----------------------------------------------------------------------------
@@ -516,6 +518,8 @@ EXPORT_C void CVccHoTrigger::ManualHoCallReleased()
     {
     RUBY_DEBUG_BLOCK( "CVccHoTrigger::ManualHoCallReleased" );
     iManualHoDone = EFalse;
+
+    iWlanSignalLevelHandler->SetManualHoDone( EFalse );
     }
 
 // -----------------------------------------------------------------------------

@@ -34,6 +34,8 @@ const TInt KEnableTimeout = 120000000;
 
 const TInt KUsernameMaxLength = 255;
 
+_LIT8( KSCPAt8, "@" );
+
 // -----------------------------------------------------------------------------
 // CScpSipConnection::CScpSipConnection
 // -----------------------------------------------------------------------------
@@ -567,23 +569,55 @@ TInt CScpSipConnection::GetUsername( TDes8& aUsername ) const
     SCPLOGSTRING2( "CScpSipConnection[0x%x]::GetUsername", this );
 
     TInt result( KErrNotFound );
+    
+    // Check if profile is registered
+    TBool val( EFalse );
+    result = iSipProfile->GetParameter( KSIPProfileRegistered, val );
+    
     const TDesC8* aor( NULL );
 
     // Get SIP's Username    
     result = iSipProfile->GetParameter( KSIPUserAor, aor );
     
-    if ( result == KErrNone && aor )
+    if ( result == KErrNone && aor->Length() > KErrNone  )
         {
         if ( aor->Length() <= aUsername.MaxLength() )
             {
+            SCPLOGSTRING( "CScpSipConnection::GetUsername - Got username from AOR" );
             aUsername.Copy( *aor );
             }
         else
             {
+            SCPLOGSTRING( "CScpSipConnection::GetUsername - KErrOverflow" );
             result = KErrOverflow;
             }
         }
-
+    else if ( val ) // registered
+        {
+        // Might be IMS case and UserAor is incomplete, then
+        // Get SIP's Username from registered AORs
+        const MDesC8Array* aors = 0;
+        result =  iSipProfile->GetParameter( KSIPRegisteredAors, aors );
+        if ( !aors || aors->MdcaCount() == 0 )
+            {
+            SCPLOGSTRING( "CScpSipConnection::GetUsername - KErrNotReady" );
+            result = KErrNotReady;
+            }
+        else
+            {
+            HBufC8* tmpUserName = HBufC8::NewLC( aors->MdcaPoint( 0 ).Length() );
+            tmpUserName->Des().Copy( aors->MdcaPoint( 0 ) );
+            #ifdef _DEBUG
+                TBuf<256> tmpUri;
+                tmpUri.Copy( aors->MdcaPoint( 0 ) );
+                SCPLOGSTRING2( "CScpSipConnection::GetUsername - use first registered AOR: %S", &tmpUri );
+            #endif
+            TInt atPos = tmpUserName->Find( KSCPAt8 );
+            aUsername.Copy( tmpUserName->Left( atPos ) );
+            CleanupStack::PopAndDestroy( tmpUserName );
+            }
+        }
+    SCPLOGSTRING2( "CScpSipConnection::GetUsername - return error: %d", result );
     return result;                
     }
 

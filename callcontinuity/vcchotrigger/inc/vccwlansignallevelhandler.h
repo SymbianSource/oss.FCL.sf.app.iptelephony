@@ -112,6 +112,11 @@ public:
     * Destructor.
     */
     virtual ~CVccWlanSignalLevelHandler();
+    
+    /**
+    *  for telling WLAN Signal Level Handler that manual HO is done or not done
+    */
+    void SetManualHoDone( TBool aValue );
 
 private:
 
@@ -177,7 +182,16 @@ private:
      * @see MWlanMgmtNotifications::OldNetworksLost()
      */
     void OldNetworksLost();
-
+    
+    /**
+     * Overriding this because WLAN signal level handler needs to observe the signal level
+     * more frequently than GSM Signal Level Handler
+     */
+    void RunL();
+    
+    //overriding this because specific actions needed for cancellation for WLAN
+    void DoCancel(); 
+    
 private: // data
 
     /**
@@ -190,6 +204,11 @@ private: // data
      * for informing the states
      */
     CVccEngPsProperty& iVccPsp;
+    
+    /**
+     * indicates is manual HO done or not
+     */
+    TBool iManualHoDone;
     };
 
 #endif // VCCWLANSIGNALLEVELHANDLER_H

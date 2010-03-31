@@ -22,8 +22,8 @@
 #include <pressettingsset.h>
 #include <sysutil.h>
 #include <pathinfo.h>
-#include <Authority16.h>
-#include <stringloader.h>
+#include <authority16.h>
+#include <StringLoader.h>
 #include <escapeutils.h>
 
 #include "voipxmlutils.h"

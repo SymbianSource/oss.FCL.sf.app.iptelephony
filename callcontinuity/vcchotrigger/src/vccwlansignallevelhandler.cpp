@@ -26,6 +26,9 @@
 // Min. signal strength.
 static const TInt32 KStrengthMin = 110;
 
+const TInt KWlanPollIntervalLowSignal= 1000000;
+const TInt KWlanPollIntervalHighSignal= 5000000;
+
 // ---------------------------------------------------------------------------
 // C++ destructor.
 // ---------------------------------------------------------------------------
@@ -80,6 +83,7 @@ CVccWlanSignalLevelHandler::CVccWlanSignalLevelHandler(
     const TSignalLevelParams& aParams, CVccEngPsProperty& aPsProperty )
     : CVccSignalLevelHandler( aObserver, aParams ), iVccPsp( aPsProperty )
     {
+    iManualHoDone = EFalse;
     }
 
 // ---------------------------------------------------------------------------
@@ -247,4 +251,192 @@ void CVccWlanSignalLevelHandler::NotifyChanges(
     RUBY_DEBUG1( " -New strength = -%d dBm", aSignalStrength );
 
     iObserver.WlanSignalChanged( aSignalStrength, aClass );
+    }
+
+
+// ---------------------------------------------------------------------------
+// Handles getting the signal strength and notifying the observer about
+// strength changes.
+// ---------------------------------------------------------------------------
+
+void CVccWlanSignalLevelHandler::RunL()
+    {
+    RUBY_DEBUG_BLOCK( "CVccWlanSignalLevelHandler::RunL" );
+
+    // Zero (0) is not acceptable.
+       if ( !iStrength )
+           {
+           RUBY_DEBUG0( " -0 strength not acceptable, setting to KStrengthMin");
+           iStrength = KStrengthMin;
+           }
+
+       RUBY_DEBUG3( " -iStrength = %d iState = %d iOp = %d", iStrength, iState, iOperation );
+
+       switch ( iOperation )
+           {
+           case EOperationGet:
+               {
+
+               // We are in the Get-mode to get the signal strength.
+               // If the strength is < than the high level (== the strength
+               // is good), start timer to check if we are still in good level
+               // after the timer completes.
+               // The same is done if we have a low level (== bad).
+
+               RUBY_DEBUG0( " -EOperationGet");
+
+               if ( iStrength <= iParams.iHighLevel && iStrength > 0 )
+                   {
+                   RUBY_DEBUG0( "  set state = EStrengthHigh, op = EOperationWait" );
+                   
+                   After( iParams.iHighTimeout );
+                   iState = EStrengthHigh;
+                   iOperation = EOperationWait;
+                   }
+               else if ( iStrength >= iParams.iLowLevel )
+                   {
+                   RUBY_DEBUG0( "  set state = EStrengtLow, op = EOperationWait" );
+                   After( iParams.iLowTimeout );
+                   iState = EStrengthLow;
+                   iOperation = EOperationWait;
+                   }
+               else
+                   {
+                   RUBY_DEBUG0( "  strength between low and high, set op = EOperationNone" );
+                  
+                   //WLAN signal is almost weak, check again with low interval
+                   After( KWlanPollIntervalLowSignal );
+                   iOperation = EOperationNone;
+                   iState = EStrengthLow;
+                   // PCLint
+                   }
+               break;
+               }
+
+           case EOperationWait:
+               {
+
+               // Timer has completed. Check the signal level again.
+
+               RUBY_DEBUG0( " -EOperationWait" );
+               RUBY_DEBUG0( "  set op = EOperationComplete" );
+               GetStrength();
+
+               SetActive();
+
+               iOperation = EOperationComplete;
+
+               break;
+               }
+
+           case EOperationComplete:
+               {
+               // Checking signal strength is now done.
+               // Notify our observer (if needed).
+
+               RUBY_DEBUG1( " -EOperationComplete, iStrength = %d", iStrength );
+
+               // Do we have a good signal level?
+               if ( iStrength <= iParams.iHighLevel && iStrength > 0 && iState == EStrengthHigh )
+                   {
+                   RUBY_DEBUG0( " -if ( iStrength <= iParams.iHighLevel" );
+                   NotifyChanges( iStrength, MVccSignalLevelObserver::ESignalClassNormal );
+                   }
+               // Or do we have a bad signal level?
+               else if ( iStrength >= iParams.iHighLevel && iState == EStrengthLow )
+                   {
+                   RUBY_DEBUG0( " -else if ( iStrength >= iParams.iHighLevel" );
+                   NotifyChanges( iStrength, MVccSignalLevelObserver::ESignalClassWeak );
+                   }
+               else
+                   {
+                   // PCLint
+                   }
+               
+               TTimeIntervalMicroSeconds32 interval;
+                                              
+                    if( iState == EStrengthHigh )
+                        {
+                         RUBY_DEBUG0( "  high interval" );
+                        interval = KWlanPollIntervalHighSignal;
+                         }
+                    else
+                          {
+                          RUBY_DEBUG0( "  low interval" )
+                           interval = KWlanPollIntervalLowSignal;
+                          }
+                               
+                    After( interval );
+       
+               iState = EStrengthUnknown;
+               iOperation = EOperationNone;
+             
+               break;
+               }
+
+           case EOperationNone:
+               {
+               RUBY_DEBUG0( " -EOperationNone" );
+               
+               //if manual HO is done then there is no need for checking signal strength so much,
+               //so stopping the loop
+               if( !iManualHoDone )
+                   {
+                   RUBY_DEBUG0( " -call GetStrength()" );
+                   GetStrength();
+                   SetActive();
+                   RUBY_DEBUG1( " -iStrength = %d, set op = EOperationGet \
+                                        state = EStrengthUnknown", iStrength );
+                   iOperation = EOperationGet;
+                   }
+                break;
+         
+               }
+               
+                
+           default:
+               {
+               break;
+               }
+           }
+       
+    }
+
+// ---------------------------------------------------------------------------
+// Lets Wlan Signal Level Handler know is manual handover done or not done
+// 
+// ---------------------------------------------------------------------------
+
+
+void CVccWlanSignalLevelHandler::SetManualHoDone( TBool aValue )
+    {
+    RUBY_DEBUG_BLOCK( "CVccWlanSignalLevelHandler::SetManualHoDone" );
+    iManualHoDone = aValue;
+    }
+
+
+// ---------------------------------------------------------------------------
+// Cancel outstanding requests.
+// ---------------------------------------------------------------------------
+//
+void CVccWlanSignalLevelHandler::DoCancel()
+    {
+    RUBY_DEBUG_BLOCK( "CVccSignalLevelHandler::DoCancel" );
+    switch ( iOperation )
+        {
+        case EOperationWait:
+        case EOperationNone:
+            {
+            RUBY_DEBUG0( "EOperationWait / EOperationNone" );
+            CTimer::DoCancel();
+
+            break;
+            }
+
+
+        default:
+            {
+            break;
+            }
+        }
     }

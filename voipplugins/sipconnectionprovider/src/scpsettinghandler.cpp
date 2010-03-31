@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -22,8 +22,8 @@
 #include <spproperty.h>
 #include <spsettingsvoiputils.h>
 #include <pressettingsapi.h>
-#include <XdmSettingsApi.h>
-#include <XdmSettingsCollection.h>
+#include <xdmsettingsapi.h>
+#include <xdmsettingscollection.h>
 
 #include "scpsettinghandler.h"
 #include "scpservice.h"

@@ -21,7 +21,7 @@
 #include <cmconnectionmethoddef.h>
 #include <cmpluginwlandef.h>
 #include <centralrepository.h>
-#include <CommsDat.h>
+#include <commsdat.h>
 
 #include "cchcommdbwatcher.h"
 #include "cchcommdbwatcherobserver.h"

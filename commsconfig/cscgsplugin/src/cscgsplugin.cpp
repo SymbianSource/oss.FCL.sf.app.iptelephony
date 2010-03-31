@@ -22,9 +22,9 @@
 #include <bldvariant.hrh>
 #include <StringLoader.h>
 #include <AknNullService.h>
-#include <GSParentPlugin.h>
+#include <gsparentplugin.h>
 #include <cscgspluginrsc.rsg>
-#include <GSPrivatePluginProviderIds.h>
+#include <gsprivatepluginproviderids.h>
 
 #include    "cscgsplugin.h"
 
