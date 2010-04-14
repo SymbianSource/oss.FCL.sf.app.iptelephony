@@ -296,10 +296,18 @@ MCCPCall* CVccDirector::NewCallL(
     // Check call type and translate it into domain type
     CVccPerformer* perf;
     TBool csOriginated = EFalse;
+    
     if( aParameters.CallType() == CCPCall::ECallTypeCSVoice )
         {
+        RUBY_DEBUG0("CS Call");
+        iHoTrigger->SetCurrentDomainType( CVccHoTrigger::ECallDomainTypeCS );
         csOriginated = ETrue;
         iHoTrigger->ReadHoAllowedWhenCsOriginatedSettingL();
+        }
+    else
+        {
+        RUBY_DEBUG0("PS Call");
+        iHoTrigger->SetCurrentDomainType( CVccHoTrigger::ECallDomainTypePS );
         }
     
     perf = CVccPerformer::NewL( iProviders, 
@@ -601,10 +609,19 @@ void CVccDirector::IncomingCallL( MCCPCall* aCall )
     TBool csOriginated = EFalse;
     if( aCall->Parameters().CallType() == CCPCall::ECallTypeCSVoice )
         {
+        RUBY_DEBUG0("incoming CS Call");
+        iHoTrigger->SetCurrentDomainType( CVccHoTrigger::ECallDomainTypeCS );
         csOriginated = ETrue;
         iHoTrigger->ReadHoAllowedWhenCsOriginatedSettingL();
         
         }
+    
+    else
+        {
+        RUBY_DEBUG0("incoming PS Call");
+        iHoTrigger->SetCurrentDomainType( CVccHoTrigger::ECallDomainTypePS );
+        }
+    
     //Create 1 performer for each call
     
     CVccPerformer* perf = CVccPerformer::NewL( iProviders, 

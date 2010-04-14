@@ -136,10 +136,29 @@ CCchServiceImpl* CCchServiceImpl::NewLC( CCchImpl& aCch, TInt aServiceId,
 TInt CCchServiceImpl::Enable( TCCHSubserviceType aType )
     {
     CCHLOGSTRING( "CCchServiceImpl::Enable: IN" );
-	
-    iAsynchroniser->Enable(aType);
+    TInt error = KErrNone;
+    if (iCch.ConnectivityDialogsAllowed())
+        {
+        CCHLOGSTRING( "CCchServiceImpl::Enable: Async mode" );
+        iAsynchroniser->Enable(aType);
+        }
+    else
+        {
+        CCHLOGSTRING( "CCchServiceImpl::Enable: Sync mode" );
+        TServiceSelection selection( iServiceId, aType );
+        TRequestStatus status = KErrNone;
+        iCch.CchClient().EnableService( selection, status, EFalse );
+   
+        //even the cchclient api seems to be asynchronous, 
+        //this method is completed immediately
+        User::WaitForRequest( status );
+        error = status.Int();
+        }
+        
+    CCHLOGSTRING2( " CCchServiceImpl::Enable: return  %d", error );
+    
 	CCHLOGSTRING( "CCchServiceImpl::Enable: OUT" );
-    return KErrNone;
+    return error;
     }
 
 // ---------------------------------------------------------------------------

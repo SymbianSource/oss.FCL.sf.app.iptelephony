@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -1682,6 +1682,25 @@ HBufC8* CSVPUtility::SetMoFromHeaderLC( TUint aSecurityStatus )
         }
 
     return fromheader;
+    }
+
+// ---------------------------------------------------------------------------
+// CSVPUtility::AddPPreferredIdentityToUserHeaders
+// ---------------------------------------------------------------------------
+//
+void CSVPUtility::AddPPreferredIdentityToUserHeadersL( 
+    CDesC8Array& aUserAgentHeaders, const TDesC8& aUri )
+    { 
+    SVPDEBUG1( "CSVPUtility::AddPPreferredIdentityToUserHeadersL In" )
+    
+    TBuf8<KSVPTempStringlength> pPreferredHeaderString;
+    pPreferredHeaderString.Append( KSVPPIdentity );
+    pPreferredHeaderString.Append( KSVPLeftBracketMark );
+    pPreferredHeaderString.Append( aUri );
+    pPreferredHeaderString.Append( KSVPRightBracketMark );
+    aUserAgentHeaders.AppendL( pPreferredHeaderString );
+    
+    SVPDEBUG1( "CSVPUtility::AddPPreferredIdentityToUserHeadersL Out " )
     }
 
 // ---------------------------------------------------------------------------

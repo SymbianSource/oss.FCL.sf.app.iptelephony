@@ -19,25 +19,25 @@
 #include <ecom/registryinfo.rh>
 
 RESOURCE REGISTRY_INFO r_registry
-{
-	dll_uid = 0x20026FE1; 	// dll uid
-					
-	interfaces =
-		{
-		INTERFACE_INFO
-			{
-			interface_uid = 0x101F7D87; // Const for all data recognizers
-			implementations =
-				{
-				IMPLEMENTATION_INFO
-					{
-					implementation_uid = 0x20026FE2; // implementation uid
-					version_no = 1;
-					display_name = "VoIP provisioning recognizer";
-					default_data = "";  
-					opaque_data = "";
-					}
-				};
-			}
-		};
-}
+    {
+    dll_uid = 0x20026FE1;     // dll uid
+                    
+    interfaces =
+        {
+        INTERFACE_INFO
+            {
+            interface_uid = 0x101F7D87; // Const for all data recognizers
+            implementations =
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = 0x20026FE2; // implementation uid
+                    version_no = 1;
+                    display_name = "VoIP provisioning recognizer";
+                    default_data = "";  
+                    opaque_data = "";
+                    }
+                };
+            }
+        };
+    }

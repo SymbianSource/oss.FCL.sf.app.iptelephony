@@ -220,14 +220,19 @@ void CCSCServiceContainer::UpdateServiceViewL()
             uiPlugins.AppendL( uiExtension );
             }
         }
-
-    const TInt itemHeight( iListBox->ItemHeight() );
-    TInt iconSize( KIconSizeQvgaPortrait ); // Default icon size (QVGA portrait).
-    if ( KItemHeightQvgaLandscape == itemHeight ) // QVGA landscape
+  
+    iListBoxItemHeight = iListBox->ItemHeight();
+    
+    TInt iconSize( 0 );
+    if ( iListBoxItemHeight == KItemHeightPortrait )
         {
-        iconSize = KIconSizeQvgaLandscape;
+        iconSize = iListBoxItemHeight - KIconSizeCorrectionPortrait;
         }
-               
+    else
+        {
+        iconSize = iListBoxItemHeight - KIconSizeCorrectionLandscape;
+        }
+                 
     for ( TUint i( 0 ) ; i < iUiExtensionCount ; i++ )
         {
         TUiExtensionPluginInfo uiExtension = uiPlugins[i];
@@ -751,6 +756,12 @@ void CCSCServiceContainer::SizeChanged()
     if ( iListBox )
         {
         iListBox->SetRect( Rect() );
+        
+        // Update view if portrait/landscape change happened
+        if ( iListBoxItemHeight != iListBox->ItemHeight() )
+            {
+            TRAP_IGNORE( UpdateServiceViewL() );
+            }        
         }
     }
     

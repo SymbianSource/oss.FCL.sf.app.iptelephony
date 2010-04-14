@@ -36,7 +36,8 @@ _LIT8( KSVPNotifyRinging, "SIP/2.0 180 Ringing" );
 _LIT8( KSVPNotifyOK, "SIP/2.0 200 OK" );
 _LIT8( KSVPBusyHereReason, "SIP/2.0 486 Busy Here" );
 _LIT8( KSVPNotifyServiceUnavailable, "SIP/2.0 503 Service Unavailable" );
-
+_LIT8( KSVPNotifyRinging183, "SIP/2.0 183 Ringing" );
+_LIT8( KSVPNotifyOk2, "SIP/2.0 200 Ok" );
 
 //Response messages
 //Provisional 1xx

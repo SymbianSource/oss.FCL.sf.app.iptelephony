@@ -80,6 +80,7 @@ LIBRARY     xdmsettingsapi.lib
 LIBRARY     ipvoicemailengine.lib
 LIBRARY     bafl.lib
 LIBRARY     inetprotutil.lib
+LIBRARY     cmmanager.lib
 
 // access to uiservicetabsettings
 LIBRARY         vimpstsettings.lib

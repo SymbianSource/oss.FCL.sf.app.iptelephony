@@ -22,7 +22,6 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-    DATA=DATAZ_\RESOURCE_FILES_DIR\VoIPProvRec.rsc	RESOURCE_FILES_DIR\VoIPProvRec.rsc
     S60_APP_RESOURCE(VoIPProvisioningApp)
 //    S60_APP_CAPTION(VoIPProvisioningApp)
 

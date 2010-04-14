@@ -685,6 +685,19 @@ void CVccPerformer::HandoverReady()
                               MCCPCallObserver::ECCPNotifyRemotePartyInfoChange;
     iCallObs->CallEventOccurred( event, this );
     
+    RUBY_DEBUG0("Let HoTrigger know about changed domain");
+
+    if( params->CallType() == CCPCall::ECallTypeCSVoice )
+          {
+          RUBY_DEBUG0("New domain is CS");
+          iVccHoTrigger.SetCurrentDomainType( CVccHoTrigger::ECallDomainTypeCS );
+          }
+      else
+          {
+          RUBY_DEBUG0("New domain is PS");
+          iVccHoTrigger.SetCurrentDomainType( CVccHoTrigger::ECallDomainTypePS );
+          }
+    
     delete params;
     }
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -252,7 +252,8 @@ void CCSCSvcPluginHandler::RemoveProfilesL( TUint32 aServiceId )
         internetSnapId = dest.MetadataL( CMManager::ESnapMetadataInternet );
         if( internetSnapId == KErrNone )
             {
-            dest.DeleteLD();
+            // May leave if some connection method inside SNAP is in use
+            TRAP_IGNORE( dest.DeleteLD() );
             }
         
         CleanupStack::PopAndDestroy( &dest );        

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,6 +26,8 @@
 #include <aknlistquerydialog.h>
 #include <cvimpstsettingsstore.h>
 #include <csxhelp/voip.hlp.hrh>
+#include <csc.rsg>
+#include <aknnotedialog.h>
 
 #include "cscconstants.h"
 #include "cscsettingsui.hrh"
@@ -36,6 +38,9 @@
 #include "cscengdestinationshandler.h"
 #include "cipapputilsaddressresolver.h"
 #include "cscsettingsuimaincontainer.h"
+#include "cscengservicepluginhandler.h"
+#include "cscnoteutilities.h"
+#include "cscengsettingscleanupplugininterface.h"
 
 // Format of the setting item.
 _LIT( KCSCSettingsUiListItemTextFormat, "\t%S\t\t%S" );
@@ -59,15 +64,15 @@ CCSCSettingsUiMainContainer::CCSCSettingsUiMainContainer(
 // ---------------------------------------------------------------------------
 //
 void CCSCSettingsUiMainContainer::ConstructL(
-    const TRect& aRect )
+    const TRect& aRect)
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::ConstructL - begin" );
-        
+
     CreateWindowL();
     ConstructListBoxL();
     SetRect( aRect );
     ActivateL();
-    
+
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::ConstructL - end" );
     }
 
@@ -103,17 +108,17 @@ CCSCSettingsUiMainContainer::~CCSCSettingsUiMainContainer()
 void CCSCSettingsUiMainContainer::UpdateContainerL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::UpdateContainerL - begin" );
-     
+
     // Get listbox items from model.
     CTextListBoxModel* model = iListBox->Model();
     MDesCArray* textArray = model->ItemTextArray();
     CDesCArray* listBoxItems = static_cast<CDesCArray*>( textArray );
     listBoxItems->Reset();
     iListBoxItemArray.Reset();
-       
+
     // Initialize setting items.
     InitializeSettingItemsL();
-   
+
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::UpdateContainerL - end" );
     }
 
@@ -126,25 +131,25 @@ void CCSCSettingsUiMainContainer::HandoverNotificationToneQueryL()
     {    
     CDesCArrayFlat* items = new ( ELeave ) CDesCArrayFlat( 2 );   
     CleanupStack::PushL( items );
-    
+
     HBufC* onItem =  StringLoader::LoadLC( 
             R_CSCSETTINGSUI_SETTING_HANDOVER_NOTIF_TONE_ON );
     items->AppendL( *onItem );
     CleanupStack::PopAndDestroy( onItem );
-    
+
     HBufC* offItem =  StringLoader::LoadLC( 
             R_CSCSETTINGSUI_SETTING_HANDOVER_NOTIF_TONE_OFF );
     items->AppendL( *offItem );
     CleanupStack::PopAndDestroy( offItem );
-    
+
     TInt index( 0 );
     CAknListQueryDialog* dialog = 
         new ( ELeave ) CAknListQueryDialog( &index );
-    
+
     dialog->PrepareLC( R_CSCSETTINGSUI_HANDOVER_NOTIFICATION_TONE_QUERY );
     dialog->SetItemTextArray( items );
     dialog->SetOwnershipType( ELbmDoesNotOwnItemArray );
-        
+
     if ( dialog->RunLD() )
         {
         // Update setting according user selection
@@ -170,7 +175,7 @@ void CCSCSettingsUiMainContainer::HandoverNotificationToneQueryL()
         {        
         // cancelled
         }
-        
+
     CleanupStack::PopAndDestroy( items );
     UpdateContainerL();
     }
@@ -184,25 +189,25 @@ void CCSCSettingsUiMainContainer::PresenceReqPrefQueryL()
     {    
     CDesCArrayFlat* items = new ( ELeave ) CDesCArrayFlat( 2 );   
     CleanupStack::PushL( items );
-    
+
     HBufC* alwaysAskItem =  StringLoader::LoadLC( 
             R_CSCSETTINGSUI_PRES_PREF_ALWAYS_ASK );
     items->AppendL( *alwaysAskItem );
     CleanupStack::PopAndDestroy( alwaysAskItem );
-    
+
     HBufC* autoAcceptItem =  StringLoader::LoadLC( 
             R_CSCSETTINGSUI_PRES_PREF_ACCEPT_AUTOMATICALLY );
     items->AppendL( *autoAcceptItem );
     CleanupStack::PopAndDestroy( autoAcceptItem );
-    
+
     TInt index( 0 );
     CAknListQueryDialog* dialog = 
         new ( ELeave ) CAknListQueryDialog( &index );
-    
+
     dialog->PrepareLC( R_CSCSETTINGSUI_PRESENCE_REQUEST_PREF_QUERY );
     dialog->SetItemTextArray( items );
     dialog->SetOwnershipType( ELbmDoesNotOwnItemArray );
-        
+
     if ( dialog->RunLD() )
         {
         // Update setting according user selection
@@ -228,7 +233,7 @@ void CCSCSettingsUiMainContainer::PresenceReqPrefQueryL()
         {        
         // canceled
         }
-        
+
     CleanupStack::PopAndDestroy( items );
     UpdateContainerL();
     }
@@ -241,7 +246,7 @@ void CCSCSettingsUiMainContainer::PresenceReqPrefQueryL()
 void CCSCSettingsUiMainContainer::SaveImTonePathL( const TDesC& aTonePath )
     { 
     MVIMPSTSettingsStore* settings = CVIMPSTSettingsStore::NewLC();
-    
+
     User::LeaveIfError( settings->SetL( 
         iModel.CurrentSPEntryId(), EServiceToneFileName, aTonePath ) );
 
@@ -258,7 +263,6 @@ CAknSettingStyleListBox* CCSCSettingsUiMainContainer::ListBox()
     return iListBox;
     }
 
-
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::CurrentItemIndex
 // Returns index of selected listbox item. 
@@ -270,7 +274,6 @@ TMainListBoxItem CCSCSettingsUiMainContainer::CurrentItem() const
     return iListBoxItemArray[ currentItemIndex ];
     }
 
-
 // ---------------------------------------------------------------------------
 // From class CoeControl
 // CCSCSettingsUiMainContainer::ComponentControl
@@ -281,7 +284,6 @@ CCoeControl* CCSCSettingsUiMainContainer::ComponentControl(
     {
     return iListBox;
     }
-
 
 // -----------------------------------------------------------------------------
 // From class CoeControl
@@ -305,13 +307,13 @@ TKeyResponse CCSCSettingsUiMainContainer::OfferKeyEventL(
     {
     TKeyResponse response = EKeyWasNotConsumed;
     response = iListBox->OfferKeyEventL( aKeyEvent, aType );
-    
+
     if ( EKeyUpArrow == aKeyEvent.iCode ||  
         EKeyDownArrow == aKeyEvent.iCode  )
         {
         iModel.UpdateSoftkeys();
         }
-     
+
     return response;
     }
 
@@ -332,7 +334,7 @@ void CCSCSettingsUiMainContainer::HandleResourceChange( TInt aType )
         SetRect( mainPaneRect );
         DrawNow();
         }
-    
+
     CCoeControl::HandleResourceChange( aType );
     }
 
@@ -345,7 +347,7 @@ void CCSCSettingsUiMainContainer::HandleResourceChange( TInt aType )
 void CCSCSettingsUiMainContainer::ConstructListBoxL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::ConstructListBoxL - begin" );
-    
+
     // Create listbox and array for listbox items.
     iListBox = new( ELeave ) CAknSettingStyleListBox;
     iListBox->ConstructL( this, EAknListBoxSelectionList );    
@@ -357,10 +359,10 @@ void CCSCSettingsUiMainContainer::ConstructListBoxL()
     CDesCArrayFlat* itemsArray = 
         new ( ELeave ) CDesCArrayFlat( KCSCSettingsUiArrayGranularity );  
     iListBox->Model()->SetItemTextArray( itemsArray );
-        
+
     // Initialize setting items.
     InitializeSettingItemsL();
-    
+
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::ConstructListBoxL - end" );
     }
 
@@ -374,7 +376,7 @@ void CCSCSettingsUiMainContainer::InitializeSettingItemsL()
     {
     CSCSETUIDEBUG( 
         "CCSCSettingsUiMainContainer::InitializeSettingItemsL - begin" );
-    
+
     // Get supported subservices
     TSupportedSubServices supSubServices;
     iModel.CCHHandler().SupportedSubServicesL( 
@@ -382,7 +384,7 @@ void CCSCSettingsUiMainContainer::InitializeSettingItemsL()
 
     // Make username setting
     MakeSettingItemL ( TMainListBoxItem::EUsername );
-    
+
     // Make password setting
     MakeSettingItemL ( TMainListBoxItem::EPassword );
 
@@ -410,29 +412,27 @@ void CCSCSettingsUiMainContainer::InitializeSettingItemsL()
                 }
             }
         }
-            
+
     // Make setting item if IM is supported by service
     if ( supSubServices.iIm )
         {
         // IM tone setting.
         MakeSettingItemL( TMainListBoxItem::EImTone );
         }
-    
+
     // Make setting item if presence is supported by service
     if ( supSubServices.iPresence )
         {
         // Presence request preference
         MakeSettingItemL( TMainListBoxItem::EAutoacceptInv );
         }
-    
+
     // Connectivity setting (cannot be changed)
     MakeSettingItemL( TMainListBoxItem::EServiceConn );
-    
-    
+
     CSCSETUIDEBUG( 
         "CCSCSettingsUiMainContainer::InitializeSettingItemsL - end" );
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::MakeSettingItemL
@@ -444,23 +444,23 @@ void CCSCSettingsUiMainContainer::MakeSettingItemL(
     {
     CSCSETUIDEBUG( 
         "CCSCSettingsUiMainContainer::MakeSettingItemL - begin" );
-    
+
     // Get listbox items from model.
     CTextListBoxModel* model = iListBox->Model();
     MDesCArray* textArray = model->ItemTextArray();
     CDesCArray* listBoxItems = static_cast<CDesCArray*>( textArray );
-    
+
     TBuf<KCSCSettingsUiItemLength> listBoxItemText ( KNullDesC );
-    
+
     TMainListBoxItem listBoxItem;
     listBoxItem.iItem = aItem;
-    
+
     RBuf value;
     CleanupClosePushL( value );
-    
+
     value.CreateL( 1 );
     value.Copy( KNullDesC );
-       
+
     switch ( aItem  )
         {
         case TMainListBoxItem::EUsername:
@@ -513,18 +513,17 @@ void CCSCSettingsUiMainContainer::MakeSettingItemL(
             KCSCSettingsUiListItemTextFormat,
             GetCaptionL( aItem ),
             &value );
-    
+
     CleanupStack::PopAndDestroy( &value );
-    
+
     // Add to listbox
     iListBoxItemArray.Append( listBoxItem );
     listBoxItems->AppendL( listBoxItemText );
     iListBox->HandleItemAdditionL();
-    
+
     CSCSETUIDEBUG( 
         "CCSCSettingsUiMainContainer::MakeSettingItemL - end" );
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetCaptionL
@@ -534,12 +533,12 @@ void CCSCSettingsUiMainContainer::MakeSettingItemL(
 HBufC* CCSCSettingsUiMainContainer::GetCaptionL( 
     TMainListBoxItem::TSettingItems aItem )
     {
-    if( iCaption != NULL )
+    if ( iCaption != NULL )
         {
         delete iCaption;
         iCaption = NULL;
         }
-        
+
     switch ( aItem  )
         {
         case TMainListBoxItem::EUsername:
@@ -594,7 +593,7 @@ HBufC* CCSCSettingsUiMainContainer::GetCaptionL(
             User::Leave( KErrArgument );
             break;
         }
-    
+
     return iCaption;
     }
  
@@ -606,9 +605,8 @@ void CCSCSettingsUiMainContainer::GetUsernameL( RBuf& aUsername )
     {
     aUsername.ReAllocL( KCCHMaxUsernameLength );
     User::LeaveIfError( iModel.CCHHandler().GetConnectionParameter( 
-             iModel.CurrentSPEntryId(), ECchUsername, aUsername ) );
+        iModel.CurrentSPEntryId(), ECchUsername, aUsername ) );
     }
-    
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetPresencePrefSettingL
@@ -618,17 +616,16 @@ void CCSCSettingsUiMainContainer::GetPreferredServiceSettingL( RBuf& aValue )
     {
     // Select text resource for the current pref telephony value
     TInt resource = ( iModel.SettingsHandler().IsPreferredTelephonyVoip() &&
-                     iModel.SettingsHandler().IsPreferredService(
-                             iModel.CurrentSPEntryId() ) ) ?
-                     R_CSCSETTINGSUI_SETTING_PREFERRED_SERVICE_ON :
-                     R_CSCSETTINGSUI_SETTING_PREFERRED_SERVICE_OFF;
-                           
+        iModel.SettingsHandler().IsPreferredService(
+        iModel.CurrentSPEntryId() ) ) ?
+        R_CSCSETTINGSUI_SETTING_PREFERRED_SERVICE_ON :
+        R_CSCSETTINGSUI_SETTING_PREFERRED_SERVICE_OFF;
+
     HBufC* value = StringLoader::LoadLC( resource );
     aValue.ReAllocL( value->Length() );
     aValue.Copy( value->Des() );
     CleanupStack::PopAndDestroy( value );
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetVccPreferredServiceSettingL
@@ -638,17 +635,16 @@ void CCSCSettingsUiMainContainer::GetVccPreferredServiceSettingL( RBuf& aValue )
     {
     // Select text resource for the current pref telephony value
     TInt resource = ( iModel.SettingsHandler().IsPreferredTelephonyVoip() &&
-                     iModel.SettingsHandler().IsPreferredService(
-                             iModel.CurrentSPEntryId() ) ) ?
-                     R_CSCSETTINGSUI_SETTING_VCC_PREFERRED_SERVICE_ON :
-                     R_CSCSETTINGSUI_SETTING_VCC_PREFERRED_SERVICE_OFF;
-                           
+        iModel.SettingsHandler().IsPreferredService(
+        iModel.CurrentSPEntryId() ) ) ?
+        R_CSCSETTINGSUI_SETTING_VCC_PREFERRED_SERVICE_ON :
+        R_CSCSETTINGSUI_SETTING_VCC_PREFERRED_SERVICE_OFF;
+
     HBufC* value = StringLoader::LoadLC( resource );
     aValue.ReAllocL( value->Length() );
     aValue.Copy( value->Des() );
     CleanupStack::PopAndDestroy( value );
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetHandoverNotificationToneL
@@ -659,10 +655,10 @@ void CCSCSettingsUiMainContainer::GetHandoverNotificationTonePrefL(
     {
     HBufC* value = NULL;
     TOnOff onOff = EOff;
-    
+
     TRAPD( err, onOff = iModel.SettingsHandler().HandoverNotifTonePrefL( 
         iModel.CurrentSPEntryId() ) );
-    
+
     if ( KErrNotFound == err )
         {
         iModel.SettingsHandler().SetHandoverNotifTonePrefL( 
@@ -676,7 +672,7 @@ void CCSCSettingsUiMainContainer::GetHandoverNotificationTonePrefL(
         {
         // nothing to do
         }
-                   
+
     if ( EOff == onOff )
         {
         value = StringLoader::LoadLC( 
@@ -699,13 +695,12 @@ void CCSCSettingsUiMainContainer::GetHandoverNotificationTonePrefL(
         {
         User::Leave( KErrGeneral );     
         }
-       
+
     aValue.ReAllocL( value->Length() );
     aValue.Copy( value->Des() );
-           
+
     CleanupStack::PopAndDestroy( value );
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetImToneSettingL
@@ -714,25 +709,25 @@ void CCSCSettingsUiMainContainer::GetHandoverNotificationTonePrefL(
 void CCSCSettingsUiMainContainer::GetImToneSettingL( RBuf& aValue )
     {
     aValue.ReAllocL( KCSCMaxImToneLength );
-    
+
     MVIMPSTSettingsStore* settings = CVIMPSTSettingsStore::NewLC();
-    
+
     TInt err = settings->GetL( 
         iModel.CurrentSPEntryId(), EServiceToneFileName, aValue );
-    
+
     // If tone path is not found from settings, set Off text
     if ( KErrNotFound == err || aValue.Length() < 2 )
         {
         HBufC* noToneSelected = StringLoader::LoadLC( 
             R_CSCSETTINGSUI_IM_TONE_OFF );
-        
+
         User::LeaveIfError( settings->SetL( 
             iModel.CurrentSPEntryId(), EServiceToneFileName, *noToneSelected ) );       
 
         // Get tone.
         User::LeaveIfError( settings->GetL( 
             iModel.CurrentSPEntryId(), EServiceToneFileName, aValue ) );
-        
+
         CleanupStack::PopAndDestroy( noToneSelected );
         }
     else if ( err )
@@ -743,17 +738,16 @@ void CCSCSettingsUiMainContainer::GetImToneSettingL( RBuf& aValue )
         {
         // KErrNone -> do nothing
         }
-    
+
     TInt pos( 0 );    
     while ( KErrNotFound != pos )
         {
         pos = aValue.Find( KDoubleBackSlash );
         aValue.Delete( 0, pos+1 );
         }
-    
+
     CleanupStack::PopAndDestroy();
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetPresencePrefSettingL
@@ -763,10 +757,10 @@ void CCSCSettingsUiMainContainer::GetPresencePrefSettingL( RBuf& aValue )
     {
     HBufC* value = NULL;
     TOnOff onOff = EOff;
-            
+
     TRAPD( err, onOff = iModel.SettingsHandler().PresenceReqPrefL( 
             iModel.CurrentSPEntryId() ) );
-            
+
     if ( KErrNotFound == err )
         {
         iModel.SettingsHandler().SetPresenceReqPrefL( 
@@ -780,7 +774,7 @@ void CCSCSettingsUiMainContainer::GetPresencePrefSettingL( RBuf& aValue )
         {
         // nothing to do
         }
-                
+
     if ( EOff == onOff )
         {
         value = StringLoader::LoadLC( 
@@ -804,13 +798,12 @@ void CCSCSettingsUiMainContainer::GetPresencePrefSettingL( RBuf& aValue )
         {
         User::Leave( KErrGeneral );     
         }
-    
+
     aValue.ReAllocL( value->Length() );
     aValue.Copy( value->Des() );
-        
+
     CleanupStack::PopAndDestroy( value ); 
     }
-
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainContainer::GetSnapSettingL
@@ -823,7 +816,7 @@ void CCSCSettingsUiMainContainer::GetSnapSettingL( RBuf& aValue )
     TInt snapId( 0 );
     TInt err = iModel.CCHHandler().GetConnectionParameter( 
        iModel.CurrentSPEntryId(), ECchSnapId, snapId );       
-               
+
     // If no error, try to get snap name.
     if ( KErrNone == err )
         {
@@ -839,7 +832,6 @@ void CCSCSettingsUiMainContainer::GetSnapSettingL( RBuf& aValue )
         }
     }
 
-
 // ---------------------------------------------------------------------------
 // From class CoeControl
 // CCSCSettingsUiMainContainer::CountComponentControls
@@ -849,7 +841,6 @@ TInt CCSCSettingsUiMainContainer::CountComponentControls() const
     {
     return 1;
     }
-
 
 // ---------------------------------------------------------------------------
 // From class CoeControl
@@ -861,7 +852,6 @@ void CCSCSettingsUiMainContainer::SizeChanged()
     iListBox->SetRect( Rect() );
     }
 
-
 // ---------------------------------------------------------------------------
 // From class CoeControl
 // CCSCSettingsUiMainContainer::FocusChanged
@@ -871,9 +861,107 @@ void CCSCSettingsUiMainContainer::FocusChanged(
     TDrawNow aDrawNow )
     {
     CCoeControl::FocusChanged( aDrawNow );
-    
-    if( iListBox )
+
+    if ( iListBox )
         {
         iListBox->SetFocus( IsFocused() );
         }
     }
+
+// ---------------------------------------------------------------------------
+// Deletes service.
+// ---------------------------------------------------------------------------
+//
+void CCSCSettingsUiMainContainer::DeleteServiceL()
+    {
+    CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::DeleteServiceL - begin" );
+
+    // Show confirmation query for service deletion.
+    // Create confirmation query dialog.
+    HBufC* string = NULL;
+    CAknQueryDialog* query = 
+        new( ELeave ) CAknQueryDialog( CAknQueryDialog::ENoTone );
+
+    CleanupStack::PushL( query );
+    query->PrepareLC( R_CSC_DELETE_SERVICE_QUERY );
+    string = StringLoader::LoadLC( 
+        R_QTN_CSC_DELETE_SERVICE_QUERY, 
+        iModel.SettingsHandler().ServiceNameL( iModel.CurrentSPEntryId() ) );
+    query->SetPromptL( *string );
+    CleanupStack::PopAndDestroy( string );
+    CleanupStack::Pop( query );
+    if ( query->RunLD() )
+        {
+        // First check if there is a service plugin UID.
+        TInt count = iModel.ServicePluginHandler().PluginCount( 
+            CCSCEngServicePluginHandler::EInitialized );
+
+        TRAPD( err, LaunchCleanupPluginL( iModel.CurrentSPEntryId() ) );
+        if ( KErrNone != err )
+            {
+            iModel.SettingsHandler().DeleteServiceL( 
+                iModel.CurrentSPEntryId() );
+            }
+        }
+
+    CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::DeleteServiceL - end" );
+    }
+
+// ---------------------------------------------------------------------------
+// Launches cleanup plugin to remove settings.
+// ---------------------------------------------------------------------------
+//
+void CCSCSettingsUiMainContainer::LaunchCleanupPluginL( 
+    TUint aServiceId ) const
+    {
+    CSCSETUIDEBUG( 
+        "CCSCSettingsUiMainContainer::LaunchCleanupPluginL - begin" );
+
+    RImplInfoPtrArray implInfoArray;
+    CleanupStack::PushL( TCleanupItem( 
+        ResetAndDestroy, &implInfoArray ) );
+
+    REComSession::ListImplementationsL(
+        KCSCSettingsCleanupPluginInterfaceUid,
+        implInfoArray );
+
+    for ( TInt i( 0 ) ; i < implInfoArray.Count() ; i++ )
+        {                    
+        CCSCEngSettingsCleanupPluginInterface* plugin = 
+            CCSCEngSettingsCleanupPluginInterface::NewL( 
+                implInfoArray[i]->ImplementationUid() );
+
+        CleanupStack::PushL( plugin );
+
+        if ( CCSCEngSettingsCleanupPluginInterface::ESipVoIPCleanupPlugin 
+            == plugin->PluginType() )
+            {
+            plugin->RemoveSettingsL( aServiceId );
+            }
+
+        CleanupStack::PopAndDestroy( plugin );
+        }
+
+    CleanupStack::PopAndDestroy( &implInfoArray );
+    REComSession::FinalClose();
+
+    CSCSETUIDEBUG(
+        "CCSCSettingsUiMainContainer::LaunchCleanupPluginL - end" );
+    }
+ 
+// ---------------------------------------------------------------------------
+// CCSCSettingsUiMainContainer::ResetAndDestroy
+// ---------------------------------------------------------------------------
+//
+void CCSCSettingsUiMainContainer::ResetAndDestroy( TAny* aArray )
+     {
+     if ( aArray )
+         {
+         RImplInfoPtrArray* array = 
+             reinterpret_cast<RImplInfoPtrArray*>( aArray );
+         array->ResetAndDestroy();
+         }
+     }
+
+// End of file.
+

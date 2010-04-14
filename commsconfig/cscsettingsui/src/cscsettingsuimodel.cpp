@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -31,6 +31,7 @@
 #include "cscsettingsuiconstants.h"
 #include "cscengdestinationshandler.h"
 #include "mcscsettingsuimodelobserver.h"
+#include "cscengservicepluginhandler.h"
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -52,19 +53,23 @@ CCSCSettingsUiModel::CCSCSettingsUiModel(
 void CCSCSettingsUiModel::ConstructL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiModel::ConstructL - begin" );
-    
+
     // Create handle to CSC's Service Provider Settings Handler.
     iSPSHandler = CCSCEngServiceHandler::NewL( this );
-    
+
     // Create handle to CSC's Converged Connection Handler.
     iCCHHandler = CCSCEngCCHHandler::NewL( *this );
-    
+
     // Create handle to CSC's Destinations Handler.
     iDestinationsHandler = CCSCEngDestinationsHandler::NewL();
-    
+
     // Create handle to CSC's Branding Server Handler.
     iBSHandler = CCSCEngBrandingHandler::NewL();
-    
+
+    // Create CSC's Service Plugin Handler.
+    iServicePluginHandler = CCSCEngServicePluginHandler::NewL( 
+        iEikEnv, *this, *iSPSHandler );
+
     CSCSETUIDEBUG( "CCSCSettingsUiModel::ConstructL - end" );
     }
 
@@ -109,6 +114,7 @@ CCSCSettingsUiModel::~CCSCSettingsUiModel()
     delete iSPSHandler;
     delete iCCHHandler;
     delete iDestinationsHandler;
+    delete iServicePluginHandler;
     
     CSCSETUIDEBUG( "CCSCSettingsUiModel::~CCSCSettingsUiModel - end" );
     }
@@ -157,6 +163,16 @@ CCSCEngBrandingHandler& CCSCSettingsUiModel::BSHandler() const
     }
 
 // ---------------------------------------------------------------------------
+// CCSCSettingsUiModel::ServicePluginHandler
+// Returns reference to CSC's Service Plugin Handler.
+// ---------------------------------------------------------------------------
+//
+CCSCEngServicePluginHandler& CCSCSettingsUiModel::ServicePluginHandler() const
+    {
+    return *iServicePluginHandler;
+    }
+
+// ---------------------------------------------------------------------------
 // CCSCSettingsUiModel::StoreInitializationDataL
 // Stores initialization information.
 // ---------------------------------------------------------------------------
@@ -166,10 +182,10 @@ void CCSCSettingsUiModel::StoreInitializationDataL(
     TUint aServiceId )
     {
     CSCSETUIDEBUG( "CCSCSettingsUiModel::StoreInitializationDataL - begin" );
-    
+
     // View id for customer application return view id.
     iViewId = aViewId;
-    
+
     // Check that service exists in service table.
     RArray<TUint> spEntryIds;
     CleanupClosePushL( spEntryIds );
@@ -177,7 +193,7 @@ void CCSCSettingsUiModel::StoreInitializationDataL(
     User::LeaveIfError( spEntryIds.Find( aServiceId ) );
     CleanupStack::PopAndDestroy( &spEntryIds );
     iServiceId = aServiceId;
-    
+
     CSCSETUIDEBUG( "CCSCSettingsUiModel::StoreInitializationDataL - end" );
     }
 
@@ -227,7 +243,7 @@ void CCSCSettingsUiModel::ServiceStatusChanged(
     TCCHSubserviceType /*aType*/, 
     const TCchServiceStatus& /*aServiceStatus*/ )
     {
-    // not used
+    // Not used.
     }
 
 
@@ -238,6 +254,16 @@ void CCSCSettingsUiModel::ServiceStatusChanged(
 //
 void CCSCSettingsUiModel::NotifyServiceChange()
     {
-    // not used
+    // Not used.
     }
-    
+
+// ---------------------------------------------------------------------------
+// From MCSCProvisioningObserver.
+// CCSCSettingsUiModel::NotifyServicePluginResponse
+// ---------------------------------------------------------------------------
+//
+void CCSCSettingsUiModel::NotifyServicePluginResponse( 
+    const CCSCEngServicePluginHandler::TServicePluginResponse& /*aResponse*/,
+    const TInt /*aIndex*/, const TUid& /*aPluginUid*/ )
+    {
+    }

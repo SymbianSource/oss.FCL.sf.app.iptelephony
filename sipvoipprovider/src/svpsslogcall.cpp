@@ -220,8 +220,8 @@ HBufC* CSVPSSLogCall::FindContactTitleL( const TDesC& aSipUri )
                             }       
                         }
                     else
-                        {					
-						title = tempContactItem->GetContactTitleL();
+                        {
+                        title = tempContactItem->GetContactTitleL();
                         compId = contactId;
                         ind = count;
                         }
@@ -281,42 +281,42 @@ void CSVPSSLogCall::HandleCallLoggingL( const TDesC8& aFrom )
     
     TLogString number;
     CnvUtfConverter::ConvertToUnicodeFromUtf8( number, aFrom );
-    RemoveUnusedCharsFromSipAddress( number );            
-	SVPDEBUG2("  CSVPSSLogCall::HandleCallLoggingL, number = %S", &number );        
+    RemoveUnusedCharsFromSipAddress( number );
+    SVPDEBUG2("  CSVPSSLogCall::HandleCallLoggingL, number = %S", &number );
 
     if ( KErrNotFound == aFrom.Find( KSVPAnonymousName8 ) )
     	{
         SVPDEBUG1("  CSVPSSLogCall::HandleCallLoggingL, URI address is seen" );
         HBufC* contactName = FindContactTitleL( number );
-	    if ( contactName )
-		    { 
-	        //  Phonebook contact id has been found
-		    tempBufTwo.Copy( number );
-		    iLogEvent->SetRemoteParty( contactName->Des() );
-	        }
-	    else
-	        { // No phonebook contact id has been found
-	       	tempBufTwo.Copy( number );
-	       	iLogEvent->SetRemoteParty( number );
-	        }
-	    
-	    if ( contactName )
-	        {
-	        delete contactName;
-	        contactName = NULL;
-	        }
-	    
-	    tempBufOne.Append( tempBufTwo );             
-	    tempBufTwo.Zero();
-	    tempBufOne.Append( KLogFieldDelimiter() );
-	    tempBufOne.Append( KLogTagMA() );
-	    tempBufOne.Append( KLogValueDelimiter() );
-    	}
+        if ( contactName )
+            { 
+            //  Phonebook contact id has been found
+            tempBufTwo.Copy( number );
+            iLogEvent->SetRemoteParty( contactName->Des() );
+            }
+        else
+            { // No phonebook contact id has been found
+           	tempBufTwo.Copy( number );
+           	iLogEvent->SetRemoteParty( number );
+            }
+        
+        if ( contactName )
+            {
+            delete contactName;
+            contactName = NULL;
+            }
+        
+        tempBufOne.Append( tempBufTwo );
+        tempBufTwo.Zero();
+        tempBufOne.Append( KLogFieldDelimiter() );
+        tempBufOne.Append( KLogTagMA() );
+        tempBufOne.Append( KLogValueDelimiter() );
+        }
     else
-	    {
+        {
         SVPDEBUG1("  CSVPSSLogCall::HandleCallLoggingL, URI address is Anonymous" );
         iLogEvent->SetRemoteParty( KSVPPrivateNumber );
-	    }
+        }
     TRAP_IGNORE( iLogEvent->SetDataL( tempBufOne ) );
     TTime eventTime;
     eventTime.UniversalTime();

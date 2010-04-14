@@ -254,6 +254,13 @@ public:
      */
     TBool IsSnapConnectionAvailable( TInt aSnapId ) const;
     
+    /**
+     * Checks if IAP connection method used by sip profile is
+     * available
+     * @return ETrue if available
+     */
+    TBool IsIapConnectionAvailable( TInt aIapId ) const;
+
 #ifdef _DEBUG
     void GetInfo( TDes& aInfo ) const;
 #endif
@@ -308,13 +315,6 @@ private:
      * @return ETrue if available
      */
     TBool IsNetworkConnectionAvailable() const;
-
-    /**
-     * Checks if IAP connection method used by sip profile is
-     * available
-     * @return ETrue if available
-     */
-    TBool IsIapConnectionAvailable( TInt aIapId ) const;
 
 private:
 

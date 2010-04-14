@@ -27,10 +27,6 @@
 #include "svpsipconsts.h"
 #include "svpconsts.h"
 
-// These have to be handled as well
-_LIT8( KSVPNotifyRinging183, "SIP/2.0 183 Ringing" );
-_LIT8( KSVPNotifyOk, "SIP/2.0 200 Ok" );
-
 // ---------------------------------------------------------------------------
 // CSVPTransferController::CSVPTransferController
 // ---------------------------------------------------------------------------
@@ -230,7 +226,7 @@ void CSVPTransferController::NotifyReceivedL(
                 }
             }
         else if ( !content->Find( TPtrC8( KSVPNotifyOK ) ) || 
-                  !content->Find( TPtrC8( KSVPNotifyOk ) ) )
+                  !content->Find( TPtrC8( KSVPNotifyOk2 ) ) )
             {
             if ( iTransferContext->IsAttended() )
                 {

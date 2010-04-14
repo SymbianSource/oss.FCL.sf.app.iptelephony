@@ -322,6 +322,13 @@ private:
      */
     void AddDefaultCodecsL();
 
+    /**
+     * Sets the service as default service and preferred telephony as PS.
+     *
+     * @since S60 v5.1
+     */
+    void SetAsDefaultL();
+
 private:
 
     CVoipXmlVoipHandler();
@@ -378,6 +385,11 @@ private:
      * will be stored to SPSettings in FinalizedSettings method.
      */
     TUint32 iDestinationId;
+
+    /**
+     * Tells if the service is to be set as default service.
+     */
+    TBool iDefault;
     };
 
 #endif // VOIPXMLVOIPHANDLER_H

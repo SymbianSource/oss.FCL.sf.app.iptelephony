@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -113,6 +113,19 @@ void CSVPMoSession::ConstructL(
                                 aSecurityStatus,
                                 userEqphone );
     CleanupStack::PushL( uri );
+    
+    // Add P-Preferred-Identity header if CLIR is on  
+    if ( iSVPUtility.IsCLIROnL() )
+        {
+        const TDesC8* userAor = NULL;
+        TInt err = profile->GetParameter( KSIPUserAor, userAor );
+        
+        if ( !err )
+            {
+            iSVPUtility.AddPPreferredIdentityToUserHeadersL( 
+                *aUserHeaders, *userAor );
+            }
+        }
     
     // create Mce out session 
     if ( KSVPStatusNonSecure == aSecurityStatus )

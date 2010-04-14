@@ -33,7 +33,7 @@ SOURCEPATH      ../data
 
 START RESOURCE  20026FE1.rss
 #ifdef SYMBIAN_SECURE_ECOM
-TARGET          VoIPProvRec.rsc
+TARGET          voipprovrec.rsc
 #endif
 END
 

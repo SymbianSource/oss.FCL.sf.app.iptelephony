@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -275,13 +275,29 @@ void CSVPTransferStateContext::SetTransferDataL(
         {
         if ( iIncomingReplaces && IsAttended() )
             {
-            SVPDEBUG1( "CSVPTransferStateContext::SetTransferDataL: add replaces header" )
-            TBuf8<KSVPTempStringlength> replacesString;
-            replacesString.Append( KSVPReplacesColonTxt );
-            // add IncomingReplaces
-            replacesString.Append( IncomingReplaces() );
+            SVPDEBUG1( "CSVPTransferStateContext::SetTransferDataL: Add replaces header" )
+            // fetch "replaces:" string
+            HBufC* replacesStringHeap16 = IncomingReplaces().AllocLC(); // CS: 1
+            
+            // Copy incoming replaces to 8-bit buffer
+            HBufC8* replacesStringHeap8 =
+                    HBufC8::NewLC( replacesStringHeap16->Length() +
+                                   KSVPReplacesColonTxt().Length() ); // CS: 2
+            
+            replacesStringHeap8->Des().Copy( *replacesStringHeap16 );
+            CleanupStack::Pop( 1 );
+            CleanupStack::PushL( replacesStringHeap8 ); // ReAlloc possible
+            
+            // add replaces header
+            replacesStringHeap8->Des().Insert( 0, KSVPReplacesColonTxt );
+            CleanupStack::Pop( 1 );
+            CleanupStack::PushL( replacesStringHeap8 ); // ReAlloc possible
+            SVPDEBUG2( "CSVPTransferStateContext::SetTransferDataL - length: %d", replacesStringHeap8->Length() )
+            
             // Finally add collected Replaces string to header
-            aUserAgentHeaders->AppendL( replacesString );
+            aUserAgentHeaders->AppendL( *replacesStringHeap8 );
+            CleanupStack::PopAndDestroy( replacesStringHeap8 );      // CS: 1
+            CleanupStack::PopAndDestroy( replacesStringHeap16 );     // CS: 0
             }
         
         if ( iIncomingReferredBy )
@@ -736,7 +752,14 @@ TInt CSVPTransferStateContext::CheckRightBracket( const TDesC8& aUri ) const
 TInt CSVPTransferStateContext::CheckAuthidentity( const TDesC8& aUri ) const
     {
     SVPDEBUG1( "CSVPTransferStateContext::CheckAuthidentity" )
-    return ( aUri.Find( KSVPAuthidentity ) );
+    TInt returnValue = aUri.Find( KSVPAuthidentity );
+    SVPDEBUG2( "CSVPTransferStateContext::CheckAuthidentity return: %d", returnValue )
+    if ( returnValue == KErrNotFound )
+        {
+        returnValue = aUri.Find( KSVPAuthidentity2 );
+        SVPDEBUG2( "CSVPTransferStateContext::CheckAuthidentity second return: %d", returnValue )
+        }
+    return returnValue;
     }
 
 // ---------------------------------------------------------------------------

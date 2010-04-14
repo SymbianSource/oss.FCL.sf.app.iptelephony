@@ -83,6 +83,7 @@ _LIT( KParamValueBrandingUri,             "brandinguri" );
 _LIT( KParamValueAutoEnable,              "autoenable" );
 _LIT( KParamValueEnableSipIm,             "enablesipim" );
 _LIT( KParamValueBrandId,                 "brandid" );
+_LIT( KParamValueDefault,                 "default" );
 // Voice mailbox specific.
 _LIT( KParamValueMwiUri,                  "mwiuri" );
 _LIT( KParamValueListeningUri,            "listeninguri" );
@@ -276,6 +277,7 @@ enum TParameters
     EAutoEnable,
     EEnableSipIm,
     EBrandId,
+    EDefault,
     // Voice mailbox parameters
     EMwiUri,
     EListeningUri,

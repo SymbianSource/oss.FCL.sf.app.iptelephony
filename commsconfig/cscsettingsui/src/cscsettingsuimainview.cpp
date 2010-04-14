@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -38,6 +38,8 @@
 #include <aknradiobuttonsettingpage.h>
 #include <aknnavi.h>
 #include <aknnavide.h>
+#include <vwsdef.h>
+#include <AknDef.h>
 
 #include "cscconstants.h"
 #include "cscsettingsui.hrh"
@@ -48,6 +50,7 @@
 #include "cscsettingsuimainview.h"
 #include "cscsettingsuiconstants.h"
 #include "cscengservicepluginhandler.h"
+#include "cscappui.h"
 
 
 #define AppUi() (static_cast<CAknViewAppUi*>(iAvkonAppUi) )
@@ -245,12 +248,20 @@ void CCSCSettingsUiMainView::HandleCommandL( TInt aCommand )
                 {
                 CArrayFix<TCoeHelpContext>* buf = AppUi()->AppHelpContextL();
                     HlpLauncher::LaunchHelpApplicationL(
-                            iEikonEnv->WsSession(), buf );
+                        iEikonEnv->WsSession(), buf );
                 }
             break;
             }         
         case EAknSoftkeyBack:
             {
+            HandleReturnToPreviousViewL();
+            break;
+            }
+        case ECSCSettingsUiDelete:
+            {
+            CSCSETUIDEBUG( "    HandleCommandL - delete service" );
+            iContainer->DeleteServiceL();
+            iDeleted = ETrue;
             HandleReturnToPreviousViewL();
             break;
             }
@@ -280,7 +291,7 @@ void CCSCSettingsUiMainView::DoActivateL(
     const TDesC8& /*aCustomMessage*/ )
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::DoActivateL - begin" );
-    
+
     // Create container when view is activated.
     if ( !iContainer )
         {
@@ -290,22 +301,22 @@ void CCSCSettingsUiMainView::DoActivateL(
         AppUi()->AddToStackL( *this, iContainer );
         iContainer->ListBox()->SetListBoxObserver( this );
         }
-    
+
     SetTitleTextL();
     UpdateSoftkeysL();
     iContainer->UpdateContainerL();
-    
-    if (!iNaviPane)
+
+    if ( !iNaviPane )
          {
          iNaviPane = static_cast<CAknNavigationControlContainer*>(
              iAvkonAppUi->StatusPane()->ControlL(
              TUid::Uid(EEikStatusPaneUidNavi)));
          } 
-     
+
      if ( !iNaviDecorator )
          {
          iNaviDecorator = iNaviPane->CreateNavigationLabelL();
-         iNaviPane->PushL(*iNaviDecorator);
+         iNaviPane->PushL( *iNaviDecorator );
          }
 
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::DoActivateL - end" );
@@ -321,9 +332,9 @@ void CCSCSettingsUiMainView::DoDeactivate()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::DoDeactivate - begin" );
     
-    if (iNaviPane && iNaviDecorator)
+    if ( iNaviPane && iNaviDecorator )
             {
-            iNaviPane->Pop(iNaviDecorator);
+            iNaviPane->Pop( iNaviDecorator );
             }
    delete iNaviDecorator;
    iNaviDecorator = NULL;
@@ -430,7 +441,7 @@ void CCSCSettingsUiMainView::DynInitMenuPaneL(
         {
         TMainListBoxItem listBoxItem = iContainer->CurrentItem();
     
-        switch( listBoxItem.iItem )
+        switch ( listBoxItem.iItem )
             {
             // Hide "Change" and show "Open"
             case TMainListBoxItem::EServiceConn:
@@ -453,6 +464,11 @@ void CCSCSettingsUiMainView::DynInitMenuPaneL(
                  aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
                  aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
             break;
+            }
+        if ( !(iModel.CCHHandler().IsServiceDisabled( 
+            iModel.CurrentSPEntryId() ) ) )
+            {
+            aMenuPane->SetItemDimmed( ECSCSettingsUiDelete, ETrue );
             }
         }
      
@@ -856,25 +872,36 @@ void CCSCSettingsUiMainView::HandleReturnToPreviousViewL()
     if ( iModel.ReturnViewId() != KNullUid )
         {             
         TUid tabview( KNullUid );
-        TRAPD( err, tabview.iUid = iModel.SettingsHandler().ServiceTabViewIdL( 
+
+        // Error code not needed.
+        TRAP_IGNORE( 
+            tabview.iUid = iModel.SettingsHandler().ServiceTabViewIdL( 
             iModel.CurrentSPEntryId() ) )
-                 
-        if ( tabview.iUid == iModel.ReturnViewId().iUid && !err )
+
+        if ( iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
+            {
+            TVwsViewId idleId;
+            AknDef::GetPhoneIdleViewId( idleId );
+            ActivateViewL( idleId );
+            AppUi()->HandleCommandL( EEikCmdExit );
+            }
+        else if ( tabview.iUid == iModel.ReturnViewId().iUid )
             {
             RxSPViewServices viewServices;
             TInt err = viewServices.Activate( 
                 KPhoneBookTabUid.iUid, 
                 iModel.ReturnViewId().iUid );
-              
+
             CSCSETUIDEBUG2( "   --> ACTIVATE ERR=%d", err );
-              
+
             AppUi()->HandleCommandL( EEikCmdExit );
             }
         else
-            { 
-            // Not launched from service tab, activate previsous view
+            {
+            // Not deleted or launched from service tab,
+            // activate previous view.
             AppUi()->ActivateLocalViewL( iModel.ReturnViewId() );
-            }        
+            }
         }
       
     CSCSETUIDEBUG( 
@@ -941,4 +968,6 @@ void CCSCSettingsUiMainView::ResetViewL()
 
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::ResetViewL - OUT" );
     }
+
+// End of file.
 

@@ -115,6 +115,8 @@ _LIT( KSVPLeftBracketMark2, "<" );
 _LIT8( KSVPRightBracketMark, ">");
 _LIT( KSVPRightBracketMark2, ">" );
 _LIT8( KSVPAuthidentity, "?X-Sipx-Authidentity=");
+_LIT8( KSVPAuthidentity2, "?X-sipX-Authidentity=");
+
 // uri length
 const TUint KSVPMaxUriLength = 100;
 // codec name length, max
@@ -173,6 +175,8 @@ _LIT8( KSVP_tag,                ";tag=" );
 _LIT8( KSVPTo_tag,              "%3Bto-tag%3D" );
 _LIT8( KSVPFrom_tag,            "%3Bfrom-tag%3D" );
 _LIT8( KSVPFromPrompt, 			"From: ");
+_LIT8( KSVPPIdentity,           "P-Preferred-Identity: ");
+
 const TUint KSVPFromPromptStringlength = 6;
 
 _LIT8( KSVPReplacesColonTxt,    "Replaces:" );

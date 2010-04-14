@@ -23,10 +23,12 @@
 #include <spdefinitions.h>
 #include <sipmanagedprofile.h>
 #include <sipmanagedprofileregistry.h>
-#include <cipappphoneutils.h> // SIP User-Agent header info.
+#include <cipappphoneutils.h>           // SIP User-Agent header info.
 #include <cipapputilsaddressresolver.h> // SIP User-Agent header info.
-#include <pathinfo.h> // For getting phone rom root path.
-#include <cvimpstsettingsstore.h> // For IM tone path
+#include <pathinfo.h>                   // For getting phone rom root path.
+#include <cvimpstsettingsstore.h>       // For IM tone path
+#include <settingsinternalcrkeys.h>     // For default service.
+#include <centralrepository.h>          // For default service.
 
 #include "voipxmlvoiphandler.h"
 #include "voipxmlprocessorlogger.h"
@@ -156,6 +158,7 @@ TInt CVoipXmlVoipHandler::StoreSettings()
             // from registry so that we'll get all the values registry has
             // added to the entry (AddL takes entry as const reference).
             TRAP_IGNORE( iRegistry->FindL( profileId, *iEntry ) );
+            iServiceId = iEntry->iServiceProviderId;
             }
         else
             {
@@ -236,6 +239,10 @@ TInt CVoipXmlVoipHandler::FinalizeSettings()
         {
         // ParamHandler is only intrested in KErrNone and KErrCompletion.
         err = KErrCompletion;
+        }
+    if ( iDefault )
+        {
+        TRAP_IGNORE( SetAsDefaultL() );
         }
     return err;
     }
@@ -541,6 +548,15 @@ void CVoipXmlVoipHandler::SetCoreSettingL( TInt aParam, const TDesC& aValue )
             if ( !iSpSettings.iBrandId )
                 {
                 iSpSettings.iBrandId = aValue.AllocL();
+                iSettingsSet = ETrue;
+                }
+            break;
+            }
+        case EDefault:
+            {
+            if ( KErrNone == VoipXmlUtils::DesToInt( aValue, intValue ) )
+                {
+                iDefault = (TBool)intValue;
                 iSettingsSet = ETrue;
                 }
             break;
@@ -1283,6 +1299,19 @@ void CVoipXmlVoipHandler::AddDefaultCodecsL()
     iEntry->iPreferredCodecs.AppendL( codecId );
 
     CleanupStack::PopAndDestroy( codec );
+    }
+
+// ---------------------------------------------------------------------------
+// Sets the service as default service and preferred telephony as PS.
+// ---------------------------------------------------------------------------
+//
+void CVoipXmlVoipHandler::SetAsDefaultL()
+    {
+    // Set the preferred service ID and preferred telephony as PS.
+    CRepository* repository = CRepository::NewL( KCRUidRichCallSettings );
+    repository->Set( KRCSPSPreferredService, (TInt)iServiceId );
+    repository->Set( KRCSEPreferredTelephony, 1 );
+    delete repository;
     }
 
 //  End of File

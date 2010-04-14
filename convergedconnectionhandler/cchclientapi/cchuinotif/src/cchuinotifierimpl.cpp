@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -26,6 +26,7 @@
 #include <cenrepnotifyhandler.h>
 #include <ctsydomainpskeys.h>
 #include <crcseprofileregistry.h>
+#include <AknNotiferAppServerApplication.h>  // Application Key enable/disable
 
 #include "cchuilogger.h"
 #include "cchuicommon.hrh"
@@ -59,6 +60,14 @@ void CCCHUiNotifierImpl::ConstructL()
 CCCHUiNotifierImpl::~CCCHUiNotifierImpl()
     {
     CCHUIDEBUG( "CCCHUiNotifierImpl::~CCCHUiNotifierImpl - IN" );	
+    
+    if ( iAppKeyBlocked )
+        {
+        // Remove application key blocking
+        (void) ((CAknNotifierAppServerAppUi*)
+            iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+        iAppKeyBlocked = EFalse;
+        }
     
     CCCHUiNotifierBase::Cancel();
     iListQueryDialog = NULL;
@@ -146,6 +155,11 @@ void CCCHUiNotifierImpl::ShowUsernamePasswordQueryL(
     
     CAknMultiLineDataQueryDialog* dlg = CAknMultiLineDataQueryDialog::NewL( 
         ptrUserName, ptrPassWord );
+     
+    // Block application key while showing query
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
+    iAppKeyBlocked = ETrue;
     
     if ( dlg->ExecuteLD( R_CCHUINOTIF_USERNAME_PWD_DIALOG ) )
         {	
@@ -163,6 +177,12 @@ void CCCHUiNotifierImpl::ShowUsernamePasswordQueryL(
         CCHUIDEBUG( "ShowUsernamePasswordQueryL - cancelled" );	
         CompleteMessage( KErrCancel );
         }
+    
+    // Remove application key blocking
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+    iAppKeyBlocked = EFalse;
+    
     CleanupStack::PopAndDestroy( passWord );
     CleanupStack::PopAndDestroy( userName );
     
@@ -263,7 +283,12 @@ void CCCHUiNotifierImpl::ShowNoConnectionsQueryL(
         {
         // Error occurred in RetrieveServiceIconL. Nothing to do.
         }
-      
+         
+    // Block application key while showing query
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
+    iAppKeyBlocked = ETrue;
+    
     CCHUIDEBUG( "ShowNoConnectionsQueryL - run dialog" );   
     iListQueryDialog->RunLD();
     CCHUIDEBUG( "ShowNoConnectionsQueryL - run dialog done" );
@@ -289,6 +314,12 @@ void CCCHUiNotifierImpl::ShowNoConnectionsQueryL(
         CCHUIDEBUG( "ShowNoConnectionsQueryL - complete with cancel" ); 
         CompleteMessage( KErrCancel );
         }
+    
+    // Remove application key blocking
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+    iAppKeyBlocked = EFalse;
+    
     CleanupStack::PopAndDestroy( string );
     CleanupStack::PopAndDestroy( &commandArray );
     CleanupStack::PopAndDestroy( arrayforDialog );    
@@ -399,7 +430,12 @@ void CCCHUiNotifierImpl::ShowChangeConnectionQueryL(
         {
         // Error occurred in RetrieveServiceIconL. Nothing to do.
         }
-
+   
+    // Block application key while showing query
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
+    iAppKeyBlocked = ETrue;
+    
     CCHUIDEBUG( "ShowChangeConnectionQueryL - run dialog" );
     
     // List query dialog is deleted via RunLD except if there is
@@ -434,6 +470,11 @@ void CCCHUiNotifierImpl::ShowChangeConnectionQueryL(
         
         iListQueryDialog = NULL;
         }
+    
+    // Remove application key blocking
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+    iAppKeyBlocked = EFalse;
     
     CleanupStack::PopAndDestroy( string );    
     CleanupStack::PopAndDestroy( &iapName );   
@@ -622,6 +663,11 @@ void CCCHUiNotifierImpl::ShowConfirmChangeConnectionL(
     query->SetPromptL( *textForQuery );    
     CleanupStack::PopAndDestroy( textForQuery );
     CleanupStack::Pop( query );
+       
+    // Block application key while showing query
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
+    iAppKeyBlocked = ETrue;
     
     // Run query
     if( query->RunLD() )
@@ -656,6 +702,11 @@ void CCCHUiNotifierImpl::ShowConfirmChangeConnectionL(
         
         CompleteMessage( KErrCancel );
         }
+    
+    // Remove application key blocking
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+    iAppKeyBlocked = EFalse;
     
     CleanupStack::PopAndDestroy( &iapName );
     
@@ -699,6 +750,11 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
     CCHUIDEBUG( "ShowGprsSelectionL - set item array" );	
     dialog->SetItemTextArray( arrayforDialog );
     dialog->SetOwnershipType( ELbmDoesNotOwnItemArray );
+      
+    // Block application key while showing query
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
+    iAppKeyBlocked = ETrue;
     
     CCHUIDEBUG( "ShowGprsSelectionL - run dialog" );	
     dialog->RunLD();
@@ -714,6 +770,11 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
         {
         User::Leave( KErrCancel );
         }
+    
+    // Remove application key blocking
+    (void) ((CAknNotifierAppServerAppUi*)
+        iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+    iAppKeyBlocked = EFalse;
 
     CleanupStack::PopAndDestroy( string );
     CleanupStack::PopAndDestroy( arrayforDialog );     

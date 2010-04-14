@@ -614,7 +614,6 @@ void CCCHServiceHandler::HandleDelayedNotifyEvent()
     CCHLOGSTRING2( "CCCHServiceHandler[0x%x]::HandleDelayedNotifyEvent IN",
                    this );
     
-    iDelayedHandleNotifyServiceId = 0;
     CancelHandleNotifyDelayTimer();
     
     TServiceSelection selection;
@@ -659,6 +658,7 @@ void CCCHServiceHandler::HandleDelayedNotifyEvent()
         TRAP_IGNORE( UpdateL( ETrue ) );
         }
                 
+    iDelayedHandleNotifyServiceId = 0;
     CCHLOGSTRING( "CCCHServiceHandler::HandleDelayedNotifyEvent OUT" );
     }
 

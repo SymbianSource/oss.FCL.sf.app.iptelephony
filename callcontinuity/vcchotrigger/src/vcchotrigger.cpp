@@ -349,9 +349,10 @@ void CVccHoTrigger::GsmSignalChanged(
     TVccHoStatus hoStatus( EVccHoStateUnknown );
     iEngPsProperty->GetCurrentHoStatus( hoStatus );
     
-    if( hoStatus != EVccCsToPsHoStarted || hoStatus != EVccCsToPsHoInprogress )
+    if( hoStatus != EVccCsToPsHoStarted || hoStatus != EVccCsToPsHoInprogress 
+        || hoStatus != EVccPsToCsHoStarted || hoStatus != EVccPsToCsHoInprogress )
         {
-        RUBY_DEBUG0( "CS to PS HO in progress, not updating keys" );
+        RUBY_DEBUG0( "HO not in progress,  updating keys" );
         TRAP_IGNORE( UpdatePsKeysL() );
         }
     
@@ -562,6 +563,8 @@ EXPORT_C void CVccHoTrigger::ReadHoAllowedWhenCsOriginatedSettingL()
 void CVccHoTrigger::TriggerHo()
 	{
 	RUBY_DEBUG_BLOCK( "CVccHoTrigger::TriggerHo" );
+	
+	RUBY_DEBUG1("Current domain is: %d", iDomainType);
 	//Check if manual ho is already made during this call and the 
 	//service availability.
 	if( iManualHoDone || !ServicesAvailable() || iHoNotAllowed )
@@ -582,7 +585,7 @@ void CVccHoTrigger::TriggerHo()
 	
 	if ( ( iWlanClass == ESignalClassWeak || iCchServiceStatus == EServiceUnavailable )&&
 	        iGsmClass == ESignalClassNormal && 
-	     ( iPolicy.AllowedDirection() & EPsToCsAllowed  ))
+	     ( iPolicy.AllowedDirection() & EPsToCsAllowed  ) && iDomainType == ECallDomainTypePS )
 	    {
 	    RUBY_DEBUG0( "VccHoTrigger::WlanSignalChanged - NotifySubscriberL" );
 	        
@@ -668,7 +671,7 @@ TBool CVccHoTrigger::DoImmediateHo()
 	
 	else if ( (iPolicy.PreferredDomain() == EPsPreferred)  &&
 	      iWlanClass == ESignalClassNormal && iCchServiceStatus != EServiceUnavailable &&
-	      ( iPolicy.AllowedDirection() & ECsToPsAllowed  ) )
+	      ( iPolicy.AllowedDirection() & ECsToPsAllowed  ) && iDomainType != ECallDomainTypePS )
         {
         // Current call is CS, PS signal is ok, preferred domain is PS and 
 	    // immediate HO is requested -> HANDOVER to PS

@@ -819,14 +819,17 @@ void CCSCServiceView::TimerExpired()
     
     CCSCNoteUtilities::TCSCNoteType 
         type = CCSCNoteUtilities::ECSCConfigureServiceQuery;
-    
-    if ( CCSCNoteUtilities::ShowCommonQueryL( 
-       type, iPluginInfo.iProviderName ) )
-       {        
-       iServicePluginHandler.DoProvisioningL( 
+     
+    TRAP_IGNORE
+        (
+        if ( CCSCNoteUtilities::ShowCommonQueryL( 
+           type, iPluginInfo.iProviderName ) )
+           {        
+           iServicePluginHandler.DoProvisioningL( 
                iPluginInfo.iPluginsUid, KCSCServiceViewId );
-       }
-   
+           }
+        );
+
     iNextPluginIndex++;
     TInt pluginCount = iServicePluginHandler.PluginCount( 
             CCSCEngServicePluginHandler::EInitialized );

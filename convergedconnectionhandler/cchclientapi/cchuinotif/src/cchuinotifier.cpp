@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,6 +29,8 @@
 #include <cenrepnotifyhandler.h>
 #include <CoreApplicationUIsSDKCRKeys.h> // KCRUidCoreApplicationUIs, 
                                          // KCoreAppUIsNetworkConnectionAllowed
+#include <AknNotiferAppServerApplication.h>  // Application Key enable/disable
+
 #include "cchuilogger.h"
 #include "cchuinotifier.h"
 #include "cchuinotifconnectionhandler.h"
@@ -41,7 +43,8 @@ const TInt32 KSipVoIPSubServicePlugId = 0x1027545A;
 
 // ======== MEMBER FUNCTIONS ========
 
-CCCHUiNotifierBase::CCCHUiNotifierBase(): CActive(EPriorityStandard)
+CCCHUiNotifierBase::CCCHUiNotifierBase(): 
+    CActive(EPriorityStandard), iAppKeyBlocked( EFalse )
     {
     CActiveScheduler::Add(this);
     }
@@ -78,6 +81,13 @@ void CCCHUiNotifierBase::ConstructL()
 CCCHUiNotifierBase::~CCCHUiNotifierBase()
     {
     CCHUIDEBUG( "CCCHUiNotifierBase::~CCCHUiNotifierBase - IN" );
+    
+    if( iAppKeyBlocked )
+        {
+        (void) ((CAknNotifierAppServerAppUi*)
+            iEikEnv->EikAppUi())->SuppressAppSwitching(EFalse);    
+        }
+    
     Cancel();    
     
     delete iSettings;
@@ -170,7 +180,7 @@ TPtrC8 CCCHUiNotifierBase::StartL( const TDesC8& /*aBuffer*/ )
 // ---------------------------------------------------------------------------
 //
 void CCCHUiNotifierBase::StartL( 
-    const TDesC8& aBuffer, 
+    const TDesC8& /*aBuffer*/, 
     TInt aReplySlot, 
     const RMessagePtr2& aMessage )
     {

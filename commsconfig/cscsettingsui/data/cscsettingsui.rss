@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -23,6 +23,7 @@ NAME CSCS
 #include <avkon.rsg>
 #include <avkon.loc>
 #include <cscsettingsui.loc>
+#include <csc.loc>
 
 #include "cscsettingsui.hrh"
 
@@ -111,6 +112,11 @@ RESOURCE MENU_PANE r_cscsettingsui_mainview_menu
             command = ECSCSettingsUiOpen;
             txt = qtn_options_open;
             flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ECSCSettingsUiDelete;
+            txt = qtn_voip_csc_option_delete_service;
             },
         MENU_ITEM
             {

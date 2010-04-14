@@ -443,6 +443,10 @@ TInt CVoipXmlParamHandler::ConvertParameter( const TDesC& aParam )
         {
         return EBrandId;
         }
+    else if ( KParamValueDefault() == name )
+        {
+        return EDefault;
+        }
     // ==============================
     // VoIP voicemailbox parameters.
     // ==============================

@@ -16,6 +16,10 @@
 */
 #include <e32std.h>
 #include <escapeutils.h>
+#include <cmmanager.h>
+#include <cmdestination.h>
+#include <cmconnectionmethoddef.h>
+#include <cmpluginwlandef.h>
 
 #include "scpservicemanager.h"
 #include "scpsettinghandler.h"
@@ -181,7 +185,9 @@ void CScpServiceManager::EnableServiceL( TUint aServiceId,
     SCPLOGSTRING2( "CScpServiceManager::EnableServiceL service:%i", aServiceId );
     SCPLOGSTRING2( "CScpServiceManager::EnableServiceL type:%i", aSubServiceType );
     __ASSERT_DEBUG( aServiceId > 0, User::Panic( KNullDesC, KErrNotFound ) );
-        
+
+    CheckRestrictedConnectionsL( aServiceId );
+    
     CScpService* service = GetServiceL( aServiceId, aSubServiceType );
     
     if( !service )
@@ -805,22 +811,25 @@ void CScpServiceManager::GetConnectionParameterL(
     
     if( aParameter==ECchUsername )
         {
-        HBufC* buffer = NULL;
         TBuf16<KTempBufMaxLength> tempBuf;
         TBuf8<KUsernameMaxLength> username;
         
         if( sipConnection->GetUsername( username ) == KErrNone )
             {
-            tempBuf.Copy( username );
-            
             // Decode encoded username (spaces to %20).
-            buffer = EscapeUtils::EscapeDecodeL( tempBuf );
+            HBufC8* decodedUsername = EscapeUtils::EscapeDecodeL( username );
+            CleanupStack::PushL( decodedUsername );
             
-            if ( buffer )
+            HBufC* userName16 =
+                    EscapeUtils::ConvertToUnicodeFromUtf8L( decodedUsername->Des() );
+            
+            CleanupStack::PopAndDestroy( decodedUsername );
+                        
+            if ( userName16 )
                 {
-                aValue.Copy( buffer->Des() );
-                delete buffer;
-                buffer = NULL;
+                aValue.Copy( userName16->Des() );
+                delete userName16;
+                userName16 = NULL;
                 }
             else
                 {
@@ -1007,4 +1016,86 @@ void CScpServiceManager::SetUsernameAndPasswordToXdmL(
         }
     }
 
+// -----------------------------------------------------------------------------
+// CScpServiceManager::CheckRestrictedConnectionsL
+// -----------------------------------------------------------------------------
+//
+void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
+    {
+    if ( !iSettingHandler->IsVoIPOverWcdmaAllowedL( aServiceId ) )
+        {
+        SCPLOGSTRING( "CScpServiceManager::CheckRestrictedConnectionsL WCDMA not allowed" );
+        
+        TBool sipConnectionCreated( EFalse );
+        CScpSipConnection* sipConnection = GetSipConnectionL( 
+                                                    aServiceId,
+                                                    ECCHVoIPSub, 
+                                                    sipConnectionCreated );
+        
+        if( sipConnectionCreated )
+            {
+            CleanupStack::PushL( sipConnection );
+            }
+        
+        TUint32 snapId( KErrNone );
+        sipConnection->GetSnap( snapId );
+        
+        RArray<TInt> iaps;
+        CleanupClosePushL( iaps );
+        // get first iap and iap's bearer, there must be atleast 
+        // one iap if not cch does not work as it should
+        RCmManager cmm;
+        cmm.OpenL();
+        CleanupClosePushL( cmm );
+        RCmDestination destination( cmm.DestinationL( snapId ) );
+        CleanupClosePushL( destination );
+
+        for ( TInt i = 0; i < destination.ConnectionMethodCount(); i++ )
+            {
+            RCmConnectionMethod cm = destination.ConnectionMethodL( i );
+            CleanupClosePushL( cm );
+
+            if( KUidWlanBearerType == 
+                cm.GetIntAttributeL( CMManager::ECmBearerType ) )
+                {
+                SCPLOGSTRING( "CScpServiceManager::CheckAvailableConnectionsL WLAN IAP found" );
+                iaps.Append( cm.GetIntAttributeL( CMManager::ECmIapId ) );
+                }
+            else
+                {
+                SCPLOGSTRING2( "CScpServiceManager::CheckAvailableConnectionsL iaps count = %d", iaps.Count() );
+                SCPLOGSTRING( "CScpServiceManager::CheckAvailableConnectionsL 3G IAP found break the loop" );
+                i = destination.ConnectionMethodCount();
+                }
+            
+            CleanupStack::PopAndDestroy( &cm );
+            }
+        
+        TBool available( EFalse );
+        for ( TInt j( 0 ); j < iaps.Count(); j++ )
+            {
+            if ( sipConnection->IsIapConnectionAvailable( iaps[ j ] ) )
+                {
+                SCPLOGSTRING( "CScpServiceManager::CheckAvailableConnectionsL WLAN IAP available" );
+                available = ETrue;
+                break;
+                }
+            }
+        
+        CleanupStack::PopAndDestroy( &destination ); 
+        CleanupStack::PopAndDestroy( &cmm );
+        CleanupStack::PopAndDestroy( &iaps );
+        
+        if( sipConnectionCreated )
+            {
+            CleanupStack::PopAndDestroy( sipConnection );
+            }
+        
+        if ( !available )
+            {
+            User::Leave( KCCHErrorAccessPointNotDefined );
+            }
+        }
+    }
+    
 // End of file

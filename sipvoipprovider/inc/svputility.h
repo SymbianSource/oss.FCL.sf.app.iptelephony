@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -216,6 +216,17 @@ public: // new methods
     * @return HBufC8* constructed fromheader.
     */
     HBufC8* SetMoFromHeaderLC( TUint aSecurityStatus );
+    
+	
+	/**
+    * Adds P-Preferred-Identity to user headers.
+    * @since Series 60 3.2
+	* @param aUserAgentHeaders user agent headers.
+	* @param aUri own sip uri.
+    * @return void
+    */
+    void AddPPreferredIdentityToUserHeadersL( 
+        CDesC8Array& aUserAgentHeaders, const TDesC8& aUri  );
     
     /**
      * Updates the jitterbuffer size to given RTP source. Function resets

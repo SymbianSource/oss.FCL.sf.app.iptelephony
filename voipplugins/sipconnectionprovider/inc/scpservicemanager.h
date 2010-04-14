@@ -325,6 +325,14 @@ private:
         const TDesC8& aPassword,
         TBool aSetPassword );
     
+    /**
+     * Checks restricted connections. In case where voip is not 
+     * allowed via 3g and 3g ap is first ap, leave with error 
+     * KCCHErrorAccessPointNotDefined so user can select another ap.
+     * @param aServiceId Service Id
+     */
+    void CheckRestrictedConnectionsL( TUint aServiceId );
+    
 private:  
 
     /**

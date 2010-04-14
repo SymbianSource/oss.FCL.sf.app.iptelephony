@@ -24,7 +24,7 @@
 
     file=ABI_DIR\BUILD_DIR\voipxmlprocessor.dll SHARED_LIB_DIR\voipxmlprocessor.dll
 
-    ECOM_PLUGIN( voipprovrec.dll,20026FE1.rsc )
+    ECOM_PLUGIN( voipprovrec.dll, 20026FE1.rsc )
 
     S60_APP_EXE(voipprovisioningapp)
     S60_UPGRADABLE_APP_REG_RSC(voipprovisioningapp)

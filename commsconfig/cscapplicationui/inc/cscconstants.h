@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -38,8 +38,8 @@ _LIT( KDriveZ, "z:" );
 _LIT( KCSCAifFile, "csc_aif.mif");
 
 // For icon size
-const TInt KIconSizeQvgaPortrait = 58;
-const TInt KIconSizeQvgaLandscape = 59;
-const TInt KItemHeightQvgaLandscape = 67;
+const TInt KItemHeightPortrait = 67;
+const TInt KIconSizeCorrectionPortrait = 8;
+const TInt KIconSizeCorrectionLandscape = 7;
 
 #endif  // CSCCONSTANTS_H

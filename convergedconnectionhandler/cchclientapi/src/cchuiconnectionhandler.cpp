@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -431,8 +431,9 @@ TInt CCchUiConnectionHandler::AddNewConnectionMethodL(
            if ( destination.Id() != aDestination.Id() )
                {
                CCHUIDEBUG( "Copy existing connection method to destination" );
-               iCmManagerExt.CopyConnectionMethodL(
-                   aDestination, connectionMethod );
+               
+               aDestination.AddConnectionMethodL( 
+                   connectionMethod.CreateCopyL() );
                }
            TRAP_IGNORE( aDestination.ModifyPriorityL( 
                connectionMethod, KCmHighestPriority ) );
@@ -649,7 +650,7 @@ void CCchUiConnectionHandler::CopyIapToServiceSnapL(
     
     TInt conMethodCount = targetSnap.ConnectionMethodCount();
     TUint32 sourceIapId = sourceConn.GetIntAttributeL( CMManager::ECmIapId );
-    TBool matchFound = false;
+    TBool matchFound( EFalse );
     
     for ( TInt ndx = 0 ; ndx < conMethodCount && matchFound == 0; ndx ++ )
         {
@@ -660,16 +661,16 @@ void CCchUiConnectionHandler::CopyIapToServiceSnapL(
         
         if( targetIapId == sourceIapId )
             {
-            matchFound =true;
+            matchFound = ETrue;
             }
         CleanupStack::PopAndDestroy( &cm );
         }
     if( !matchFound )
         {
         CCHUIDEBUG( 
-          "CopyIapToServiceSnapL - Get source connection ok -> copy connection");    
+          "CopyIapToServiceSnapL - Get source connection ok -> add connection");
         
-        iCmManagerExt.CopyConnectionMethodL( targetSnap, sourceConn );
+        targetSnap.AddConnectionMethodL( sourceConn.CreateCopyL() );
         }
     CleanupStack::PopAndDestroy( &sourceConn );
     CleanupStack::PopAndDestroy( &targetSnap );      

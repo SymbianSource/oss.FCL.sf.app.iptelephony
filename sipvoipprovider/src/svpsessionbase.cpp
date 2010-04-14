@@ -1574,6 +1574,18 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
             SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - Resume ICMP, Sink" )
             TRAP_IGNORE( StartTimerL( KSVPSinkResumeICMPErrorTime, KSVPSinkResumeICMPErrorTimerExpired ) )
             }
+        
+        else if ( !HasHoldController() && !aSink.IsEnabled() && CMceSession::EEstablished == sessionState && 
+                  CMceMediaStream::EDisabled == aStream.State() )
+            {
+            // Not a hold case, mediaStream and sink is disabled -> try enable after a while
+            SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - ICMP, Sink and MediaStream" )
+            if ( !IsSessionMuted() )
+                {
+                SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - ICMP, Sink not enabled -> enable" )
+                aSink.EnableL();
+                }
+            }
         }
     
     SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange(aStream,aSink) Out" )
@@ -1615,6 +1627,18 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream,
             // Hold state is connected but source is disabled -> try enable after a while
             SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - Resume ICMP, Source" )
             TRAP_IGNORE( StartTimerL( KSVPSourceResumeICMPErrorTime, KSVPSourceResumeICMPErrorTimerExpired ) )
+            }
+        
+        else if ( !HasHoldController() && !aSource.IsEnabled() && CMceSession::EEstablished == sessionState && 
+                  CMceMediaStream::EDisabled == aStream.State() )
+            {
+            // Not a hold case, mediaStream and source is disabled -> try enable after a while
+            SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - ICMP, Source and MediaStream" )
+            if ( !IsSessionMuted() )
+                {
+                SVPDEBUG1( "CSVPSessionBase::HandleStreamStateChange - ICMP, Source not enabled -> enable" )
+                aSource.EnableL();
+                }
             }
         }
     
