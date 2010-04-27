@@ -443,7 +443,7 @@ void CCCHUiNotifierImpl::ShowChangeConnectionQueryL(
     // In case of incoming call CallStateChanged() method handles
     // the deletion
     iListQueryDialog->RunLD();
-    
+    // coverity[check_after_deref]
     if( iListQueryDialog )
         {
         // write result, result now holds the item number

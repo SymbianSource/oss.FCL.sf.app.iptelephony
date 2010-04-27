@@ -164,8 +164,8 @@ void CSvtUriParser::DisplayNameFromUriL(
             }        
         else 
             {
-            // it is also possible that displayname is included 
-            // in, in case that there is no brackets around the uri. So if there is something
+            // it is also possible that displayname is included, in case there's
+            // no brackets around the uri. So if there is something
             // inside quotationMarks it should be used as displayname
     
             // check if displayname is found
@@ -177,14 +177,14 @@ void CSvtUriParser::DisplayNameFromUriL(
                 && displayNameStart < displayNameEnd )
                 {
                 // displayname is included
-                // ++, to remove quotationMark from the start
-                aResult = aDisplayname.Create( resultStr.Mid( ++displayNameStart, 
-                    // -1, to remove quotationMark from the end
-                    displayNameEnd - displayNameStart - 1 ) );  
+                // +1, to remove quotationMark from the start
+                // -1, to remove quotationMark from the end
+                aResult = aDisplayname.Create( resultStr.Mid( displayNameStart + 1,
+                                       displayNameEnd - displayNameStart - 1 ) );
                 }                                
             else
                 {
-                // check if there is spaces in the uri, if there is
+                // check if there is spaces in the uri. If there is,
                 // everything before it belongs to display name                
                 TInt index = resultStr.LocateReverse( KSpaceMark );
                 

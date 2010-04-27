@@ -288,14 +288,10 @@ TInt CCchServiceImpl::SetConnectionParameter( TCCHSubserviceType aType,
 	        	{
 	        	serviceConnInfoPckg().iIapId = aValue;
 	        	}
-            else if ( ECchReserved == aParameter )
+            else  // ECchReserved == aParameter
                 {
                 serviceConnInfoPckg().SetParameter( aParameter );
                 serviceConnInfoPckg().iReserved = aValue;
-                }
-            else
-                {
-                return KErrArgument;
                 }
     	    iCch.CchClient().SetConnectionInfo( serviceConnInfoPckg, status );
     	    //even the cchclient api seems to be asynchronous, 

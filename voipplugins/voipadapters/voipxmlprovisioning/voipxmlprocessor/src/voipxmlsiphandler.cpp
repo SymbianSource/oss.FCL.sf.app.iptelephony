@@ -133,6 +133,8 @@ void CVoipXmlSipHandler::SetSetting( TInt aType, TInt aParam,
             //       => KSoIpTOS
             const TInt ipTosShift( 2 );
             TInt value( KErrNotFound );
+            // don't need to check return value because 'TInt value' is checked
+            // coverity[check_return] coverity[unchecked_value]
             VoipXmlUtils::Des8ToInt( aValue, value );
             if ( 0 <= value )
                 {

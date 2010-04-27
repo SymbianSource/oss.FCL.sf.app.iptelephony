@@ -431,6 +431,14 @@ void CSVPTransferController::IncomingReferL( CMceInRefer* aRefer,
         delete headers;
         headers = NULL;
         }
+    
+    else if ( KSVPTransferPendingStateIndex == iTransferContext->CurrentState() )
+        {
+        SVPDEBUG1( "CSVPTransferController::IncomingReferL: not allowed \
+            -> ignore" )
+        User::Leave( KSVPErrTransferInProgress );
+        }
+    
     else
         {
         SVPDEBUG1( "CSVPTransferController::IncomingReferL: not allowed" )

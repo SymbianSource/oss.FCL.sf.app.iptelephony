@@ -24,7 +24,7 @@ NAME CNOT
 #include <avkon.rsg>
 #include <eikon.rsg>
 #include <avkon.mbg>
-#include "cchui.loc"
+#include <cchui.loc>
 
 
 RESOURCE RSS_SIGNATURE { }

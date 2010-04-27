@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -236,6 +236,24 @@ TInt CScpSipConnection::Disable()
         err = err1;
         }
 
+    return err;
+    }
+
+// -----------------------------------------------------------------------------
+// CScpSipConnection::ForceDisable
+// -----------------------------------------------------------------------------
+//
+TInt CScpSipConnection::ForceDisable()
+    {
+    SCPLOGSTRING2( "CScpSipConnection[0x%x]::ForceDisable", this );
+
+    iRegistrationRequestState = EDeregistrationRequested;   
+    CancelEnableTimeoutTimer();
+    
+    delete iSipConnection;
+    iSipConnection = NULL;
+    
+    TInt err = iProfileRegistry.ForceDisable( *iSipProfile );
     return err;
     }
 
@@ -604,17 +622,18 @@ TInt CScpSipConnection::GetUsername( TDes8& aUsername ) const
             result = KErrNotReady;
             }
         else
-            {
-            HBufC8* tmpUserName = HBufC8::NewLC( aors->MdcaPoint( 0 ).Length() );
-            tmpUserName->Des().Copy( aors->MdcaPoint( 0 ) );
+            {            
+            TBuf8<KUsernameMaxLength> tmpUserName;
+            tmpUserName.Copy( aors->MdcaPoint( 0 ) );
+            
             #ifdef _DEBUG
-                TBuf<256> tmpUri;
+                TBuf<KUsernameMaxLength> tmpUri;
                 tmpUri.Copy( aors->MdcaPoint( 0 ) );
                 SCPLOGSTRING2( "CScpSipConnection::GetUsername - use first registered AOR: %S", &tmpUri );
             #endif
-            TInt atPos = tmpUserName->Find( KSCPAt8 );
-            aUsername.Copy( tmpUserName->Left( atPos ) );
-            CleanupStack::PopAndDestroy( tmpUserName );
+                
+            TInt atPos = tmpUserName.Find( KSCPAt8 );
+            aUsername.Copy( tmpUserName.Left( atPos ) );
             }
         }
     SCPLOGSTRING2( "CScpSipConnection::GetUsername - return error: %d", result );

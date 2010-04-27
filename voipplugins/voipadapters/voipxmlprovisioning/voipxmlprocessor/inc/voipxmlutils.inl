@@ -16,7 +16,6 @@
 */
 
 
-#include "voipxmlutils.h"
 
 // ---------------------------------------------------------------------------
 // Pushes an item to CleanupStack.

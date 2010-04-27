@@ -145,7 +145,14 @@ void CScpServiceHandlerBase::DeregisterProfile()
             }
         else
             {
-            profileHandler.UnregisterProfile( sipProfileId );
+            error = profileHandler.UnregisterProfile( sipProfileId );
+            if ( KErrNotFound == error )
+                {
+                SCPLOGSTRING3(
+                        "CScpServiceHandlerBase[0x%x]::DeregisterProfile - No profile with ID: %d",
+                        this,
+                        sipProfileId );
+                }
             }
         }
 
@@ -193,6 +200,16 @@ void CScpServiceHandlerBase::HandleSipProfileForcedDisable()
     SCPLOGSTRING2( "CScpServiceHandlerBase[0x%x]::HandleSipProfileForcedDisable",
                    this );
 
+    CScpProfileHandler& profileHandler = iSubService.ProfileHandler();
+    
+    CScpSipConnection* sipConnection = 
+        profileHandler.GetSipConnection( iSubService.SipProfileId() );
+      
+    if ( sipConnection )
+        {
+        sipConnection->ForceDisable();
+        }
+    
     HandleSipConnectionEvent( iSubService.SipProfileId(), EScpDeregistered );
     }
 

@@ -743,7 +743,7 @@ void CCCHServiceHandler::LoadPluginsL()
     }
 
 // ---------------------------------------------------------------------------
-// CCCHServiceHandler::UnloadPlugin
+// CCCHServiceHandler::UnloadDisabledPluginsL
 // (other items were commented in a header).
 // ---------------------------------------------------------------------------
 //
@@ -773,6 +773,7 @@ void CCCHServiceHandler::UnloadDisabledPluginsL( )
                 TCCHSubserviceState state = ECCHUninitialized;
                 
                 // subservice was found, so don't need to check return value
+                // coverity[check_return] coverity[unchecked_value]
                 iServices[ ixSer ]->GetStatus(
                      iServices[ ixSer ]->GetSubserviceType( ixSub ), state );
                      

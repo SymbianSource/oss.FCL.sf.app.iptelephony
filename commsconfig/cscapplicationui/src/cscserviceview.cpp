@@ -676,7 +676,7 @@ void CCSCServiceView::DynInitMenuPaneL( TInt aResourceId,
     {
     CSCDEBUG( "CCSCServiceView::DynInitMenuPaneL - begin" );
     
-    if ( R_CSC_SERVICEVIEW_MENU == aResourceId && aMenuPane )
+    if ( R_CSC_SERVICEVIEW_MENU == aResourceId && aMenuPane && iContainer )
         {    
         TBool itemSpecificCommandsEnabled = 
             MenuBar()->ItemSpecificCommandsEnabled();
@@ -813,13 +813,13 @@ void CCSCServiceView::DoDeactivate()
 void CCSCServiceView::TimerExpired()
     {
     CSCDEBUG( "CCSCServiceView::TimerExpired - begin" );
-    
+
     iStartupHandler.ResetUid( CCSCEngStartupHandler::EPluginUid );
     iOfferedPluginUids.Append( iPluginInfo.iPluginsUid );
-    
+
     CCSCNoteUtilities::TCSCNoteType 
         type = CCSCNoteUtilities::ECSCConfigureServiceQuery;
-     
+    TBool configure( EFalse );
     TRAP_IGNORE
         (
         if ( CCSCNoteUtilities::ShowCommonQueryL( 
@@ -827,37 +827,35 @@ void CCSCServiceView::TimerExpired()
            {        
            iServicePluginHandler.DoProvisioningL( 
                iPluginInfo.iPluginsUid, KCSCServiceViewId );
+           // User has accepted plugin configuration query.
+           // Return to avoid launching a new query on top of
+           // current configuration process.
+           configure = ETrue;
            }
         );
+    if ( configure )
+        {
+        return;
+        }
 
     iNextPluginIndex++;
     TInt pluginCount = iServicePluginHandler.PluginCount( 
-            CCSCEngServicePluginHandler::EInitialized );
-    
+        CCSCEngServicePluginHandler::EInitialized );
+
     for ( ; iNextPluginIndex < pluginCount; iNextPluginIndex++ )
         {
         CSCDEBUG2( "CCSCServiceView::TimerExpired -iNextPluginIndex = %d",
             iNextPluginIndex );
-        
+
         iPluginInfo =
             iServicePluginHandler.ItemFromPluginInfoArray( iNextPluginIndex );
-        
-        if ( KNullUid != iUid )
+
+        if ( KNullUid != iPluginInfo.iPluginsUid && !iPluginInfo.iProvisioned )
             {
-            if ( iUid == iPluginInfo.iPluginsUid && !iPluginInfo.iProvisioned )
-                {
-                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
-                break;
-                }
+            iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
+            break;
             }
-        else
-            {
-            if ( !iPluginInfo.iProvisioned )
-                {
-                iEngTimer->StartTimer( CCSCEngTimer::ENoteDelayTimer );
-                break;
-                }
-            }
+
         }
     CSCDEBUG( "CCSCServiceView::TimerExpired - end" );
     }

@@ -293,53 +293,53 @@ TInt CCchImpl::GetServices( TCCHSubserviceType aType,
 //
 void CCchImpl::GetServicesL( TCCHSubserviceType aType, 
         RPointerArray<CCchService>& aServices )
-	{
-	TInt error = KErrNone;
-	TServiceSelection selection( 0, aType, ECchInitial );
-	CCHLOGSTRING( "CCchImpl::GetServices: IN" );
-	CCchServiceImpl* cchServiceImpl = NULL;
-	CArrayFixFlat<TCCHService>* cchServices;
-	cchServices = new (ELeave) CArrayFixFlat<TCCHService>(1);
-	CleanupStack::PushL( cchServices );
-	error = GetCchServicesL( 0, aType, *cchServices );
-	if( KErrNone == error )
-		{
-		for ( TInt i = 0; i < cchServices->Count(); i++ )
-			{
-			TCCHService service = cchServices->At( i );
-			TInt idx =idx = FindService( service.iServiceId );
-			if( idx == KErrNotFound )
-				{
-				cchServiceImpl = CCchServiceImpl::NewL( *this, service.iServiceId, 
-				    *iCchUi );
-				error = iCchServiceImpls.Append( cchServiceImpl );
-				if( error == KErrNone )
-					{
-					cchServiceImpl = iCchServiceImpls[ iCchServiceImpls.Count() - 1 ];
-					}
-				else
-					{
-					delete cchServiceImpl;
-					cchServiceImpl = NULL;
-					}
-				}
-			else
-				{
-				cchServiceImpl = iCchServiceImpls[ idx ];
-				}
-			error = aServices.Append( cchServiceImpl );
-			if( error )
-				{
-				delete cchServiceImpl;
-				cchServiceImpl = NULL;
-				}
-			}
-		}
-	cchServices->Reset();
-	CleanupStack::PopAndDestroy( cchServices );
-	CCHLOGSTRING( "CCchImpl::GetServices: OUT" );
-	User::LeaveIfError( error );
-	}
+    {
+    TInt error = KErrNone;
+    TServiceSelection selection( 0, aType, ECchInitial );
+    CCHLOGSTRING( "CCchImpl::GetServices: IN" );
+    CCchServiceImpl* cchServiceImpl = NULL;
+    CArrayFixFlat<TCCHService>* cchServices;
+    cchServices = new (ELeave) CArrayFixFlat<TCCHService>(1);
+    CleanupStack::PushL( cchServices );
+    error = GetCchServicesL( 0, aType, *cchServices );
+    if( KErrNone == error )
+        {
+        for ( TInt i = 0; i < cchServices->Count(); i++ )
+            {
+            TCCHService service = cchServices->At( i );
+            TInt idx = FindService( service.iServiceId );
+            if( idx == KErrNotFound )
+                {
+                cchServiceImpl = CCchServiceImpl::NewL( *this, service.iServiceId, 
+                    *iCchUi );
+                error = iCchServiceImpls.Append( cchServiceImpl );
+                if( error == KErrNone )
+                    {
+                    cchServiceImpl = iCchServiceImpls[ iCchServiceImpls.Count() - 1 ];
+                    }
+                else
+                    {
+                    delete cchServiceImpl;
+                    cchServiceImpl = NULL;
+                    }
+                }
+            else
+                {
+                cchServiceImpl = iCchServiceImpls[ idx ];
+                }
+            error = aServices.Append( cchServiceImpl );
+            if( error )
+                {
+                delete cchServiceImpl;
+                cchServiceImpl = NULL;
+                }
+            }
+        }
+    cchServices->Reset();
+    CleanupStack::PopAndDestroy( cchServices );
+    CCHLOGSTRING( "CCchImpl::GetServices: OUT" );
+    User::LeaveIfError( error );
+    }
 
 // ---------------------------------------------------------------------------
 // CCCHServiceHandler::FindService

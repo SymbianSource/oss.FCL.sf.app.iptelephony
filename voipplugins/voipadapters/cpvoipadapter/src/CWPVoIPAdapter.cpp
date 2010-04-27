@@ -682,7 +682,8 @@ void CWPVoIPAdapter::VisitL( CWPParameter& aParameter )
                 && iSetCodec )
                 {
                 typedef CWPVoIPCodec CMediaSubType;
-
+                // don't need to check value because of switch-default:
+                // coverity[check_return] coverity[unchecked_value]
                 DescToInt( tmpValue, tIntParameterValue );
 
                 switch ( tIntParameterValue )

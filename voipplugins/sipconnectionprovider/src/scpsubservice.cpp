@@ -526,7 +526,7 @@ void CScpSubService::ChangeState( TCCHSubserviceState aState, TInt aError )
                         CScpPresenceHandler* presenceHandler = static_cast<CScpPresenceHandler*>(
                             &iService.GetSubServiceByType( ECCHPresenceSub )->ServiceHandler() );
                             
-                        presenceHandler->UpdateXdmSettingsL();
+                        TRAP_IGNORE( presenceHandler->UpdateXdmSettingsL() );
                         }
                     }
                 }

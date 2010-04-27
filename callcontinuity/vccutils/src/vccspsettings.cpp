@@ -956,7 +956,7 @@ EXPORT_C void CVccSPSettings::SetDtAllowedWhenCsOriginated( const TDesC& aValue 
     TRAP_IGNORE( iDtAllowedWhenCsOriginated = aValue.AllocL() );
     }
 // ---------------------------------------------------------------------------
-// 
+// Update old property or add new property to the service entry 
 // ---------------------------------------------------------------------------
 //
 void CVccSPSettings::AddOrUpdatePropertyL( CSPEntry& aServiceEntry, 
@@ -971,13 +971,15 @@ void CVccSPSettings::AddOrUpdatePropertyL( CSPEntry& aServiceEntry,
         CSPProperty* property = CSPProperty::NewLC(); 
         property->SetName( aName );
         property->SetValue( aValue );
+        // New property, don't need to check return value
+        // coverity[check_return] coverity[unchecked_value]
         aServiceEntry.AddPropertyL( *property );
         CleanupStack::PopAndDestroy( property );
         }    
     }
 
 // ---------------------------------------------------------------------------
-// Update old property of add new property to the service entry 
+// Update old property or add new property to the service entry 
 // ---------------------------------------------------------------------------
 //
 void CVccSPSettings::AddOrUpdatePropertyL( CSPEntry& aServiceEntry, 
@@ -991,6 +993,8 @@ void CVccSPSettings::AddOrUpdatePropertyL( CSPEntry& aServiceEntry,
         CSPProperty* property = CSPProperty::NewLC(); 
         property->SetName( aName );
         property->SetValue( aValue );
+        // New property, don't need to check return value
+        // coverity[check_return] coverity[unchecked_value]
         aServiceEntry.AddPropertyL( *property );
         CleanupStack::PopAndDestroy( property );
         }    

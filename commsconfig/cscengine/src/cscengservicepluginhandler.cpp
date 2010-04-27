@@ -629,8 +629,23 @@ void CCSCEngServicePluginHandler::SetPluginInitInfoL(
             }
         
         CleanupStack::PopAndDestroy( &serviceIds );
-        
-        iServicePluginInfoArray.Append( pluginInfo );
+
+        // Check if the plugin is already in array before appending.
+        TBool found( EFalse );
+        for ( TInt counter( 0 ); 
+            counter < iServicePluginInfoArray.Count();
+            counter++ )
+            {
+            if ( iServicePluginInfoArray[counter].iPluginsUid == 
+                pluginInfo.iPluginsUid )
+                {
+                found = ETrue;
+                }
+            }
+        if ( !found )
+            {
+            iServicePluginInfoArray.Append( pluginInfo );
+            }
         }
         
     CSCENGDEBUG( "CCSCEngServicePluginHandler::SetPluginInitInfoL - end" );

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -164,6 +164,7 @@ void CCchNoteHandler::RunL()
                     ECCHGprsRoamingCostWarningAlreadyShown );
                 }
             }
+            break;
         default:
             break;
         }
@@ -237,16 +238,32 @@ void CCchNoteHandler::LaunchGlobalNoteL( const TInt aResourceId,
         const TInt aSoftKeyConfig,
         const TInt aSecondaryDisplayIndex )
     {
+    CCHLOGSTRING( "CCchNoteHandler::LaunchGlobalNoteL: IN" );
+    
     // Check there is global message query is shown at the moment
     if ( IsActive() )
         {
-        // add the message query info to array
-        TGlobalMsgQueryInfo msgQueryInfo;
-        msgQueryInfo.iResourceId = aResourceId;
-        msgQueryInfo.iSoftkeyId = aSoftKeyConfig;
-        msgQueryInfo.iSecondaryDisplayIndex = aSecondaryDisplayIndex;
+        TBool alreadyAdded( EFalse );       
+        for ( TInt i( 0 ) ; i < iMsgQueryInfoArray.Count() ; i++ )
+            {
+            if ( iMsgQueryInfoArray[ i ].iResourceId == aResourceId )
+                {
+                alreadyAdded = ETrue;
+                }
+            }
         
-        iMsgQueryInfoArray.AppendL( msgQueryInfo );
+        // Add to array only if note with same resource is not 
+        // already in array
+        if ( !alreadyAdded && ( iResourceId != aResourceId ) )
+            {
+            // add the message query info to array
+            TGlobalMsgQueryInfo msgQueryInfo;
+            msgQueryInfo.iResourceId = aResourceId;
+            msgQueryInfo.iSoftkeyId = aSoftKeyConfig;
+            msgQueryInfo.iSecondaryDisplayIndex = aSecondaryDisplayIndex;
+        
+            iMsgQueryInfoArray.AppendL( msgQueryInfo );
+            }
         }
     else
         {
@@ -264,6 +281,7 @@ void CCchNoteHandler::LaunchGlobalNoteL( const TInt aResourceId,
         iMsgQueryInfoArray.AppendL( msgQueryInfo );
         }
         
+    CCHLOGSTRING( "CCchNoteHandler::LaunchGlobalNoteL: OUT" );
     }
 
 // -----------------------------------------------------------------------------
@@ -276,6 +294,8 @@ void CCchNoteHandler::DoLaunchGlobalNoteL( const TInt aResourceId,
         const TInt aSoftKeyConfig,
         const TInt aSecondaryDisplayIndex )
     {
+    CCHLOGSTRING( "CCchNoteHandler::LaunchGlobalNoteL: IN" );
+    
     iResourceId = aResourceId;
     HBufC* textBuffer = LoadResourceL( aResourceId );
     CleanupStack::PushL( textBuffer );    
@@ -300,6 +320,8 @@ void CCchNoteHandler::DoLaunchGlobalNoteL( const TInt aResourceId,
 
     CleanupStack::PopAndDestroy( textBuffer );
     SetActive();
+    
+    CCHLOGSTRING( "CCchNoteHandler::LaunchGlobalNoteL: OUT" );
     }
 
 // -----------------------------------------------------------------------------

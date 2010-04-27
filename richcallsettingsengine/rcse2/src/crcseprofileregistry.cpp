@@ -1317,7 +1317,13 @@ void FindAndAddDefaultPropertyL(
 
     if ( KErrNone == err )
         {
-        aEntry.AddPropertyL( aProperty );
+        err = aEntry.AddPropertyL( aProperty );
+        if ( KErrNone != err )
+            {
+            RCSELOGSTRING2(
+                "CRCSEProfileRegistry::FindAndAddDefaultPropertyL - add property err: %d",
+                err );
+            }
         }
     }
 
@@ -1343,6 +1349,8 @@ void CRCSEProfileRegistry::CreateDefaultServiceSettingsL(
         {
         return;
         }
+    
+    TInt err( KErrNone );
 
     // Service table API
     CSPSettings* table = CSPSettings::NewLC();
@@ -1358,13 +1366,32 @@ void CRCSEProfileRegistry::CreateDefaultServiceSettingsL(
         {
         property->SetName( EPropertyServiceSetupPluginId );
         property->SetValue( aNewEntry.iVoIPPluginUID );
-        entry->AddPropertyL( *property );
+        err = entry->AddPropertyL( *property );
+        if ( KErrAlreadyExists == err )
+            {
+            User::LeaveIfError(
+                    entry->UpdateProperty( EPropertyServiceSetupPluginId,
+                                           aNewEntry.iVoIPPluginUID ) );
+            }
+        else
+            {
+            User::LeaveIfError( err );
+            }
         }
 
     // This property is needed by clients to check if VoIP service is used
     property->SetName( ESubPropertyVoIPSettingsId );
     property->SetValue( KVoIPSettingsID );
-    entry->AddPropertyL( *property );
+    err = entry->AddPropertyL( *property );
+    if ( KErrAlreadyExists == err )
+        {
+        User::LeaveIfError( entry->UpdateProperty( ESubPropertyVoIPSettingsId,
+                                                   KVoIPSettingsID ) );
+        }
+    else
+        {
+        User::LeaveIfError( err );
+        }
     
     // Service Attribute Mask
     FindAndAddDefaultPropertyL( 

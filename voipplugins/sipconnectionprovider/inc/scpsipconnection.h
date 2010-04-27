@@ -85,6 +85,12 @@ public:
      * @return Symbian error codes
      */  
     TInt Disable();
+    
+    /**
+     * Disables the connection ungracefully.
+     * @return Symbian error codes
+     */  
+    TInt ForceDisable();
 
     /**
      * Returns state of deregistration request

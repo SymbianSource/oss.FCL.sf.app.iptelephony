@@ -159,7 +159,7 @@ TInt CScpProfileHandler::GetCurrentState( TUint32 aProfileId,
         TRAP( result, sipConnection = CreateSipConnectionL( aProfileId ) );
         }
 
-    if( result == KErrNone )
+    if( result == KErrNone && sipConnection )
         {
         sipConnection->GetState( aState, aError );
         }
@@ -333,7 +333,7 @@ TInt CScpProfileHandler::RemoveSipConnection( TUint32 aProfileId )
     TInt ret = ( KErrNotFound );
     CScpSipConnection* sipConnection( NULL );
     
-    sipConnection =  GetSipConnection( aProfileId );
+    sipConnection = GetSipConnection( aProfileId );
     
     if ( sipConnection )
         {

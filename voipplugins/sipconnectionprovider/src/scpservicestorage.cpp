@@ -158,14 +158,15 @@ void CScpServiceStorage::RemoveDisabledServices()
                     CScpSubService* subService = 
                         service->GetSubService( subServiceIds[ j ] );
                     
-                    // Don't remove if there is at least one enabled or disconnectin
+                    // Don't remove if there is at least one enabled or disconnecting
                     // sub service
-                    if( subService->EnableRequestedState() == CScpSubService::EScpEnabled ||
-                        subService->State() == ECCHDisconnecting )
+                    if( subService && (
+                            subService->EnableRequestedState() == CScpSubService::EScpEnabled ||
+                            subService->State() == ECCHDisconnecting ) )
                         {
                         remove = EFalse;
                         }
-                    else
+                    else if ( subService )
                         {
                         service->RemoveSubService( subService->Id() );
                         }
@@ -472,8 +473,8 @@ void CScpServiceStorage::GetDebugInfo( TDes& aInfo ) const
             {
             CScpSubService* subService = service->GetSubService( subServiceIds[ j ] );
             
-            //if( subService->IsEnabled() )
-            if( subService->EnableRequestedState() == CScpSubService::EScpEnabled )
+            if( subService &&
+                    subService->EnableRequestedState() == CScpSubService::EScpEnabled )
                 {
                 enabledSubServices++;
                 }

@@ -515,7 +515,7 @@ void CCCHServiceInfo::AddSubserviceL( TCCHSubservice& aSubservice )
         {
         // Create new instance and set service id
         subserviceInfo = 
-            CCCHSubserviceInfo::NewL( aSubservice.iConnectionInfo.iServiceSelection.iServiceId, iServer );
+            CCCHSubserviceInfo::NewLC( aSubservice.iConnectionInfo.iServiceSelection.iServiceId, iServer );
         // Set subserviceID
         subserviceInfo->SetSubserviceId( aSubservice.iSubserviceId );
         
@@ -536,6 +536,7 @@ void CCCHServiceInfo::AddSubserviceL( TCCHSubservice& aSubservice )
         subserviceInfo->SetStartupFlag( startupFlag );        
         // Append pointer to array
         iSubservices.Append( subserviceInfo );
+        CleanupStack::Pop( subserviceInfo );
         }
    
     CCHLOGSTRING( "CCCHServiceInfo::AddSubserviceL: OUT" );

@@ -48,6 +48,7 @@
 #include "svpemergencyiapprovider.h"
 #include "svprtpobserver.h"
 #include "svpsettings.h"
+#include "svptransferstatecontext.h"
 
 // ---------------------------------------------------------------------------
 // CSVPController::CSVPController
@@ -2148,12 +2149,22 @@ void CSVPController::IncomingRefer( CMceInRefer* aRefer,
     if ( err )
         {
         SVPDEBUG2("CSVPController::IncomingRefer: err: %d", err )
-        // TRAP is used because of RejectL might leave.
-        TRAP( err, aRefer->RejectL() );
-        
-        if ( err )
+        if ( err == KSVPErrTransferInProgress )
             {
-            SVPDEBUG2("CSspController::IncomingRefer: RejectL err: %d", err )
+            SVPDEBUG1( "CSVPController::IncomingRefer - transfer in progress \
+                -> ignore" )
+            }
+        else
+            {
+            // TRAP is used because of RejectL might leave.
+            SVPDEBUG1( "CSVPController::IncomingRefer -> reject" )
+            TRAP( err, aRefer->RejectL() );
+        
+            if ( err )
+                {
+                SVPDEBUG2("CSspController::IncomingRefer: RejectL err: \
+                    %d", err )
+                }
             }
         }
     
