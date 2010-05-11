@@ -128,14 +128,18 @@ void CCCHSession::ServiceL( const RMessage2& aMessage )
             const TInt handle( iObjectIx->AddL( subsession ) );
             CleanupStack::Pop( subsession );
             TPckg<TInt> handlePckg( handle );
-            TRAPD( err, aMessage.WriteL( 3, handlePckg ) );
+            TInt err = aMessage.Write( 3, handlePckg ); 
+         
             if ( KErrNone != err )
                 {
                 // Panic client
                 iObjectIx->Remove( handle );
-                iCCHServer.PanicClient( aMessage, ECCHErrSubSessionOpen );
+                iCCHServer.PanicClient( aMessage, ECCHErrSubSessionOpen );   
                 }
-            aMessage.Complete( KErrNone );
+            else   
+                {
+                aMessage.Complete( KErrNone );
+                }
             }
             break;
         case ECCHCloseSubSession:
@@ -144,13 +148,13 @@ void CCCHSession::ServiceL( const RMessage2& aMessage )
             if ( iObjectIx->At( handle ) )
                 {
                 iObjectIx->Remove( handle );
+                aMessage.Complete( KErrNone );
                 }
             else
                 {
                 // Panic client. Handle was not valid
                 iCCHServer.PanicClient( aMessage, ECCHErrSubSessionClose );
                 }
-            aMessage.Complete( KErrNone );
             }
             break;
         /**

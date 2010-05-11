@@ -239,19 +239,17 @@ void CCscGsPlugin::LaunchCscAppL()
     {
     // Get the correct application data
     RWsSession ws;
+    CleanupClosePushL( ws );
     User::LeaveIfError( ws.Connect() );
 
     // Find the task with uid
     TApaTaskList taskList( ws );
     TApaTask task = taskList.FindApp( KCscAppUid );
-    ws.Close();
 
     if ( task.Exists() )
         {
-        //Launch csc application as embedded
-        TAppInfo app( KCscAppUid, KCscApp );
-        iEmbedded = NULL;
-        EmbedAppL( app );
+        //Bring CSC to foreground.
+        task.BringToForeground();
         }
     else
         {
@@ -260,6 +258,7 @@ void CCscGsPlugin::LaunchCscAppL()
         iEmbedded = NULL;
         EmbedAppL( app );
         }
+    CleanupStack::PopAndDestroy( &ws );
     }
 
 

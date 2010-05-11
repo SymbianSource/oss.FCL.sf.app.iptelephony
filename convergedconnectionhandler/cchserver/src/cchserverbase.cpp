@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,8 +29,10 @@
 #include "cchwakeupeventnotifier.h"
 #include "cchstartupcounter.h"
 #include "cchactivescheduler.h"
+#include "cchconnmonhandlernotifier.h"
 
 #include <ecom/ecom.h>
+#include <rconnmon.h>
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -260,18 +262,8 @@ void CCCHServerBase::InitServerObjectsL()
 
     if ( iServiceHandler->IsStartupFlagSet() )
         {
-        // Start monitoring startup flag registration, this may set startup 
-        // flag to OFF if crashes happens more than KCCHMaxStartupCount during 
-        // startup flag registration
-        TRAP_IGNORE( CreateStartupCounterL() );
-        // If CCH cannot load the Plug-ins, CCH can still 
-        // try to load them later 
-        TRAP_IGNORE( iServiceHandler->LoadPluginsL() );
-        RequestStorage().ScanNetworks();
-        // initialization is now done. update states and send notification to 
-        // all clients
-        iServerObjectsInit = ETrue;
-        iServiceHandler->UpdateL();
+        // is snap ready to proceed startup
+        ConnMonHandler().ScanNetworks( ETrue, this );
         }
     else
         {
@@ -282,7 +274,30 @@ void CCCHServerBase::InitServerObjectsL()
         }
     CCHLOGSTRING( "CCCHServerBase::InitServerObjectsL: OUT" );
     }
-    
+
+// ---------------------------------------------------------------------------
+// CCCHServerBase::ServiceStartupL
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHServerBase::ServiceStartupL()
+    {
+    CCHLOGSTRING( "CCCHServerBase::ServiceStartupL: IN" );
+    // Start monitoring startup flag registration, this may set startup
+    // flag to OFF if crashes happens more than KCCHMaxStartupCount during
+    // startup flag registration
+    TRAP_IGNORE( CreateStartupCounterL() );
+    // If CCH cannot load the Plug-ins, CCH can still
+    // try to load them later
+    TRAP_IGNORE( iServiceHandler->LoadPluginsL() );
+    RequestStorage().ScanNetworks();
+    // initialization is now done. update states and send notification to
+    // all clients
+    iServerObjectsInit = ETrue;
+    iServiceHandler->UpdateL();
+    CCHLOGSTRING( "CCCHServerBase::ServiceStartupL: OUT" );
+    }
+
 // ---------------------------------------------------------------------------
 // CCCHServerBase::StartMinimalServerL
 // Start server in settings monitoring mode
@@ -639,6 +654,57 @@ TBool CCCHServerBase::IsServerShutdownAllowedL()
 
     CCHLOGSTRING2("CCCHServerBase::IsServerShutdownAllowedL: shutDownAllowed = %d", shutDownAllowed );
     return shutDownAllowed;
+    }
+
+// ---------------------------------------------------------------------------
+// From MCCHConnMonHandlerNotifier
+// CCCHServerBase::NetworkScanningCompletedL
+// ---------------------------------------------------------------------------
+//
+void CCCHServerBase::NetworkScanningCompletedL(
+    const TConnMonSNAPInfo& aSNAPs, TInt aError )
+    {
+    CCHLOGSTRING2( "CCCHServerBase::NetworkScanningCompletedL error = %d", aError );
+
+    if ( KErrNone == aError && aSNAPs.iCount  )
+        {
+        ServiceStartupL();
+        }
+    else if ( KErrNone == aError || KErrNotReady == aError )
+        {
+        // No SNAPs available. Start listen to availability change
+        ConnMonHandler().SetSNAPsAvailabilityChangeListener( this );
+        }
+    else
+        {
+        // exceptional error occured
+        ResetStartupCounterL();
+        StartMinimalServerL();
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// From MCCHConnMonHandlerNotifier
+// CCCHServerBase::SNAPsAvailabilityChanged
+// ---------------------------------------------------------------------------
+//
+void CCCHServerBase::SNAPsAvailabilityChanged( TInt aError )
+    {
+    CCHLOGSTRING2( "CCCHServerBase::SNAPsAvailabilityChanged error = %d", aError );
+    
+    // Stop event receiving
+    ConnMonHandler().SetSNAPsAvailabilityChangeListener( NULL );
+    
+    if ( KErrNone == aError || KErrTimedOut == aError )
+        {
+        ServiceStartupL();
+        }
+    else
+        {
+        // exceptional error occured
+        ResetStartupCounterL();
+        StartMinimalServerL();
+        }
     }
 
 // ========================== OTHER EXPORTED FUNCTIONS =======================

@@ -197,19 +197,9 @@ void CScpServiceHandlerBase::CancelDisableTimer()
 //
 void CScpServiceHandlerBase::HandleSipProfileForcedDisable()
     {
-    SCPLOGSTRING2( "CScpServiceHandlerBase[0x%x]::HandleSipProfileForcedDisable",
-                   this );
+    SCPLOGSTRING2( 
+        "CScpServiceHandlerBase[0x%x]::HandleSipProfileForcedDisable", this );
 
-    CScpProfileHandler& profileHandler = iSubService.ProfileHandler();
-    
-    CScpSipConnection* sipConnection = 
-        profileHandler.GetSipConnection( iSubService.SipProfileId() );
-      
-    if ( sipConnection )
-        {
-        sipConnection->ForceDisable();
-        }
-    
     HandleSipConnectionEvent( iSubService.SipProfileId(), EScpDeregistered );
     }
 

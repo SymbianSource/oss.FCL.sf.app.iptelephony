@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -104,40 +104,7 @@ public: // New functions
     void GetConnectivityPluginUidL( TUint32 aServiceId,
         TCCHSubserviceType aType, 
         TUid& aUid ) const;
-    
-    /**
-     * Get SNAP Id
-     * @since S60 3.2
-     * @param aServiceId Used Service
-     * @param aType Subservice's type
-     * @param aSNAPId On completion, contains SNAP Id
-     */
-    void GetSNAPIdL( TUint32 aServiceId,
-        TCCHSubserviceType aType,
-        TInt& aSNAPId ) const;
-    
-    /**
-     * Get IAP Id
-     * @since S60 3.2
-     * @param aServiceId Used Service
-     * @param aType Subservice's type
-     * @param aIapId On completion, contains IAP Id
-     */
-    void GetIapIdL( TUint32 aServiceId,
-        TCCHSubserviceType aType,
-        TInt& aIapIdL ) const;
-    
-    /**
-     * Get Settings Id
-     * @since S60 3.2
-     * @param aServiceId Used Service
-     * @param aType Subservice's type
-     * @param aId On completion, contains Settings Id
-     */
-    void GetSettingsIdL( TUint32 aServiceId,
-        TCCHSubserviceType aType,
-        TInt& aId ) const;
-    
+        
     /**
      * Get Service's load at startup information
      * @since S60 3.2

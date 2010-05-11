@@ -244,16 +244,8 @@ void CCchUIHandler::UpdateUI( )
 void CCchUIHandler::CheckGprsFirstUsageL( )
     { 
     CCHLOGSTRING( "CCchUIHandler::CheckGprsFirstUsageL - IN" );
-    
-    // Check value from cenrep
-    TInt gprsRoamingCostWarningShown( 0 );
-    
-    User::LeaveIfError( iCchRepository->Get( 
-        KCCHGprsRoamingCostWarningShown, 
-        gprsRoamingCostWarningShown ) );
-    
     // Show gprs roaming cost warning note if not already shown
-    if( !gprsRoamingCostWarningShown )
+    if( !IsCostWarningSeen() )
         {
         iNoteHandler->LaunchGlobalNoteL( 
             R_QTN_SERVTAB_ALLOW_GPRS_WHEN_ROAMING_QUERY, 
@@ -262,6 +254,22 @@ void CCchUIHandler::CheckGprsFirstUsageL( )
         }
     
     CCHLOGSTRING( "CCchUIHandler::CheckGprsFirstUsageL - OUT" );
+    }
+
+// ---------------------------------------------------------------------------
+// CCchUIHandler::IsCostWarningSeen
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//      
+TBool CCchUIHandler::IsCostWarningSeen() const
+    {
+    TBool response( EFalse );
+    TInt costWarning( KErrNone );
+    iCchRepository->Get( KCCHGprsRoamingCostWarningShown, costWarning );
+
+    response = 1 == costWarning;
+    CCHLOGSTRING2( "CCchUIHandler::IsCostWarningSeen : %d", response );
+    return response;
     }
 
 // ---------------------------------------------------------------------------

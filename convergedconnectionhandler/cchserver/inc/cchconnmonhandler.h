@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -38,8 +38,15 @@
 
 // FORWARD DECLARATIONS
 class CCCHServerBase;
+class MCCHConnMonHandlerNotifier;
 
 // CLASS DECLARATION
+class TCCHConnectionInfo
+    {
+public:
+    TUint iIapId;
+    TUint iConnId;
+    };
 
 /**
  *  CCCHConnMonHandler declaration
@@ -61,6 +68,8 @@ public: // Constructors and destructor
           EInitialized,     /// Initalized
           EGetIAPS,
           EGetSNAPs,
+          EGetIAP,
+          EGetConnectionCount,
           EError            /// Error condition
         };
 
@@ -83,10 +92,14 @@ public: // New functions
 
     /**
      * Scan available networks
-     * @since S60 3.2
+     *
+     * @since S60 9.2
      * @param aWlanScan ETrue if WLAN network scan needed
+     * @param aObserver Completion notified by method
+     *        NetworkScanningCompletedL() if set.
      */
-    void ScanNetworks( TBool aWlanScan = EFalse );
+    void ScanNetworks( TBool aWlanScan = EFalse,
+	    MCCHConnMonHandlerNotifier* aObserver = NULL );
 
     /**
      * Cancel network scanning
@@ -109,6 +122,26 @@ public: // New functions
      * @return ETrue if IAP is available
      */
     TBool IsIapAvailable( TUint aIapId ) const;
+
+    /**
+     * Sets observer to notify if SNAPs availability is changed
+     *
+     * @since S60 9.2
+     * @param aObserver Notifies by method
+     *        SNAPsAvailabilityChanged(). NULL turns off notify.
+     */
+    void SetSNAPsAvailabilityChangeListener( MCCHConnMonHandlerNotifier* aObserver );
+        
+	/**
+     * Collects all connected IAP Ids and Connection Ids to array.
+     */
+    void StartMonitoringConnectionChanges();
+	
+	/**
+     * Connected IAPs getter.
+     * @param aIapIds
+     */
+    void StopMonitoringConnectionChanges( RArray<TUint>& aIapIds );
 
 protected: // From base classes
 
@@ -182,6 +215,31 @@ private:
      */
     void StopNotify();
 
+    /**
+     * Call back function to the CPeriodic.
+     * 
+     * @since S60 9.2
+     * @param aAny A pointer to this class.
+     * @return Error code
+     */
+    static TInt PeriodicTimerCallBack(TAny* aAny);
+        
+	/**
+     * Connection count solver.
+     */
+    void GetConnectionCount();
+	
+	/**
+     * IAP Id solver.
+     */
+    void GetIapId();
+	
+	/**
+     * Remove connected IAP id from connected IAPs array.
+	 * @param aConnId disconnected connection id.
+     */
+    void RemoveIapId( TUint aConnId );
+
 private: // data
 
     /**
@@ -219,6 +277,43 @@ private: // data
      */
     RArray<TUint>                   iAvailableIAPs;
 
+    /**
+     * Connection change listener timer.
+     * owns.
+     */
+    CPeriodic* iConnChangeListenerTimer;
+    
+    /**
+     * Network scanning observer
+     */
+    MCCHConnMonHandlerNotifier* iNetworkScanningObserver;
+	
+    /**
+     * SNAPs availability change observer
+     */
+    MCCHConnMonHandlerNotifier* iSNAPsAvailabilityObserver;
+    
+	/**
+     * pending async request
+     */
+    RArray<TCCHConnMonHandlerState> iPendingRequests;
+	
+	/**
+     * Unsolved connection ids
+     */
+    RArray<TUint>                   iUnsolvedConnIds;
+	
+	/**
+     * Connected IAP Ids
+     */
+    RArray<TCCHConnectionInfo>      iConnIapIds;
+	
+	/**
+     * Async helpers
+     */
+    TUint                           iConnIapId;
+    TUint                           iConnId;
+    TUint                           iConnCount;
     };
 
 #endif // C_CCHCONNMONHANDLER_H

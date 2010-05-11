@@ -65,8 +65,6 @@ _LIT8( KNewMessages8, "yes" );
 _LIT8( KMessageAccount8, "message-account" );
 _LIT8( KVoiceMessage8, "voice-message" );
 _LIT8( KSlash8, "/" );
-_LIT8( KLParen8, "(" );
-_LIT8( KRParen8, ")" );
 _LIT8( KColon8, ":" );
 _LIT8( KCrlf8, "\r\n" );
 _LIT8( KEndLine8, "\n" );
@@ -195,9 +193,10 @@ void CIpVmbxEngine::SubscribeProfileL(
     User::LeaveIfError( mwiAddress->GetValue( ptrvoiceMailUri16 ) );
     if ( ptrvoiceMailUri16.Length() < KMinIpVoiceMailBoxUriLength )
         {
+        IPVMEPRINT( "CIpVmbxEngine::SubscribeProfileL - MWI not found, Leaving..." );
         User::Leave( KErrNotFound );
         }
-    IPVMEPRINT( "CIpVmbxEngine::MWI found" );
+    IPVMEPRINT( "CIpVmbxEngine::SubscribeProfileL - MWI found" );
     if ( KErrNotFound == ptrvoiceMailUri16.Find( KSipString ) )
         {
         ptrvoiceMailUri16.Insert( 0, KSipString );
@@ -360,6 +359,7 @@ void CIpVmbxEngine::EventReceivedL( const TDesC8& aRecipient8 )
         {
         // protocol test fix, new message should not be created
         // if new message count is 0
+        IPVMEPRINT( "CIpVmbxEngine::EventReceivedL - No new messages" );
         createSMS = EFalse;
         }
     if ( 0 == ptrFrom8.Length() )
@@ -388,11 +388,13 @@ void CIpVmbxEngine::EventReceivedL( const TDesC8& aRecipient8 )
     if ( totalMsgs != curTotal || newMsgs != curNew )
         {
         statusChanged = ETrue;
+        IPVMEPRINT( "CIpVmbxEngine::EventReceivedL - Status changed" );
         subscription->SetAccountMessageCount( totalMsgs, newMsgs );
         }
 
     if ( createSMS && statusChanged )
         {
+        IPVMEPRINT( "CIpVmbxEngine::EventReceivedL - Create message body" );
         TBuf8< KSmsLength > messageBody8;
         CreateMessageBodyL(
             *content8,
@@ -610,7 +612,11 @@ void CIpVmbxEngine::ParseNotifyContentL(
     TDes8& aNewMessages8,
     TDes8& aFrom8 ) const
     {
-    IPVMEPRINT( "CIpVmbxEngine::ParseNotifyContentL - IN" );
+#ifdef _DEBUG
+    TBuf<128> tmpStr;
+    tmpStr.Copy( aContent8 );
+    IPVMEPRINT2( "CIpVmbxEngine::ParseNotifyContentL - aContent8:%S", &tmpStr )
+#endif // _DEBUG
     aCreateSms = EFalse;
 
     // check required content
@@ -642,6 +648,7 @@ void CIpVmbxEngine::ParseNotifyContentL(
         }
     else
         {
+        IPVMEPRINT( "CIpVmbxEngine::ParseNotifyContentL - leave with KErrCorrupt" );
         // malformed critical part of message
         User::Leave( KErrCorrupt );
         }
@@ -651,6 +658,7 @@ void CIpVmbxEngine::ParseNotifyContentL(
         // both optionals found
         if ( !( atPosAccount < atPosMessage ) )
             {
+            IPVMEPRINT( "CIpVmbxEngine::ParseNotifyContentL - leave with KErrCorrupt 2" );
             // incorrect format
             User::Leave( KErrCorrupt );
             }
@@ -659,6 +667,7 @@ void CIpVmbxEngine::ParseNotifyContentL(
     if ( KErrNotFound != atPosAccount && aCreateSms )
         {
         // get account
+        IPVMEPRINT( "CIpVmbxEngine::ParseNotifyContentL - get account" );
         messagePtr8.Set( FetchMessagePartL( posPtr8 ) );
         analyzer8.Assign(
             messagePtr8.Mid( messagePtr8.Find( KColon8 ) + KOneChar ) );
@@ -670,7 +679,7 @@ void CIpVmbxEngine::ParseNotifyContentL(
         aFrom8.Copy( dataPtr8.Left( aFrom8.MaxLength() ) );
         }
 
-    if ( KErrNotFound != atPosMessage && aCreateSms )
+    if ( KErrNotFound != atPosMessage )
         {
         messagePtr8.Set( FetchMessagePartL( posPtr8 ) );
         analyzer8.Assign(
@@ -688,28 +697,7 @@ void CIpVmbxEngine::ParseNotifyContentL(
 
         analyzer8.SkipSpace();
         User::LeaveIfError( analyzer8.Val( oldMessageCount ) );
-        // save result here because of leaving parts above
-        aNewMessages8.Num( newMessageCount );
-        // result saved here in case of leave from optional parsing of optional part below
-        aTotalMessages8.Num( ( TInt64 ) oldMessageCount +  ( TInt64 ) newMessageCount );
 
-        analyzer8.SkipSpace();
-        if ( KErrNotFound != KLParen8().Locate( analyzer8.Get() ) )
-            {
-            // urgent messages found
-            TUint urgentNew = 0;
-            TUint urgentOld = 0;
-            User::LeaveIfError( analyzer8.Val( urgentNew ) );
-            analyzer8.SkipSpace();
-            User::LeaveIfError( KSlash8().Locate( analyzer8.Get() ) );
-
-            User::LeaveIfError( analyzer8.Val( urgentOld ) );
-            newMessageCount += urgentNew;
-            oldMessageCount += urgentOld;
-            analyzer8.SkipSpace();
-            User::LeaveIfError( KRParen8().Locate( analyzer8.Get() ) );
-            }
-        // save status again, might have updated
         aNewMessages8.Num( newMessageCount );
         aTotalMessages8.Num( ( TInt64 ) oldMessageCount + ( TInt64 ) newMessageCount );
 

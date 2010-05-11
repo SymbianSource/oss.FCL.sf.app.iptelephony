@@ -122,7 +122,11 @@ void TVccStateCalling::CallStateChanged( CVccPerformer& aContext,
 		if ( aContext.Parameters().CallType() == CCPCall::ECallTypePS )
             {
             TRAP_IGNORE( aContext.Notifier().NotifySubscriberL( EVccCsToPsHoInprogress, 
-                                                   KErrNone ) );            
+                                                   KErrNone ) );
+                  
+            RUBY_DEBUG0( "TVccStateCalling::CallStateChanged - call are swapped so hang up CS call now" );
+            ReleaseCall( aContext, *aContext.SecondaryCall(), *iInit, KVccHoOk );
+            return;
             }
         else
             {

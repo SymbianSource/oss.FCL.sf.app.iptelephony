@@ -271,6 +271,11 @@ private: // data
      */
     TBool iDeleted;
 
+    /**
+     * Flag for telling if SNAP list is open.
+     */
+    TBool iSnapListOpen;
+
 #ifdef _DEBUG
     friend class UT_cscsettingsui;
 #endif

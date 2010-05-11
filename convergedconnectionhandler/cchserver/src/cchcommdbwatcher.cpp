@@ -20,6 +20,7 @@
 #include <cmdestination.h>
 #include <cmconnectionmethoddef.h>
 #include <cmpluginwlandef.h>
+#include <cmpluginvpndef.h>
 #include <centralrepository.h>
 #include <commsdat.h>
 
@@ -215,6 +216,21 @@ TInt CCCHCommDbWatcher::GetIapCountFromSnap(
     }
 
 // ---------------------------------------------------------------------------
+// CCCHCommsDbWatcher::IsVpnApL
+//
+// ---------------------------------------------------------------------------
+//
+TBool CCCHCommDbWatcher::IsVpnApL(
+    TInt aIapId )
+    {
+    CCHLOGSTRING( "CCCHCommDbWatcher::IsVpnApL: IN" );
+    TBool response( KPluginVPNBearerTypeUid == GetBearerL( aIapId ) );
+    CCHLOGSTRING3( "CCCHCommDbWatcher::IsVpnApL: iap id: %d is vpn ap: %d", 
+            aIapId, response );
+    return response;
+    }
+
+// ---------------------------------------------------------------------------
 // CCCHCommsDbWatcher::IsWLANAPL
 //
 // ---------------------------------------------------------------------------
@@ -223,19 +239,25 @@ TBool CCCHCommDbWatcher::IsWlanApL(
     TInt aIapId )
     {
     CCHLOGSTRING( "CCCHCommDbWatcher::IsWLANAPL: IN" );
-    TBool ret( EFalse );
-    TUint32 bearer( KErrNone );
-
-    // Bearer Type
-    bearer = CmManagerL().ConnectionMethodL( aIapId ).GetIntAttributeL( 
-            CMManager::ECmBearerType );
-    ret = KUidWlanBearerType == bearer;
-
+    TBool response( KUidWlanBearerType == GetBearerL( aIapId ) );
+    
     CCHLOGSTRING3( "CCCHCommDbWatcher::IsWLANAPL: iap id: %d is wlan ap: %d", 
-        aIapId, ret );
-    return ret;
+        aIapId, response );
+    return response;
     }
    
+// ---------------------------------------------------------------------------
+// CCCHCommsDbWatcher::GetBearerL
+//
+// ---------------------------------------------------------------------------
+//
+TUint32 CCCHCommDbWatcher::GetBearerL( 
+    TInt aIapId )
+    {
+    return CmManagerL().ConnectionMethodL( aIapId ).GetIntAttributeL( 
+            CMManager::ECmBearerType );
+    }
+    
 // ---------------------------------------------------------------------------
 // CCCHCommsDbWatcher::RunL
 //
@@ -330,9 +352,9 @@ void CCCHCommDbWatcher::CheckIapsL( TBool& aChanged, TInt& aSNAPId )
     currentDestinations.Append( destinationlessIaps ); 
 
     //Get count of iaps per destination
-    CCHLOGSTRING2( "CCCHCommDbWatcher::CheckIapsL: cmMethods count %d",
-            destIdArray.Count() )
     CmManagerL().AllDestinationsL( destIdArray );
+    CCHLOGSTRING2( "CCCHCommDbWatcher::CheckIapsL: destination count %d",
+                destIdArray.Count() )
     for ( TInt i = 0; i < destIdArray.Count(); i++ )
         {
         RCmDestination destination = CmManagerL().DestinationL( destIdArray[ i ] );
@@ -512,6 +534,74 @@ void CCCHCommDbWatcher::InitializeDestination()
         }
     }
 
+// ---------------------------------------------------------------------------
+// CCCHCommsDbWatcher::RemoveOtherThanVpnIapsL
+//
+// ---------------------------------------------------------------------------
+//
+void CCCHCommDbWatcher::RemoveOtherThanVpnIapsL(
+    RArray<TUint>& aIapIds,
+    TUint aIAPId )
+    {
+    CCHLOGSTRING2( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL; IAP ID:  %d", aIAPId );
+    CCHLOGSTRING2( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL; IAPs count before: %d", aIapIds.Count() );
+    
+    TUint32 iapId( KErrNone );
+    RArray<TUint> iaps;
+    CleanupClosePushL( iaps );
+    RCmConnectionMethod cm = CmManagerL().ConnectionMethodL( aIAPId );
+    CleanupClosePushL( cm );
+	
+    TUint32 realIap( cm.GetIntAttributeL( CMManager::ECmNextLayerIapId ) );
+    CCHLOGSTRING2( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL: real iap  %d ", realIap );
+    TUint32 realSnap( cm.GetIntAttributeL( CMManager::ECmNextLayerSNAPId ) );
+    CCHLOGSTRING2( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL: real snap %d", realSnap );
+            
+    if ( realIap )
+        {
+        CCHLOGSTRING( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL: VPN linked to IAP" );
+        
+        if ( KErrNotFound != aIapIds.Find( realIap ) )
+            {
+            iaps.Append( realIap );
+            }
+        }
+    else
+        {
+        CCHLOGSTRING( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL: VPN linked to SNAP" );
+        
+        RCmDestination realDestination = CmManagerL().DestinationL( realSnap );
+        CleanupClosePushL( realDestination );
+        
+        for ( TInt i = 0; i < realDestination.ConnectionMethodCount(); i++ )
+            {
+            RCmConnectionMethod realCm = realDestination.ConnectionMethodL( i );
+            CleanupClosePushL( realCm );
+            iapId = realCm.GetIntAttributeL( CMManager::ECmIapId );
+        
+            if ( KErrNotFound != aIapIds.Find( iapId ) )
+                {
+                iaps.Append( iapId );
+                }
+            
+            CleanupStack::PopAndDestroy( &realCm );
+            }
+        
+        CleanupStack::PopAndDestroy( &realDestination );
+        }
+            
+    aIapIds.Reset();
+    for ( TInt j( 0 ); j < iaps.Count(); j++ )
+        {
+        aIapIds.Append( iaps[ j ] );
+        }
+    
+    CleanupStack::PopAndDestroy( &cm );
+    CleanupStack::PopAndDestroy( &iaps ); 
+    
+    CCHLOGSTRING2( "CCCHCommDbWatcher::RemoveOtherThanVpnIapsL; IAPs count after:  %d", aIapIds.Count() );
+    }
+    
 // ========================== OTHER EXPORTED FUNCTIONS =======================
 
 //  End of File

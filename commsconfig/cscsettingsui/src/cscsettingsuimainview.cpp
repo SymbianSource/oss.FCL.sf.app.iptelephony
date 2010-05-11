@@ -85,6 +85,7 @@ void CCSCSettingsUiMainView::ConstructL()
         ( statusPane->ControlL( TUid::Uid( EEikStatusPaneUidTitle ) ) );
         
     iImToneSelectionListOpen = EFalse;
+    iSnapListOpen = EFalse;
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::ConstructL - end" );
     }
 
@@ -847,16 +848,24 @@ void CCSCSettingsUiMainView::AppendItemL(
 void CCSCSettingsUiMainView::LaunchCMSettingsUiL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::LaunchCMSettingsUiL" );
+    if ( iSnapListOpen )
+        {
+        CSCSETUIDEBUG( "CCSCSettingsUiMainView::LaunchCMSettingsUiL  end" );
+        return;
+        }
     
     // Launch Connection Method Settings Ui.
     CCmSettingsUi* cmSettingsUi = CCmSettingsUi::NewL();
     CleanupStack::PushL( cmSettingsUi );
+    iSnapListOpen = ETrue;
     if ( CCmSettingsUi::EExit == cmSettingsUi->RunSettingsL() )
         {
         HandleCommandL( EEikCmdExit );
         }
     CleanupStack::PopAndDestroy( cmSettingsUi );
-    iContainer->UpdateContainerL();
+    iSnapListOpen = EFalse;
+    ResetViewL();
+    CSCSETUIDEBUG( "CCSCSettingsUiMainView::LaunchCMSettingsUiL  end" );
     }
 
 // ---------------------------------------------------------------------------
@@ -952,6 +961,13 @@ void CCSCSettingsUiMainView::ResetViewL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::ResetViewL - IN" );
 
+    // Do not update view if SNAP list is open because in some cases
+    // there will be problems with title and status bar.
+    if ( iSnapListOpen )
+        {
+        CSCSETUIDEBUG( "CCSCSettingsUiMainView::ResetViewL - OUT" );
+        return;
+        }
     // Create container when view is activated.
     if ( !iContainer )
         {

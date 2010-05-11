@@ -1012,7 +1012,7 @@ void CNSmlDmVoIPAdapter::DDFStructureL( MSmlDmDDFObject& aDDF )
     presenceId.SetAccessTypesL( accessTypesGetReplaceAdd );
     presenceId.SetOccurenceL( MSmlDmDDFObject::EZeroOrOne );
     presenceId.SetScopeL( MSmlDmDDFObject::EDynamic );
-    presenceId.SetDFFormatL( MSmlDmDDFObject::EInt );
+    presenceId.SetDFFormatL( MSmlDmDDFObject::EChr );
     presenceId.AddDFTypeMimeTypeL( KNSmlDMVoIPTextPlain );
     presenceId.SetDescriptionL( KNSmlDMVoIPPresenceSettingsIdExp );
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -24,6 +24,7 @@
 #include <e32base.h>
 #include <cchclientserver.h>
 #include "cchwakeupeventobserver.h"
+#include "cchconnmonhandlernotifier.h"
 
 // CONSTANTS
 
@@ -88,7 +89,8 @@ class CCchStartupCounter;
  *  @since S60 3.2
  */
 NONSHARABLE_CLASS( CCCHServerBase ) : public CPolicyServer,
-			                          public MCchWakeUpEventObserver
+			                          public MCchWakeUpEventObserver,
+			                          public MCCHConnMonHandlerNotifier
     {
 
 public: // Constructors and destructor
@@ -235,7 +237,13 @@ public: // Methods from base classes
       * Switch server to monitoring mode
       */
      void WakeUp();
-     
+
+private: // From MCCHConnMonHandlerNotifier
+    
+    void NetworkScanningCompletedL( const TConnMonSNAPInfo& aSNAPs, TInt aError );
+    
+    void SNAPsAvailabilityChanged( TInt aError );
+         
 private:
 
     /**
@@ -269,7 +277,12 @@ private:
      * Release all dynamic memory allocations and other resources
      */
     void ReleaseAllResources();
-    
+	
+    /**
+     * Starts service
+     */
+    void ServiceStartupL();
+        
     template <class T>T& ConstructObject( CCCHServerBase* aThis, T*& aObject );
     template <class T>T& ConstructObject( T*& aObject );
 

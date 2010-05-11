@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -142,88 +142,94 @@ void CCCHSPSHandler::GetServiceInfoL( const TUint32 aServiceId,
     TCCHService& aService ) const
     {
     CCHLOGSTRING( "CCCHSPSHandler::GetServiceInfoL: IN" );
-    TInt err( KErrNone );
+    
+    aService.iSubservices.Reset();
+    
     // Get entry
+    TInt err( KErrNone );
     CSPEntry* entry = CSPEntry::NewLC();
     err = iSettings->FindEntryL( aServiceId, *entry );
-    CCHLOGSTRING2( "iSettings->FindEntryL err: %d", err );
+    
     if ( KErrNone == err )
         {
         // Read service id and service name
         aService.iServiceId = aServiceId;
         RBuf buf;
-        buf.Create( entry->GetServiceName(), KCCHMaxServiceNameLength );
+        CleanupClosePushL( buf );
+        buf.CreateL( entry->GetServiceName(), KCCHMaxServiceNameLength );
         aService.iServiceName.Copy( buf );
-        buf.Close();
+        CleanupStack::PopAndDestroy( &buf );
         
-        // get all service properties a.k.a subservices
-        RPropertyArray properties;
-        properties = entry->GetAllProperties();
+        // Check which subservices are supported
+        RPropertyNameArray propertyNameArray;
+        CleanupClosePushL( propertyNameArray );
+        propertyNameArray.AppendL( EPropertyVoIPSubServicePluginId );
+        propertyNameArray.AppendL( EPropertyPresenceSubServicePluginId );
+        propertyNameArray.AppendL( EPropertyIMSubServicePluginId );
+        propertyNameArray.AppendL( EPropertyVMBXSubServicePluginId );
         
-        TServicePropertyName propertyName;
-        TUint count( 0 );
-        TInt pServiceId( 0 );
-        TInt pSnap( 0 );
-        TInt pIap( 0 );
-	    TBool pSnapLocked( EFalse );
-        
-        for ( TInt i( 0 ); i < properties.Count() &&
-            count < KCCHMaxSubservicesCount; i++ )
+        for ( TInt i( 0 ) ; i < propertyNameArray.Count() ; i++ )
             {
-            propertyName = properties[ i ]->GetName();
+            CSPProperty* property = CSPProperty::NewLC();
+        
+            err = iSettings->FindPropertyL( 
+                aServiceId,
+                propertyNameArray[ i ],
+                *property );
             
-            // Check is subservice valid
-            TBool valid( EFalse );
-            TRAPD( error, valid = ValidSubserviceL( aServiceId, propertyName ) );
-            if ( KErrNone == error && valid )
+            if ( !err && ValidSubserviceL( aServiceId, propertyNameArray[ i ] ) )
                 {
-    	        aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType = 
-                    propertyName == 
-                        EPropertyVoIPSubServicePluginId ? ECCHVoIPSub : 
-                    propertyName == 
-                        EPropertyPresenceSubServicePluginId ? ECCHPresenceSub : 
-                    propertyName == 
-                        EPropertyIMSubServicePluginId ? ECCHIMSub : 
-                    propertyName == 
-                        EPropertyVMBXSubServicePluginId ? ECCHVMBxSub : 
-                    ECCHUnknown;
-                
-                if ( ECCHUnknown != aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType )
+                TCCHSubserviceType type = ECCHUnknown;        
+                switch ( propertyNameArray[ i ] )
                     {
-                    aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iServiceId = aServiceId;
-                    aService.iSubservices[ count ].iState     = ECCHUninitialized;              
-                    
-                    GetSettingsIdL( aServiceId, 
-                        aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType, 
-                        pServiceId );
-                    aService.iSubservices[ count ].iSubserviceId = 
-                        static_cast<TUint> ( pServiceId );
-                    
-                    GetSNAPIdL( aServiceId, 
-                        aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType, 
-                        pSnap );
-                    aService.iSubservices[ count ].iConnectionInfo.iSNAPId = 
-                        static_cast<TUint32> ( pSnap );
-                    
-                    GetSNAPIdL( aServiceId, 
-                        aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType, 
-                        pSnapLocked );
-                    aService.iSubservices[ count ].iConnectionInfo.iSNAPLocked = 
-                        static_cast<TUint32> ( pSnapLocked );
-                    
-                    GetIapIdL( aServiceId, 
-                        aService.iSubservices[ count ].iConnectionInfo.iServiceSelection.iType, 
-                        pIap );
-                    aService.iSubservices[ count ].iConnectionInfo.iIapId  = 
-                            static_cast<TUint32> ( pIap ); 
-                        
-                    count++;
+                    case EPropertyVoIPSubServicePluginId:
+                        {
+                        type = ECCHVoIPSub;
+                        }
+                        break;
+                    case EPropertyPresenceSubServicePluginId:
+                        {
+                        type = ECCHPresenceSub;
+                        }
+                        break;
+                    case EPropertyIMSubServicePluginId:
+                        {
+                        type = ECCHIMSub;
+                        }
+                        break;
+                    case EPropertyVMBXSubServicePluginId:
+                        {
+                        type = ECCHVMBxSub;
+                        }
+                        break;
+                    default:
+                        {
+                        type = ECCHUnknown;
+                        break;
+                        }
                     }
+            
+                CCHLOGSTRING2( "CCCHSPSHandler::GetServiceInfoL: subservice type=%d", type );
+                
+                aService.iSubservices[ i ].iConnectionInfo.iServiceSelection.iType = type;
+                aService.iSubservices[ i ].iConnectionInfo.iServiceSelection.iServiceId = aServiceId;
+                
+                // These are just initialized here. Correct values are got from connectivity plugin
+                aService.iSubservices[ i ].iState = ECCHUninitialized;
+                aService.iSubservices[ i ].iSubserviceId = KErrNone;
+                aService.iSubservices[ i ].iConnectionInfo.iSNAPId = KErrNone;
+                aService.iSubservices[ i ].iConnectionInfo.iIapId = KErrNone;
+                aService.iSubservices[ i ].iConnectionInfo.iSNAPLocked = EFalse;
                 }
-            }    
-        }    
+        
+            CleanupStack::PopAndDestroy( property );
+            }
+        
+        CleanupStack::PopAndDestroy( &propertyNameArray );
+        }
     else
         {
+        CCHLOGSTRING2( "CCCHSPSHandler::GetServiceInfoL: error getting entry err=%d", err );
         User::Leave( err );
         }
             
@@ -301,120 +307,6 @@ void CCCHSPSHandler::GetConnectivityPluginUidL( TUint32 aServiceId,
     CCHLOGSTRING2( 
         "CCCHSPSHandler::GetConnectivityPluginUidL: aUid 0x%X", aUid );   
     }
-
-// ---------------------------------------------------------------------------
-// CCCHSPSHandler::GetSNAPIdL
-// (other items were commented in a header).
-// ---------------------------------------------------------------------------
-//
-void CCCHSPSHandler::GetSNAPIdL( TUint32 aServiceId,
-    TCCHSubserviceType aType,
-    TInt& aSNAPId ) const
-    {
-    CCHLOGSTRING( "CCCHSPSHandler::GetSNAPIdL: IN" );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetSNAPIdL: aServiceId %d", aServiceId );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetSNAPIdL: aType %d", aType );
-    
-    TSPItemType propertyType( EItemTypeNotDefined );
-    TServicePropertyName propertyName( EPropertyUnknown );
-    RPropertyArray subproperties;
-    CleanupClosePushL( subproperties );
-    
-    ChangeToPropertyStyleL( aType, propertyType, propertyName );
-       
-    // Find correct subservice
-    TInt err( iSettings->FindSubServicePropertiesL( 
-        aServiceId, propertyType, subproperties ) );
-    CCHLOGSTRING2( "CCH: iSettings->FindSubServicePropertiesL err: %d" , err );            
-    for ( TInt i( 0 ); i < subproperties.Count(); i++ )
-        {
-        // Read subservice's SNAP Id
-        if ( propertyName == subproperties[ i ]->GetName() )
-            {                
-            subproperties[ i ]->GetValue( aSNAPId );
-            i = subproperties.Count();               
-            }
-        }    
-    
-    subproperties.ResetAndDestroy( );
-    CleanupStack::PopAndDestroy( &subproperties );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetSNAPIdL: aSNAPId %d", aSNAPId );
-    }
-
-// ---------------------------------------------------------------------------
-// CCCHSPSHandler::GetIapIdL
-// (other items were commented in a header).
-// ---------------------------------------------------------------------------
-//
-void CCCHSPSHandler::GetIapIdL( TUint32 aServiceId,
-    TCCHSubserviceType aType,
-    TInt& aIapId ) const
-    {
-    CCHLOGSTRING( "CCCHSPSHandler::GetIapIdL: IN" );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetIapIdL: aServiceId %d", aServiceId );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetIapIdL: aType %d", aType );
-    
-    TSPItemType propertyType( EItemTypeNotDefined );
-    TServicePropertyName propertyName( EPropertyUnknown );
-    RPropertyArray subproperties;
-    CleanupClosePushL( subproperties );
-    
-    ChangeToPropertyStyleL( aType, propertyType, propertyName );
-           
-    // Find correct subservice
-    TInt err( iSettings->FindSubServicePropertiesL( 
-        aServiceId, propertyType, subproperties ) );
-    CCHLOGSTRING2( "CCH: iSettings->FindSubServicePropertiesL err: %d" , err );
-    for ( TInt i( 0 ); i < subproperties.Count(); i++ )
-        {
-        // Read subservice's IAP Id
-        if ( propertyName == subproperties[ i ]->GetName() )
-            {                
-            subproperties[ i ]->GetValue( aIapId );
-            i = subproperties.Count();               
-            }
-        }    
-    
-    subproperties.ResetAndDestroy( );
-    CleanupStack::PopAndDestroy( &subproperties );
-    CCHLOGSTRING2( "CCCHSPSHandler::GetIapIdL: aIapId %d", aIapId );    
-    }
-
-// ---------------------------------------------------------------------------
-// CCCHSPSHandler::GetSettingsIdL
-// (other items were commented in a header).
-// ---------------------------------------------------------------------------
-//
-void CCCHSPSHandler::GetSettingsIdL( TUint32 aServiceId,
-    TCCHSubserviceType aType,
-    TInt& aId ) const
-    {
-    TSPItemType propertyType( EItemTypeNotDefined );
-    TServicePropertyName propertyName( EPropertyUnknown );
-    RPropertyArray subproperties;
-    CleanupClosePushL( subproperties );
-    
-    ChangeToPropertyStyleL( aType, propertyType, propertyName );
-           
-    // Find correct subservice
-    TInt err( iSettings->FindSubServicePropertiesL( 
-        aServiceId, propertyType, subproperties ) );
-    CCHLOGSTRING2( "CCH: iSettings->FindSubServicePropertiesL err: %d" , err );
-    for ( TInt i( 0 ); i < subproperties.Count(); i++ )
-        {
-        // Read subservice's Id
-        if ( propertyName == subproperties[ i ]->GetName() )
-            {                
-            TInt id( 0 );
-            subproperties[ i ]->GetValue( id );
-            aId = id;
-            i = subproperties.Count();               
-            }
-        }    
-    
-    subproperties.ResetAndDestroy( );
-    CleanupStack::PopAndDestroy( &subproperties );
-    }
         
 // ---------------------------------------------------------------------------
 // CCCHSPSHandler::LoadAtStartUpL
@@ -425,6 +317,8 @@ void CCCHSPSHandler::LoadAtStartUpL( TUint32 aServiceId,
     TCCHSubserviceType aType,
     TBool& aEnabled ) const
     {
+    CCHLOGSTRING2( "CCCHSPSHandler::LoadAtStartUpL: aType %d", aType );   
+    
     
     TSPItemType propertyType( EItemTypeNotDefined );
     TServicePropertyName propertyName( EPropertyUnknown );
@@ -450,6 +344,8 @@ void CCCHSPSHandler::LoadAtStartUpL( TUint32 aServiceId,
         }    
     subproperties.ResetAndDestroy( );
     CleanupStack::PopAndDestroy( &subproperties );
+    
+    CCHLOGSTRING2( "CCCHSPSHandler::LoadAtStartUpL: aEnabled %d", aEnabled );  
     }
 
 // ---------------------------------------------------------------------------
@@ -461,7 +357,7 @@ void CCCHSPSHandler::SetLoadAtStartUpL( const TUint32 aServiceId,
     const TCCHSubserviceType aType,
     const TBool aOnOff ) const
     {
-       
+    CCHLOGSTRING2( "CCCHSPSHandler::SetLoadAtStartUpL: aType %d", aType );      
     CCHLOGSTRING2( "CCCHSPSHandler::SetLoadAtStartUpL: aOnOff %d", aOnOff );   
     TSPItemType propertyType( EItemTypeNotDefined );
     TServicePropertyName propertyName( EPropertyUnknown );
@@ -573,8 +469,11 @@ TBool CCCHSPSHandler::ValidSubserviceL(
             {
             CCHLOGSTRING( "Subservice: EPropertyIMSubServicePluginId" );
             
-            // Until further notice IM property is always valid
-            valid = ETrue;
+            valid = KErrNone != iSettings->FindPropertyL( aServiceId, 
+                ESubPropertyIMSettingsId, *property ) ? EFalse :
+                    KErrNone == property->GetValue( propertyId );
+            
+            CCHLOGSTRING2( "CCH:     property id: %d" , propertyId );
             break;
             }
         case EPropertyVMBXSubServicePluginId:
@@ -591,7 +490,7 @@ TBool CCCHSPSHandler::ValidSubserviceL(
         default:
             {
             // Let other properties go through
-            valid = ETrue;
+            valid = EFalse;
             break;
             }
         }

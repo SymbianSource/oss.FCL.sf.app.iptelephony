@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -21,6 +21,7 @@
 #include "cchserverbase.h"
 #include "cchlogger.h"
 #include "cchservicehandler.h"
+#include "cchconnmonhandlernotifier.h"
 
 // EXTERNAL DATA STRUCTURES
 // None
@@ -35,7 +36,7 @@
 // None
 
 // LOCAL CONSTANTS AND MACROS
-// None
+const TInt KPeriodicTimerInterval( 5000000 ); // 5sec.
 
 // MODULE DATA STRUCTURES
 // None
@@ -72,6 +73,7 @@ void CCCHConnMonHandler::ConstructL()
     {
     User::LeaveIfError( iConnMon.ConnectL() );
     NotifyL();
+    iConnChangeListenerTimer = CPeriodic::NewL( CActive::EPriorityIdle );
     }
 
 // ---------------------------------------------------------------------------
@@ -103,9 +105,13 @@ CCCHConnMonHandler* CCCHConnMonHandler::NewLC( CCCHServerBase& aServer )
 CCCHConnMonHandler::~CCCHConnMonHandler()
     {
     CCHLOGSTRING( "CCCHConnMonHandler::~CCCHConnMonHandler" );
-    
+    iConnChangeListenerTimer->Cancel();
+    delete iConnChangeListenerTimer;
     StopNotify();
     Cancel();
+    iPendingRequests.Close();
+	iUnsolvedConnIds.Close();
+    iConnIapIds.Close();
     iAvailableSNAPs.Close();
     iAvailableIAPs.Close();
     iConnMon.Close();
@@ -116,12 +122,14 @@ CCCHConnMonHandler::~CCCHConnMonHandler()
 // (other items were commented in a header).
 // ---------------------------------------------------------------------------
 //
-void CCCHConnMonHandler::ScanNetworks( TBool aWlanScan )
+void CCCHConnMonHandler::ScanNetworks(
+    TBool aWlanScan, MCCHConnMonHandlerNotifier* aObserver )
     {
     CCHLOGSTRING( "CCCHConnMonHandler::ScanNetworks: IN" );
     
     if ( aWlanScan )
         {
+        iNetworkScanningObserver = aObserver;
         GetIaps( EBearerIdAll );
         }
             
@@ -158,6 +166,25 @@ TBool CCCHConnMonHandler::IsIapAvailable( TUint aIapId ) const
     {
     return ( KErrNotFound == iAvailableIAPs.Find( aIapId ) ) 
         ? EFalse : ETrue; 
+    }
+
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::SetSNAPsAvailabilityChangeListener
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::SetSNAPsAvailabilityChangeListener(
+    MCCHConnMonHandlerNotifier* aObserver )
+    {
+    CCHLOGSTRING( "CCCHConnMonHandler::SetSNAPsAvailabilityChangeListener" );
+    iSNAPsAvailabilityObserver = aObserver;
+    if ( iSNAPsAvailabilityObserver )
+        {
+        iConnChangeListenerTimer->Start(
+            KPeriodicTimerInterval,
+            KPeriodicTimerInterval,
+            TCallBack( PeriodicTimerCallBack, this ) );
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -278,6 +305,27 @@ void CCCHConnMonHandler::StopNotify()
     iConnMon.CancelNotifications();
     }
 
+// ----------------------------------------------------------------------------
+// CCCHConnMonHandler::PeriodicTimerCallBack
+// The call back function.
+// ----------------------------------------------------------------------------
+//
+TInt CCCHConnMonHandler::PeriodicTimerCallBack( TAny* aAny )
+    {
+    CCHLOGSTRING( "CCCHConnMonHandler::PeriodicTimerCallBack" );
+    
+    CCCHConnMonHandler* self = static_cast<CCCHConnMonHandler*>( aAny );
+    self->iConnChangeListenerTimer->Cancel();
+    
+    if ( self->iSNAPsAvailabilityObserver )
+        {
+        self->iSNAPsAvailabilityObserver->
+            SNAPsAvailabilityChanged( KErrTimedOut );
+        }
+    
+    return KErrNone;
+    }
+
 // ---------------------------------------------------------------------------
 // CCCHConnMonHandler::RunL
 // (other items were commented in a header).
@@ -296,20 +344,210 @@ void CCCHConnMonHandler::RunL()
                 UpdateIapArray( iIapsBuf() );
                 GetSNAPs();
                 }
-            break;
+                break;
+            
             case EGetSNAPs:
                 {
                 UpdateSnapArray( iSNAPbuf() );
+                if ( iNetworkScanningObserver )
+                    {
+                    iNetworkScanningObserver->NetworkScanningCompletedL(
+                        iSNAPbuf(), KErrNone );
+                    iNetworkScanningObserver = NULL;
+                    }
                 }
-            break;
+                break;
+            
+            case EGetIAP:
+                {
+                CCHLOGSTRING2( "CCCHConnMonHandler::RunL: iap: %d", iConnIapId );
+                TCCHConnectionInfo info;
+                info.iIapId  = iConnIapId;
+                info.iConnId = iConnId;
+                                    
+                if ( KErrNotFound == iConnIapIds.Find( info ) )
+                    {
+                    iConnIapIds.Append( info );
+                    }
+                iConnId    = 0;
+                iConnIapId = 0;
+                
+                CCHLOGSTRING2( "CCCHConnMonHandler::RunL: unsolved conn count: %d", iUnsolvedConnIds.Count() );
+                if ( iUnsolvedConnIds.Count() )
+                    {
+                    GetIapId();
+                    }
+                }
+                break;
+                
+            case EGetConnectionCount:
+                {
+                CCHLOGSTRING2( "CCCHConnMonHandler::RunL: conn count: %d", iConnCount );
+                TBool familiar( EFalse );
+                TUint connId( KErrNone );
+                TUint subConnCount( KErrNone );
+                for ( TInt i( 1 ); i <= iConnCount; i++ )
+                    {
+                    if ( !iConnMon.GetConnectionInfo( i, connId, subConnCount ) )
+                        {
+                        familiar = EFalse;
+                        for ( TInt j( 0 ); j < iConnIapIds.Count(); j++ )
+                            {
+                            if ( connId == iConnIapIds[ j ].iConnId )
+                                {
+                                CCHLOGSTRING2( "CCCHConnMonHandler::RunL: iap %d is familiar connection", iConnIapIds[ j ].iIapId );
+                                familiar = ETrue;
+                                break;
+                                }
+                            }
+                        
+                        if ( !familiar && KErrNotFound == iUnsolvedConnIds.Find( connId ) )
+                            {
+                            iUnsolvedConnIds.Append( connId );
+                            }
+                        }
+                    }
+                iConnCount = 0;
+                
+                CCHLOGSTRING2( "CCCHConnMonHandler::RunL: unsolved conn count: %d", iUnsolvedConnIds.Count() );
+                if ( iUnsolvedConnIds.Count() )
+                    {
+                    GetIapId();
+                    }
+                }
+                break;
+                
             default:
                 break;
+            }
+        
+        
+        if ( iPendingRequests.Count() && !IsActive() )
+            {
+            CCHLOGSTRING2( "CCCHConnMonHandler::RunL: request pending : %d", 
+                iPendingRequests[ 0 ] );
+            switch ( iPendingRequests[ 0 ] )
+                {
+                case EGetIAP:
+                    {
+                    GetIapId();
+                    }
+                    break;
+                        
+                case EGetConnectionCount:
+                    {
+                    GetConnectionCount();
+                    }
+                    break;
+                        
+                default:
+                    break;
+                }
+            
+            iPendingRequests.Remove( 0 );
+            iPendingRequests.Compress();
+            }
+        }
+    else
+        {
+        if ( iNetworkScanningObserver )
+            {
+            iNetworkScanningObserver->NetworkScanningCompletedL(
+                iSNAPbuf(), iStatus.Int() );
+            iNetworkScanningObserver = NULL;
             }
         }
             
     CCHLOGSTRING( "CCCHConnMonHandler::RunL: OUT" );
     }
 
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::StartMonitoringConnectionChanges
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::StartMonitoringConnectionChanges()
+    {
+    iConnIapIds.Reset();
+    
+    if ( !IsActive() )
+        {
+        GetConnectionCount();
+        }
+    else
+        {
+        iPendingRequests.Append( EGetConnectionCount );
+        }
+    }
+
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::StopMonitoringConnectionChanges
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::StopMonitoringConnectionChanges( 
+    RArray<TUint>& aIapIds )
+    {
+    aIapIds.Reset();
+    for ( TInt i( 0 ); i < iConnIapIds.Count(); i++ )
+        {
+        if ( KErrNotFound == aIapIds.Find( iConnIapIds[ i ].iIapId ) )
+            {
+            aIapIds.Append( iConnIapIds[ i ].iIapId );
+            }
+        }
+    }
+	
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::GetConnectionCount
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::GetConnectionCount()
+    {
+    iState = EGetConnectionCount;
+    iConnMon.GetConnectionCount( iConnCount, iStatus ); 
+    SetActive(); 
+    }
+     
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::GetIapId
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::GetIapId()
+    {
+    if ( iUnsolvedConnIds.Count() )
+        {
+        iConnId = iUnsolvedConnIds[ 0 ];
+        iUnsolvedConnIds.Remove( 0 );
+        iUnsolvedConnIds.Compress();
+        
+        iState = EGetIAP;
+        iConnMon.GetUintAttribute( iConnId, 0, KIAPId, iConnIapId, iStatus );
+        SetActive();
+        }
+    }
+            
+// ---------------------------------------------------------------------------
+// CCCHConnMonHandler::RemoveIapId
+// (other items were commented in a header).
+// ---------------------------------------------------------------------------
+//
+void CCCHConnMonHandler::RemoveIapId(
+    TUint aConnId )
+    {
+    for ( TInt i( 0 ); i < iConnIapIds.Count(); i++ )
+        {
+        if ( aConnId == iConnIapIds[ i ].iConnId )
+            {
+            iConnIapIds.Remove( i );
+            iConnIapIds.Compress();
+            break;
+            }
+        }
+    }
+	
 // ---------------------------------------------------------------------------
 // CCCHConnMonHandler::DoCancel
 // (other items were commented in a header).
@@ -318,6 +556,17 @@ void CCCHConnMonHandler::RunL()
 void CCCHConnMonHandler::DoCancel()
     {
     iConnMon.CancelAsyncRequest( EConnMonGetPckgAttribute );
+    if ( iNetworkScanningObserver )
+        {
+        iNetworkScanningObserver->NetworkScanningCompletedL(
+            iSNAPbuf(), KErrCancel );
+        iNetworkScanningObserver = NULL;
+        }
+    if ( iSNAPsAvailabilityObserver )
+        {
+        iSNAPsAvailabilityObserver->SNAPsAvailabilityChanged( KErrCancel );
+        iSNAPsAvailabilityObserver = NULL;
+        }
     }
 
 // ---------------------------------------------------------------------------
@@ -352,8 +601,44 @@ void CCCHConnMonHandler::EventL( const CConnMonEventBase &aConnMonEvent )
 
             TConnMonSNAPInfo snaps  = eventSNAP->SNAPAvailability();
             UpdateSnapArray( snaps );
+            
+            if ( iSNAPsAvailabilityObserver )
+                {
+                iConnChangeListenerTimer->Cancel();
+                iSNAPsAvailabilityObserver->SNAPsAvailabilityChanged( KErrNone );
+                }
             }
             break;
+			
+        case EConnMonCreateConnection:
+            {
+            const CConnMonCreateConnection* eventCreate = NULL; 
+            eventCreate = static_cast< const CConnMonCreateConnection* >(
+                &aConnMonEvent );
+            iUnsolvedConnIds.Append( eventCreate->ConnectionId() );
+                        
+            if ( !IsActive() )
+                {
+                GetIapId();
+                }
+            else
+                {
+                iPendingRequests.Append( EGetIAP );
+                }
+            }
+            break;
+            
+        case EConnMonDeleteConnection:
+            {
+            const CConnMonDeleteConnection* eventDelete = NULL; 
+            eventDelete = static_cast< const CConnMonDeleteConnection* >(
+                &aConnMonEvent );
+            TUint connId = eventDelete->ConnectionId();
+             
+            RemoveIapId( connId );
+            }
+            break;
+            
         default:
             break;
         }

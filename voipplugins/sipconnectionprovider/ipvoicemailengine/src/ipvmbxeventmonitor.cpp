@@ -113,7 +113,7 @@ void TIpVmbxEventMonitor::NotifyReceived(
     CMceEvent& aEvent,
     TMceTransactionDataContainer* /*aContainer*/ )
     {
-    IPVMEPRINT( "CIpVmbxEventMonitor::NotifyReceived" );
+    IPVMEPRINT( "CIpVmbxEventMonitor::NotifyReceived - IN" );
     CMceEvent::TState eventState( CMceEvent::EIdle );
     eventState = aEvent.State();
     TBool firstNotify = EFalse;
@@ -136,6 +136,7 @@ void TIpVmbxEventMonitor::NotifyReceived(
                     {
                     
                     subscription->SetStateRegistered();
+                    IPVMEPRINT( "CIpVmbxEventMonitor::NotifyReceived - firstNotify" );
                     firstNotify = ETrue;
                     }
     
@@ -151,15 +152,14 @@ void TIpVmbxEventMonitor::NotifyReceived(
                         message = CIpVmbxEngine::EEngineSmsError;
                         }
                     }
-                else 
-                    if ( firstNotify )
-                        {
-                        message = CIpVmbxEngine::EEngineSubscribed;
-                        }
-                    else
-                        {
-                        message = CIpVmbxEngine::EEngineUndefined;
-                        }
+                else if ( firstNotify )
+                    {
+                    message = CIpVmbxEngine::EEngineSubscribed;
+                    }
+                else
+                    {
+                    message = CIpVmbxEngine::EEngineUndefined;
+                    }
                 }
                 break;
             case CMceEvent::ETerminated:

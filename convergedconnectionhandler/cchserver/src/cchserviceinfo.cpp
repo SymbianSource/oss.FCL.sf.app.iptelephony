@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -554,11 +554,12 @@ void CCCHServiceInfo::UpdateL( TBool aReadServiceTable )
     iIsEnabled = EFalse;
     if ( aReadServiceTable )
         {
-        TBool found( EFalse );
+        TUint validSubserviceCount( 0 );
         TInt index( KErrNotFound );
         TCCHService service;
         // Read service information from service table
         iServer.SPSHandler().GetServiceInfoL( iServiceId , service );
+
         for ( TInt i( 0 ); i < service.iSubservices.Count(); i++ )
             {            
             TCCHSubservice subservice = service.iSubservices[ i ];
@@ -575,32 +576,51 @@ void CCCHServiceInfo::UpdateL( TBool aReadServiceTable )
                     {
                     iIsEnabled = iSubservices[ index ]->IsEnabled();
                     }
+                
+                validSubserviceCount++;
+                }
+            else if ( ECCHUnknown != subservice.iConnectionInfo.iServiceSelection.iType )
+                {
+                AddSubserviceL( subservice );
+                validSubserviceCount++;
                 }
             else
                 {
-                AddSubserviceL( subservice );
+                // do nothing
                 }
             }
+        
         // Check that all subservices really exist in service table
-        if ( service.iSubservices.Count() < iSubservices.Count() )
+        if ( validSubserviceCount < iSubservices.Count() )
             {
+            CCHLOGSTRING( "CCCHServiceInfo::UpdateL: check subservices -> need update" );
+        
             for ( TInt i( 0 ); i < iSubservices.Count(); i++ )
-                {                
-                found = ETrue;
-                for ( TInt j( 0 ); j < service.iSubservices.Count() && 
-                    found; j++ )
+                {
+                TBool found( EFalse );
+                TCCHSubserviceType type = iSubservices[ i ]->Type();
+                         
+                for ( TInt j( 0 ) ; j < service.iSubservices.Count() && !found ; j++ )
                     {
-                    found = 
-                        service.iSubservices[ j ].iConnectionInfo.iServiceSelection.iType == 
-                            iSubservices[ i ]->Type();
+                    CCHLOGSTRING2( "CCCHServiceInfo::UpdateL: type 1=%d", type );
+                    CCHLOGSTRING2( "CCCHServiceInfo::UpdateL: type 2=%d", 
+                        service.iSubservices[ j ].iConnectionInfo.iServiceSelection.iType );
+                
+                    if ( service.iSubservices[ j ].iConnectionInfo.iServiceSelection.iType == type )
+                        {
+                        CCHLOGSTRING( "CCCHServiceInfo::UpdateL: check subservices -> found" );
+                        found = ETrue;
+                        }
                     }
-                // if this subservice is not in service table then remove it.
+                
                 if ( !found )
                     {
+                    CCHLOGSTRING( "CCCHServiceInfo::UpdateL: remove subservice" );
+                
                     delete iSubservices[ i ];
                     iSubservices.Remove( i );
                     i--;
-                    }                
+                    }              
                 }
             }
         }
@@ -864,7 +884,7 @@ TBool CCCHServiceInfo::StartupFlagSet() const
         {
         ret = iSubservices[ i ]->GetStartUpFlag(); 
         }
-    CCHLOGSTRING2( "CCCHServiceHandler::StartupFlagSet: %d", ret );        
+    CCHLOGSTRING2( "CCCHServiceInfo::StartupFlagSet: %d", ret );        
     return ret;
     }
 

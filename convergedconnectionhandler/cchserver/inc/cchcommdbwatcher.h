@@ -91,6 +91,28 @@ public: // new functions
      * @since Series 60 3.2
      */
     TBool IsWlanApL( TInt aIapId );
+    
+	/**
+     * Checks is IAP's bearer type VPN AP.
+     * @param aIapId of IAP to check.
+     * @return ETrue if given IAP id is VPN AP, otherwise EFalse.
+     */
+    TBool IsVpnApL( TInt aIapId );
+    
+	/**
+     * IAP's bearer getter.
+     * @param aIapId.
+     * @return TUint32 bearer type.
+     */
+    TUint32 GetBearerL( TInt aIapId );
+    
+	/**
+     * Removes IAPs which are not linked to VPN AP.
+     * @param aIapIds all connected iaps, afterward only linked IAPs.
+	 * @param aIAPId VPN IAP to check.
+     */
+    void RemoveOtherThanVpnIapsL( RArray<TUint>& aIaps, TUint aIAPId );
+        
 
 protected: // From base classes
 

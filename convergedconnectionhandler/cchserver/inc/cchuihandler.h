@@ -110,6 +110,12 @@ public: // New functions
      * Waits one second to give enought time to end async requests
      */
     void Destroy();
+    
+    /**
+     * Is cost warning already shown
+     * @return TBool if cost warning already shown ETrue 
+     */
+    TBool IsCostWarningSeen() const;
 
 public: // From MCchEtelNetworkStatusObserver
 

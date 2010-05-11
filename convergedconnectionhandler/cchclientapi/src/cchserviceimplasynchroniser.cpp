@@ -66,18 +66,16 @@ void CCchServiceImplAsynchroniser::Enable( TCCHSubserviceType aType )
 void CCchServiceImplAsynchroniser::Disable( TCCHSubserviceType aType )
     {
     CCHLOGSTRING( "CCchServiceImplAsynchroniser::Disable IN" );
-    if (iState == EIdle)
+    if (iState != EIdle)
         {
+        Cancel();
+        }
         iState = EDisabling;
         TRequestStatus status = KErrNone;
         TServiceSelection selection( iServiceId, aType );
         SetActive();
         iCch.CchClient().DisableService( selection, iStatus );
-        }
-    else
-        {
-        CCHLOGSTRING( "CCchServiceImplAsynchroniser already active" );
-        }
+
     CCHLOGSTRING( "CCchServiceImplAsynchroniser::Disable OUT" );
     }
 
@@ -95,7 +93,14 @@ CCchServiceImplAsynchroniser::~CCchServiceImplAsynchroniser()
 
 void CCchServiceImplAsynchroniser::DoCancel()
     {
-
+    if ( EEnabling == iState ) 
+            { 
+            iCch.CchClient().EnableServiceCancel(); 
+            } 
+        else if ( EDisabling == iState ) 
+            { 
+            iCch.CchClient().DisableServiceCancel(); 
+            } 
     }
 
 void CCchServiceImplAsynchroniser::RunL()
