@@ -160,6 +160,18 @@ void CScpServiceHandlerBase::DeregisterProfile()
     }
 
 // -----------------------------------------------------------------------------
+// CScpServiceHandlerBase::PerformInstantForceSipProfileDisable
+// -----------------------------------------------------------------------------
+//
+void CScpServiceHandlerBase::PerformInstantForceSipProfileDisable()
+    {
+    SCPLOGSTRING2( 
+        "CScpServiceHandlerBase[0x%x]::PerformInstantForceSipProfileDisable", 
+        this );
+    HandleSipProfileForcedDisable( ETrue );
+    }
+
+// -----------------------------------------------------------------------------
 // CScpServiceHandlerBase::StartForcedDisableTimer
 // -----------------------------------------------------------------------------
 //
@@ -195,11 +207,25 @@ void CScpServiceHandlerBase::CancelDisableTimer()
 // CScpServiceHandlerBase::HandleSipProfileForcedDisable
 // -----------------------------------------------------------------------------
 //
-void CScpServiceHandlerBase::HandleSipProfileForcedDisable()
+void CScpServiceHandlerBase::HandleSipProfileForcedDisable( 
+    TBool aForceDisableSipProfile )
     {
     SCPLOGSTRING2( 
         "CScpServiceHandlerBase[0x%x]::HandleSipProfileForcedDisable", this );
 
+    if ( aForceDisableSipProfile )
+        {
+        CScpProfileHandler& profileHandler = iSubService.ProfileHandler();
+    
+        CScpSipConnection* sipConnection = 
+            profileHandler.GetSipConnection( iSubService.SipProfileId() );
+      
+        if ( sipConnection )
+            {
+            sipConnection->ForceDisable();
+            }
+        }
+    
     HandleSipConnectionEvent( iSubService.SipProfileId(), EScpDeregistered );
     }
 
@@ -214,7 +240,7 @@ TInt CScpServiceHandlerBase::ForceSipProfileDisable( TAny* aSelf )
     CScpServiceHandlerBase* self = static_cast<CScpServiceHandlerBase*>( aSelf );
     
     self->CancelDisableTimer();
-    self->HandleSipProfileForcedDisable();
+    self->HandleSipProfileForcedDisable( EFalse );
 
     return 1;
     }

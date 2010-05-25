@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -29,6 +29,8 @@
 
 #include <cenrepdatabaseutil.h>
 #include <cenrepdatabaseproperty.h>
+
+#include <mmf/common/mmfcontrollerpluginresolver.h>
 
 #include "crcseprofileregistry.h"
 #include "crcseprofileentry.h"
@@ -351,6 +353,8 @@ EXPORT_C void CRCSEProfileRegistry::FindByServiceIdL( TUint32 aServiceId,
     {
     RCSELOGSTRING( "CRCSEProfileRegistry::FindByServiceIdL() - IN" );
 
+    CleanupResetAndDestroyPushL( aFoundEntries );
+    
     BeginL();
 
     TBuf<KDesLength128> des;
@@ -393,6 +397,8 @@ EXPORT_C void CRCSEProfileRegistry::FindByServiceIdL( TUint32 aServiceId,
         }
 
     EndL();
+    
+    CleanupStack::Pop( &aFoundEntries );
 
     RCSELOGSTRING( "CRCSEProfileRegistry::FindByServiceIdL() - OUT" );
     }
@@ -407,6 +413,8 @@ EXPORT_C void CRCSEProfileRegistry::FindBySIPProfileIdL( TUint32 aSipProfileId,
     RPointerArray<CRCSEProfileEntry>& aFoundEntries )
     {
     RCSELOGSTRING( "CRCSEProfileRegistry::FindBySIPProfileIdL() - IN" );
+    
+    CleanupResetAndDestroyPushL( aFoundEntries );
 
     BeginL();
 
@@ -474,6 +482,8 @@ EXPORT_C void CRCSEProfileRegistry::FindBySIPProfileIdL( TUint32 aSipProfileId,
 
     CleanupStack::PopAndDestroy( &voipIds );
     EndL();
+    
+    CleanupStack::Pop( &aFoundEntries );
 
     RCSELOGSTRING( "CRCSEProfileRegistry::FindBySIPProfileIdL() - OUT" );
     }
@@ -1148,6 +1158,8 @@ void CRCSEProfileRegistry::ConvertEntryToPropertiesL(
 void CRCSEProfileRegistry::ExtractProtocoIdsL( 
     const TDesC& aDes, RArray<TSettingIds>& aArray )
     {
+    CleanupClosePushL( aArray );
+    
     TLex lex( aDes );
     
     TSettingIds value;
@@ -1172,7 +1184,9 @@ void CRCSEProfileRegistry::ExtractProtocoIdsL(
             // Go over the space character.
             lex.Inc( 1 );
             }
-        } 
+        }
+    
+    CleanupStack::Pop( &aArray );
     }
 
 // -----------------------------------------------------------------------------

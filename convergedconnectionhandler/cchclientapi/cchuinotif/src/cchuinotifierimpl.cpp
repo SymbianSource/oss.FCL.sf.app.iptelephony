@@ -808,7 +808,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsAvailableListboxL(
 	{
 	CCHUIDEBUG( 
 	    "CCCHUiNotifierImpl::FillNoConnectionsAvailableListboxL - IN" );	
-
+	
 	HBufC* connectWhenAv = StringLoader::LoadLC( 
         R_QTN_CCHUINOTIF_CONNECT_WHEN_AV_TEXT );
 	HBufC* searchWlan = StringLoader::LoadLC( 
@@ -821,7 +821,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsAvailableListboxL(
 	TBool sipVoip( EFalse );
 	TRAPD( err, sipVoip = IsSIPVoIPL( aServiceId ) );
 	
-	if ( !err && sipVoip )
+	if ( !err && sipVoip && IsVoIPOverWCDMAAllowedL() )
 	    {
 	    aListItems.AppendL( *connectWhenAv );
 	    aCommandArray.AppendL( ECchUiCommandConnectWhenAvailable );
@@ -839,7 +839,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsAvailableListboxL(
 
     CleanupStack::PopAndDestroy( useGprs );	
     CleanupStack::PopAndDestroy( searchWlan );	
-    CleanupStack::PopAndDestroy( connectWhenAv );	
+    CleanupStack::PopAndDestroy( connectWhenAv );
     
     CCHUIDEBUG( 
         "CCCHUiNotifierImpl::FillNoConnectionsAvailableListboxL - OUT" ); 
@@ -855,6 +855,8 @@ void CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL(
 	CCHUIDEBUG( 
 	    "CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL - IN" );	
 
+    CleanupClosePushL( aCommandArray );
+	
 	HBufC* searchWlan = StringLoader::LoadLC( 
 		R_QTN_CCHUINOTIF_SEARCH_WLAN_NOT_DEF_TEXT );
 	
@@ -873,6 +875,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL(
 
     CleanupStack::PopAndDestroy( useGprs );	
     CleanupStack::PopAndDestroy( searchWlan );	
+    CleanupStack::Pop();
     
     CCHUIDEBUG( 
         "CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL - OUT" );  	    
@@ -886,6 +889,8 @@ void CCCHUiNotifierImpl::FillNoConnectionsFoundListboxL(
 	CDesCArray& aListItems, RArray<TCchUiOperationCommand>& aCommandArray )
 	{
 	CCHUIDEBUG( "CCCHUiNotifierImpl::FillNoConnectionsFoundListboxL - IN" );	
+	
+	CleanupClosePushL( aCommandArray );
 
 	HBufC* searchWlan = StringLoader::LoadLC( 
 		R_QTN_CCHUINOTIF_SEARCH_WLAN_NOT_FOUND_TEXT );	
@@ -905,6 +910,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsFoundListboxL(
 
     CleanupStack::PopAndDestroy( useGprs );	
     CleanupStack::PopAndDestroy( searchWlan );	
+    CleanupStack::Pop( &aCommandArray );
     
     CCHUIDEBUG( "CCCHUiNotifierImpl::FillNoConnectionsFoundListboxL - OUT" );  
 	}	
@@ -918,7 +924,7 @@ void CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL(
     {
     CCHUIDEBUG( 
         "CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL - IN" ); 
-
+    
     HBufC* searchWlan = StringLoader::LoadLC( 
         R_QTN_CCHUINOTIF_SEARCH_WLAN_CHANGE_CURRENT_CONNECTION_TEXT );  
         
@@ -936,7 +942,7 @@ void CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL(
         }
 
     CleanupStack::PopAndDestroy( useGprs ); 
-    CleanupStack::PopAndDestroy( searchWlan );  
+    CleanupStack::PopAndDestroy( searchWlan );
     
     CCHUIDEBUG( 
             "CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL - OUT" );
@@ -951,7 +957,7 @@ void CCCHUiNotifierImpl::FillChangeConnectionListboxL(
     CDesCArray& aListItems, RArray<TCchUiOperationCommand>& aCommandArray )
     {
     CCHUIDEBUG( "CCCHUiNotifierImpl::FillChangeConnectionListboxL - IN" ); 
-
+    
     HBufC* searchWlan = StringLoader::LoadLC( 
         R_QTN_CCHUINOTIF_SEARCH_WLAN_CHANGE_CONNECTION_TEXT );  
            
@@ -969,7 +975,7 @@ void CCCHUiNotifierImpl::FillChangeConnectionListboxL(
         }
 
     CleanupStack::PopAndDestroy( useGprs ); 
-    CleanupStack::PopAndDestroy( searchWlan );  
+    CleanupStack::PopAndDestroy( searchWlan );
        
     CCHUIDEBUG( "CCCHUiNotifierImpl::FillChangeConnectionListboxL - OUT" );
     }

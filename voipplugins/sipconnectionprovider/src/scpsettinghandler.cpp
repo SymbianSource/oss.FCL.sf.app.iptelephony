@@ -887,6 +887,8 @@ void CScpSettingHandler::GetServiceIdsL( TUint32 aSipId,
                                          RArray< TUint32 >& aServiceIds ) const
     {
     SCPLOGSTRING2( "CScpSettingHandler::GetServiceIdsL sip id: %d", aSipId );
+    
+    CleanupClosePushL( aServiceIds );
 
     RArray<TUint32> profileIdArray;
     CleanupClosePushL( profileIdArray );    
@@ -917,6 +919,7 @@ void CScpSettingHandler::GetServiceIdsL( TUint32 aSipId,
         }
 
     CleanupStack::PopAndDestroy( &profileIdArray );
+    CleanupStack::Pop( &aServiceIds );
     }
 
 // -----------------------------------------------------------------------------

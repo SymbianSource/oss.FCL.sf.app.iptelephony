@@ -1049,7 +1049,9 @@ void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
         CleanupClosePushL( cmm );
         RCmDestination destination( cmm.DestinationL( snapId ) );
         CleanupClosePushL( destination );
-
+        
+        TBool wlanIapFound( EFalse );
+        
         for ( TInt i = 0; i < destination.ConnectionMethodCount(); i++ )
             {
             RCmConnectionMethod cm = destination.ConnectionMethodL( i );
@@ -1060,6 +1062,7 @@ void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
                 {
                 SCPLOGSTRING( "CScpServiceManager::CheckAvailableConnectionsL WLAN IAP found" );
                 iaps.Append( cm.GetIntAttributeL( CMManager::ECmIapId ) );
+                wlanIapFound = ETrue;
                 }
             else
                 {
@@ -1091,7 +1094,12 @@ void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
             CleanupStack::PopAndDestroy( sipConnection );
             }
         
-        if ( !available )
+        if ( !available && wlanIapFound )
+            {
+            User::Leave( KCCHErrorNetworkLost );
+            }
+        
+        else if( !wlanIapFound )
             {
             User::Leave( KCCHErrorAccessPointNotDefined );
             }

@@ -353,15 +353,49 @@ void CCCHServiceHandler::StateChangedL( const TUint aServiceId,
             iCchUIHandler->UpdateUI( );
             }
         
-        // Check for possible first usage of GPRS (roaming cost warning)
-        TServiceConnectionInfo serviceConnInfo( aServiceId, aType, 0, 0 );
-        GetConnectionInfo( serviceConnInfo );
-        
-        if ( serviceConnInfo.iIapId && ECCHEnabled == aState )
+        if ( ECCHEnabled == aState && !iCchUIHandler->IsCostWarningSeen() )
             {
-            if( !iCommDbWatcher->IsWlanApL( serviceConnInfo.iIapId ) )
-                {                
-                iCchUIHandler->CheckGprsFirstUsageL();
+            // Check for possible first usage of GPRS (roaming cost warning)
+            TServiceConnectionInfo serviceConnInfo( aServiceId, aType, 0, 0 );
+            GetConnectionInfo( serviceConnInfo );
+            
+            if ( serviceConnInfo.iIapId )
+                {
+                // Stop monitoring connectivity changes and take new connections
+                RArray<TUint> iaps;
+                CleanupClosePushL( iaps );
+                TBool gprs( EFalse );
+                iServer.ConnMonHandler().StopMonitoringConnectionChanges( iaps );
+                
+                // Are we connected via VPN
+                if ( iCommDbWatcher->IsVpnApL( serviceConnInfo.iIapId ) )
+                    {
+                    // Remove iaps whom are not linked to vpn(snap or iap)
+                    TRAP_IGNORE( iCommDbWatcher->RemoveOtherThanVpnIapsL( 
+                        iaps, serviceConnInfo.iIapId ) );
+                                
+                    for ( TInt i( 0 ); i < iaps.Count(); i++ )
+                        {
+                        CCHLOGSTRING2( "CCCHServiceHandler::StateChanged: new connections: %d",iaps[ i ] );
+                        
+                        // if any new connection is gprs connection show note if not showed already
+                        if( !iCommDbWatcher->IsVpnApL( iaps[ i ] ) && !iCommDbWatcher->IsWlanApL( iaps[ i ] ) )
+                            {
+                            gprs = ETrue;
+                            break;
+                            }
+                        }
+                    }
+                else if( !iCommDbWatcher->IsWlanApL( serviceConnInfo.iIapId ) )
+                    {      
+                    gprs = ETrue;
+                    }
+                CleanupStack::PopAndDestroy( &iaps );
+                
+                if ( gprs )
+                    {
+                    iCchUIHandler->CheckGprsFirstUsageL();
+                    }
                 }
             }
         
@@ -832,6 +866,9 @@ TInt CCCHServiceHandler::EnableService(
             {
             if( connectionOk )
                 {
+                // Start monitoring connectivity changes
+                iServer.ConnMonHandler().StartMonitoringConnectionChanges();
+                
                 if( iCancelNotify )
                     {
                     DisableNotifyChange();
@@ -878,7 +915,13 @@ TInt CCCHServiceHandler::EnableService(
                     CCHLOGSTRING( "CCCHServiceHandler::EnableService: Launching WLAN scan..." );
                     TRAP_IGNORE( iWlanExtension->EnableWlanScanL() );
                     }
-                // There could be new Plug-ins after EnableL, so we must set
+                if ( error )
+                    {
+                    RArray<TUint> iaps;
+                    iServer.ConnMonHandler().StopMonitoringConnectionChanges( iaps );
+                    iaps.Close();
+                    }
+                // There could be new Plug-ins after EnableL, so we must set 
                 // notifier to loaded Plug-ins
                 iServer.PluginHandler().SetServiceNotifier( this );
                 }
@@ -1143,7 +1186,7 @@ TBool CCCHServiceHandler::IsConnectionDefinedL(
     TInt error = GetConnectionInfo( serviceConnInfo );
     User::LeaveIfError( error );
     
-    CCHLOGSTRING3( "CCCHServiceHandler::IsConnectionDefined: snap:%d, snap:%d",
+    CCHLOGSTRING3( "CCCHServiceHandler::IsConnectionDefined: snap:%d, iap:%d",
             serviceConnInfo.iSNAPId, serviceConnInfo.iIapId );
     if( 0 != serviceConnInfo.iSNAPId )
         {
@@ -1280,13 +1323,21 @@ void CCCHServiceHandler::ServiceCountL( RMessage2 aMessage ) const
 // (other items were commented in a header).
 // ---------------------------------------------------------------------------
 //
-void CCCHServiceHandler::GetServicesL( RMessage2 aMessage ) const
+void CCCHServiceHandler::GetServicesL( RMessage2 aMessage )
     {
     CCHLOGSTRING( "CCCHServiceHandler::GetServicesL: IN" );
+    // outstanding request for service, but SpSettings notify timer still running
+    if( iHandleNotifyDelayTimer->IsActive() )
+        {
+        CCHLOGSTRING( "CCCHServiceHandler::GetServicesL - Forced handling of notify" );
+        iHandleNotifyDelayTimer->Cancel();
+        HandleDelayedNotifyEvent();
+        }
     TInt count =  iServices.Count();
     TInt index( KErrNotFound );
     if ( count )
         {
+        CCHLOGSTRING2( "CCCHServiceHandler::GetServicesL service count:%d ", count );
         TUint32 serviceId = aMessage.Int0();
         TCCHSubserviceType type ( ECCHUnknown );
         type = static_cast<TCCHSubserviceType>( aMessage.Int1() );
@@ -1299,7 +1350,8 @@ void CCCHServiceHandler::GetServicesL( RMessage2 aMessage ) const
             {
             count = 1;
             }
-                    
+        
+        
         CArrayFixFlat<TCCHService>* serviceArray = 
             new( ELeave )CArrayFixFlat<TCCHService>( count );
         CleanupStack::PushL( serviceArray );
@@ -1308,6 +1360,7 @@ void CCCHServiceHandler::GetServicesL( RMessage2 aMessage ) const
         // Get all services
         if ( KErrNone == serviceId )
             {
+            CCHLOGSTRING( "CCCHServiceHandler::GetServicesL KErrNone == serviceId" );
             if ( type == ECCHUnknown )
                 {
                 for ( TInt i( 0 ); i < count; i++ )
@@ -1334,6 +1387,8 @@ void CCCHServiceHandler::GetServicesL( RMessage2 aMessage ) const
             if ( type == ECCHUnknown )
                 {
                 index = FindService( serviceId );
+                CCHLOGSTRING2( "CCCHServiceHandler::GetServicesL index:%d", index );
+
                 if ( KErrNotFound != index )
                     {
                     iServices[ index ]->FillServiceInfo( service );
@@ -1342,6 +1397,7 @@ void CCCHServiceHandler::GetServicesL( RMessage2 aMessage ) const
                 }
             else
                 {
+            CCHLOGSTRING( "CCCHServiceHandler::GetServicesL Else" );
                 TServiceSelection selection( serviceId, type ); 
                 index = ServiceExist( selection );
                 if ( KErrNotFound != index )

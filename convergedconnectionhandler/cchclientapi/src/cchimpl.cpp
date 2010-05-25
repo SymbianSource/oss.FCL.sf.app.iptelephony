@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2006-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -294,51 +294,48 @@ TInt CCchImpl::GetServices( TCCHSubserviceType aType,
 void CCchImpl::GetServicesL( TCCHSubserviceType aType, 
         RPointerArray<CCchService>& aServices )
     {
+    CCHLOGSTRING( "CCchImpl::GetServicesL: IN" );
+
+    CleanupClosePushL( aServices );  // CS: 1
+    
     TInt error = KErrNone;
     TServiceSelection selection( 0, aType, ECchInitial );
-    CCHLOGSTRING( "CCchImpl::GetServices: IN" );
+
     CCchServiceImpl* cchServiceImpl = NULL;
     CArrayFixFlat<TCCHService>* cchServices;
     cchServices = new (ELeave) CArrayFixFlat<TCCHService>(1);
-    CleanupStack::PushL( cchServices );
+    CleanupStack::PushL( cchServices );  // CS: 2
     error = GetCchServicesL( 0, aType, *cchServices );
+    
     if( KErrNone == error )
         {
         for ( TInt i = 0; i < cchServices->Count(); i++ )
             {
             TCCHService service = cchServices->At( i );
             TInt idx = FindService( service.iServiceId );
-            if( idx == KErrNotFound )
+            
+            if( KErrNotFound == idx )
                 {
-                cchServiceImpl = CCchServiceImpl::NewL( *this, service.iServiceId, 
-                    *iCchUi );
-                error = iCchServiceImpls.Append( cchServiceImpl );
-                if( error == KErrNone )
-                    {
-                    cchServiceImpl = iCchServiceImpls[ iCchServiceImpls.Count() - 1 ];
-                    }
-                else
-                    {
-                    delete cchServiceImpl;
-                    cchServiceImpl = NULL;
-                    }
+                cchServiceImpl = CCchServiceImpl::NewLC( *this, // CS: 3
+                    service.iServiceId, *iCchUi );
+                iCchServiceImpls.AppendL( cchServiceImpl );
+                CleanupStack::Pop( cchServiceImpl );  // CS: 2
                 }
             else
                 {
                 cchServiceImpl = iCchServiceImpls[ idx ];
                 }
-            error = aServices.Append( cchServiceImpl );
-            if( error )
-                {
-                delete cchServiceImpl;
-                cchServiceImpl = NULL;
-                }
+            
+            aServices.AppendL( cchServiceImpl );
             }
         }
+    
     cchServices->Reset();
-    CleanupStack::PopAndDestroy( cchServices );
-    CCHLOGSTRING( "CCchImpl::GetServices: OUT" );
+    CleanupStack::PopAndDestroy( cchServices );  // CS: 1
     User::LeaveIfError( error );
+    CleanupStack::Pop( &aServices );  // CS: 0
+    
+    CCHLOGSTRING( "CCchImpl::GetServicesL: OUT" );
     }
 
 // ---------------------------------------------------------------------------

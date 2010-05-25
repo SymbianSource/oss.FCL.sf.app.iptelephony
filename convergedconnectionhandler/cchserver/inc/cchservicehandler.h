@@ -189,7 +189,7 @@ public: // New functions
      * @since S60 3.2
      * @param aMessage IPC message
      */
-    void GetServicesL( RMessage2 aMessage ) const;
+    void GetServicesL( RMessage2 aMessage );
 
     /** 
      * Get state of service or subservice of a certain service

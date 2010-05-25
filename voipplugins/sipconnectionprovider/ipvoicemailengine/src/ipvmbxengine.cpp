@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2002-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -553,6 +553,13 @@ void CIpVmbxEngine::HandleMessage(
             message = MIpVmbxObserver::ENetworkError;
             break;
             }
+        case CIpVmbxEngine::EEngineFatalNetworkError:
+            {
+            subscription->Cancel();
+            subscription->DeleteEvent();
+            message = MIpVmbxObserver::EFatalNetworkError;
+            break;
+            }
         default:
             IPVMEPRINT( "Unhandled message!" );
         }
@@ -613,9 +620,10 @@ void CIpVmbxEngine::ParseNotifyContentL(
     TDes8& aFrom8 ) const
     {
 #ifdef _DEBUG
-    TBuf<128> tmpStr;
-    tmpStr.Copy( aContent8 );
-    IPVMEPRINT2( "CIpVmbxEngine::ParseNotifyContentL - aContent8:%S", &tmpStr )
+    HBufC* print = HBufC::NewLC( aContent8.Length() );
+    print->Des().Copy( aContent8 );
+    IPVMEPRINT2( "CIpVmbxEngine::ParseNotifyContentL - aContent8:%S", &print->Des() )
+    CleanupStack::PopAndDestroy( print );
 #endif // _DEBUG
     aCreateSms = EFalse;
 

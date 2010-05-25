@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -828,6 +828,8 @@ void CRCSEDbImporter::GetProfileIdsFromDescriptorL(
     const TDesC& aNumbers,
     RArray<TSettingIds>& aArray )
     {
+    CleanupClosePushL( aArray );
+    
     TLex lex( aNumbers );
     
     TSettingIds value;
@@ -853,6 +855,8 @@ void CRCSEDbImporter::GetProfileIdsFromDescriptorL(
             lex.Inc( 1 );
             }
         } 
+    
+    CleanupStack::Pop( &aArray );
     }
 
 
@@ -865,6 +869,7 @@ void CRCSEDbImporter::GetNumbersFromDescriptorL(
     const TDesC& aNumbers,
     RArray<T>& aArray )
     {
+    CleanupClosePushL( aArray );
     TLex lex( aNumbers );
 
     // Reset original array
@@ -884,7 +889,9 @@ void CRCSEDbImporter::GetNumbersFromDescriptorL(
             // Go over the space character.
             lex.Inc( 1 );
             }
-        } 
+        }
+    
+    CleanupStack::Pop( &aArray );
     }
 
 

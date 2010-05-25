@@ -84,6 +84,11 @@ protected:
      * @param aSubService Deregistered sub service
      */
     void DeregisterProfile();
+    
+    /**
+     * Instantly force disables sip profile
+     */
+    void PerformInstantForceSipProfileDisable();
 
     /**
      * Starts force disable timer
@@ -124,8 +129,10 @@ private:
     /**
      * Handles sip profile forced disable timeout
      * Sends Deregistered event for the subservice
+     * @param aForceDisableSipProfile ETrue when wanted to really
+     *        force disable actual sip profile (not just generate event).
      */
-    void HandleSipProfileForcedDisable();
+    void HandleSipProfileForcedDisable( TBool aForceDisableSipProfile );
 
 protected:
 

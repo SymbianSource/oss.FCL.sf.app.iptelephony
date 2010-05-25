@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -210,6 +210,8 @@ void CCchUiNotifConnectionHandler::GetAccessPointsFromSnapL(
     CCHUIDEBUG( 
         "CCchUiNotifConnectionHandler::GetAccessPointsFromSnapL - IN" );
 
+    CleanupClosePushL(aIapIds);
+    
     RCmDestinationExt destination = 
                 iCmManagerExt.DestinationL( aDestinationId );
     CleanupClosePushL( destination );
@@ -226,6 +228,7 @@ void CCchUiNotifConnectionHandler::GetAccessPointsFromSnapL(
         }
 
     CleanupStack::PopAndDestroy( &destination );
+    CleanupStack::Pop();
     
     CCHUIDEBUG( 
         "CCchUiNotifConnectionHandler::GetAccessPointsFromSnapL - OUT" );

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2005-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2005-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -35,6 +35,7 @@
 #include <crcseprofileregistry.h>
 #include <crcseaudiocodecentry.h>
 #include <crcseaudiocodecregistry.h>
+#include <mmf/common/mmfcontrollerpluginresolver.h>
 
 #include "CWPVoIPAdapter.h"
 #include "CWPVoIPItem.h"
@@ -411,12 +412,24 @@ void CWPVoIPAdapter::VisitL( CWPCharacteristic& aCharacteristic )
 void CWPVoIPAdapter::GetSavingInfoL( TInt aIndex, 
     RPointerArray<HBufC8>& aSavingInfo )
     {
+    CleanupResetAndDestroyPushL( aSavingInfo );
+    
     // APPID into place [0].
-    aSavingInfo.AppendL( KVoIPAppID8().AllocL() );
+    HBufC8* temp = KVoIPAppID8().AllocLC();
+    aSavingInfo.AppendL( temp );
+    CleanupStack::Pop();
+    
     // APPREF into place [1].
-    aSavingInfo.AppendL( iDatas[aIndex]->AppRef()->AllocL() );
+    temp = iDatas[aIndex]->AppRef()->AllocLC();
+    aSavingInfo.AppendL( temp );
+    CleanupStack::Pop();
+    
     // Profile id into place [2].
-    aSavingInfo.AppendL( iDatas[aIndex]->SaveData().AllocL() );
+    temp = iDatas[aIndex]->SaveData().AllocLC();
+    aSavingInfo.AppendL( temp );
+    CleanupStack::Pop();
+    
+    CleanupStack::Pop( &aSavingInfo );
     }
 
 // ---------------------------------------------------------------------------

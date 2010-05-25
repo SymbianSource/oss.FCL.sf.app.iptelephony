@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004-2007 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2004-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -349,6 +349,7 @@ void CRCSERegistryBase::FindIdsByValueL(
 //
 void CRCSERegistryBase::FindAllIdsL( RArray<TUint32>& aIdArray )
     {
+    CleanupClosePushL( aIdArray );
     aIdArray.Reset();
 
     RArray<TInt> ids;
@@ -364,6 +365,7 @@ void CRCSERegistryBase::FindAllIdsL( RArray<TUint32>& aIdArray )
         }
 
     CleanupStack::PopAndDestroy( &ids );
+    CleanupStack::Pop( &aIdArray );
     }
 
 // -----------------------------------------------------------------------------
