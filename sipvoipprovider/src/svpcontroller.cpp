@@ -33,6 +33,7 @@
 
 #include <wlantrafficstreamparameters.h> // CWlanMgmtClient
 #include <ccpdefs.h>
+#include <featdiscovery.h>
 
 #include "svpcontroller.h"
 #include "svpmosession.h"
@@ -72,8 +73,12 @@ void CSVPController::ConstructL()
     iSuppServices = CSVPSupplementaryServices::NewL();
     iSVPUtility = CSVPUtility::NewL();
     iRtpObserver = CSVPRtpObserver::NewL();
+    TBool wlanSupported = CFeatureDiscovery::IsFeatureSupportedL( KFeatureIdProtocolWlan );
 #ifndef __WINS__
-    iWlanMgmt = CWlanMgmtClient::NewL();
+    if ( wlanSupported )
+        {
+        iWlanMgmt = CWlanMgmtClient::NewL();
+        }
 #endif // __WINS__
 
     SVPDEBUG1( "CSVPController::ConstructL Out" )

@@ -201,6 +201,53 @@ void CCchUiNotifConnectionHandler::GetDestinationsL(
     }
 
 // ---------------------------------------------------------------------------
+// CCchUiNotifConnectionHandler::GetDestinationL
+// ---------------------------------------------------------------------------
+//
+void CCchUiNotifConnectionHandler::GetDestinationL( 
+    TUint aIapId, TInt& aError, TUint32& aDestinationId )
+    {
+    CCHUIDEBUG2(
+        "CCchUiNotifConnectionHandler::GetDestinationL - IN aIapID = %d", &aIapId );
+    
+    aError = KErrNotFound;
+    RArray<TUint32> destinationIds;
+    CleanupClosePushL( destinationIds );
+    
+    iCmManagerExt.AllDestinationsL( destinationIds );
+    
+    // Find our service destination from Iap ids.
+    for ( TInt i( 0 ) ; i < destinationIds.Count() && KErrNone != aError; i++ )
+        {
+        RCmDestinationExt refDestination = 
+            iCmManagerExt.DestinationL( destinationIds[ i ] );
+        CleanupClosePushL( refDestination );
+        
+        HBufC* destName = refDestination.NameLC();
+        RCmConnectionMethodExt connectionMethod;
+        CleanupClosePushL( connectionMethod );
+        
+        TRAPD( error, connectionMethod =
+            refDestination.ConnectionMethodByIDL( aIapId ) );
+        
+        if ( KErrNone == error )
+            {
+            CCHUIDEBUG( 
+                "GetDestinationsL - IapID found from destination" );
+            aDestinationId = destinationIds[ i ];
+            aError = KErrNone;
+            }
+        CleanupStack::PopAndDestroy( &connectionMethod );
+        CleanupStack::PopAndDestroy( destName );
+        CleanupStack::PopAndDestroy( &refDestination );
+        }
+    
+    CleanupStack::PopAndDestroy( &destinationIds );
+
+    CCHUIDEBUG( "CCchUiNotifConnectionHandler::GetDestinationL - OUT" );
+    }
+
+// ---------------------------------------------------------------------------
 // Gets all access point ids from SNAP.
 // ---------------------------------------------------------------------------
 //
@@ -277,4 +324,104 @@ void CCchUiNotifConnectionHandler::GetGprsAccessPointsFromSnapL(
 
     CCHUIDEBUG( 
         "CCchUiNotifConnectionHandler::GetGprsAccessPointsFromSnapL - OUT" );
+    }
+
+// ---------------------------------------------------------------------------
+// CCchUiNotifConnectionHandler::GetGprsAccessPointsSetToServiceSnapL
+// ---------------------------------------------------------------------------
+//
+TInt CCchUiNotifConnectionHandler::GetGprsAccessPointsSetToServiceSnapL(
+    CDesCArray& aIaps, RArray<TUint32>& aIapIds, TUint aIapId )
+    {
+    CCHUIDEBUG2( 
+        "CCchUiNotifConnectionHandler::GetGprsAccessPointsSetToServiceSnapL - IN aIapId = %d", aIapId );
+    
+    TUint32 destinationId = 0;
+    TInt error;
+    GetDestinationL( aIapId, error, destinationId );
+    if ( KErrNone == error )
+        {
+        CCHUIDEBUG2( 
+            "GetGprsAccessPointsSetToServiceSnapL - destinationId = %d", destinationId );
+        
+        RCmDestinationExt refDestination;
+        CleanupClosePushL( refDestination );
+        TRAPD( error,
+            refDestination = iCmManagerExt.DestinationL( destinationId ) );
+        CCHUIDEBUG2(
+            "GetGprsAccessPointsSetToServiceSnapL -Destination error %d", error );
+        
+        if ( KErrNone == error )
+            {
+            GetGprsAccessPointsFromSnapL( aIaps, aIapIds, refDestination );
+            }
+        CleanupStack::PopAndDestroy( &refDestination );
+        }
+
+    CCHUIDEBUG2(
+        "CCchUiNotifConnectionHandler::GetGprsAccessPointsSetToServiceSnapL -return %d", error );
+    
+    return error;
+    }
+
+// ---------------------------------------------------------------------------
+// CCchUiNotifConnectionHandler::IsConnectionMethodSimilarL
+// ---------------------------------------------------------------------------
+//
+TBool CCchUiNotifConnectionHandler::IsConnectionMethodSimilarL(
+    TUint32 aIapId, TUint32 aIapIdToCompare )
+    {
+    CCHUIDEBUG( "CCchUiNotifConnectionHandler::IsConnectionMethodSimilarL - IN" );
+    
+    TBool returnVal = EFalse;
+    TUint32 bearerType = iCmManagerExt.GetConnectionMethodInfoIntL(
+        aIapId, CMManager::ECmBearerType );
+    if ( bearerType == iCmManagerExt.GetConnectionMethodInfoIntL(
+        aIapIdToCompare, CMManager::ECmBearerType ) )
+        {
+        HBufC* buffer = NULL;
+        HBufC* bufferToCompare = NULL;
+        
+        switch( bearerType )
+            {
+            case KUidWlanBearerType:
+                CCHUIDEBUG( "IsConnectionMethodSimilarL - KUidWlanBearerType" );
+                buffer = iCmManagerExt.GetConnectionMethodInfoStringL(
+                    aIapId, CMManager::EWlanSSID );
+                CCHUIDEBUG( "GetConnectionMethodInfoStringL - aIapId EWlanSSID OUT" );
+                CleanupStack::PushL( buffer );
+                bufferToCompare = iCmManagerExt.GetConnectionMethodInfoStringL(
+                    aIapIdToCompare, CMManager::EWlanSSID );
+                if ( buffer->Compare( *bufferToCompare ) == 0 )
+                    {
+                    returnVal = ETrue;
+                    }
+                CleanupStack::PopAndDestroy( buffer );
+                delete bufferToCompare;
+                bufferToCompare = NULL;
+                break;
+            case KUidPacketDataBearerType:
+                CCHUIDEBUG( "IsConnectionMethodSimilarL - KUidPacketDataBearerType" );
+                buffer = iCmManagerExt.GetConnectionMethodInfoStringL(
+                    aIapId, CMManager::EPacketDataAPName );
+                CleanupStack::PushL( buffer );
+                bufferToCompare = iCmManagerExt.GetConnectionMethodInfoStringL(
+                    aIapIdToCompare, CMManager::EPacketDataAPName );
+                if ( buffer->Compare( *bufferToCompare ) == 0 )
+                    {
+                    returnVal = ETrue;
+                    }
+                CleanupStack::PopAndDestroy( buffer );
+                delete bufferToCompare;
+                bufferToCompare = NULL;
+                break;
+            default:
+			    CCHUIDEBUG( "IsConnectionMethodSimilarL - Bearer type unknown" );
+                break;
+            }
+        }
+    CCHUIDEBUG2(
+        "CCchUiNotifConnectionHandler::IsConnectionMethodSimilarL -return = %d", returnVal );
+    
+    return returnVal;
     }

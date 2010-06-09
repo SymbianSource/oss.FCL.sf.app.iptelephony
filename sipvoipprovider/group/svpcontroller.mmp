@@ -136,4 +136,5 @@ LIBRARY			voipeventlog.lib	// for VoIP event logger
 LIBRARY                 ipapputils.lib          // CIpAppPhoneUtils, CIPAppUtilsAddressResolver
 LIBRARY                 callprovider.lib
 LIBRARY                 serviceprovidersettings.lib
+LIBRARY			featdiscovery.lib
 

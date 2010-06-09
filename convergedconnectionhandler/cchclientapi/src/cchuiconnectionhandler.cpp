@@ -25,6 +25,8 @@
 #include <cmconnectionmethodext.h>
 #include <WEPSecuritySettingsUI.h>
 #include <WPASecuritySettingsUI.h>
+#include <cmmanager.h>
+#include <cmpluginpacketdatadef.h>
 
 #include "cchuilogger.h"
 #include "cchuicchhandler.h"
@@ -610,7 +612,74 @@ void CCchUiConnectionHandler::SetSnapToUseL(
     
     CCHUIDEBUG( "CCchUiConnectionHandler::SetSnapToUseL - OUT" );
     } 
+
+// ---------------------------------------------------------------------------
+// CCchUiConnectionHandler::ConnectionMethodAlreadyExistsL
+// ---------------------------------------------------------------------------
+//
+TBool CCchUiConnectionHandler::ConnectionMethodAlreadyExistsL(
+    TUint32 aIapId, RCmDestinationExt& aTargetSnap ) const
+    {
+    CCHUIDEBUG( "CCchUiConnectionHandler::ConnectionMethodAlreadyExistsL - IN" );
     
+    TBool returnVal = EFalse;
+    TInt conMethodCount = aTargetSnap.ConnectionMethodCount();
+
+    for ( TInt i( 0 ) ; i < conMethodCount && !returnVal; i ++ )
+        {
+        RCmConnectionMethodExt cm = aTargetSnap.ConnectionMethodL( i );
+        CleanupClosePushL( cm );
+        
+        TUint32 bearerType = cm.GetIntAttributeL( CMManager::ECmBearerType );
+        if ( bearerType == iCmManagerExt.GetConnectionMethodInfoIntL(
+            aIapId, CMManager::ECmBearerType ) )
+            {
+            HBufC* buffer = NULL;
+            HBufC* bufferToCompare = NULL;
+            
+            switch( bearerType )
+                {
+                case KUidWlanBearerType:
+                    CCHUIDEBUG( "ConnectionMethodAlreadyExistsL - KUidWlanBearerType" );
+                    buffer = iCmManagerExt.GetConnectionMethodInfoStringL(
+                        aIapId, CMManager::EWlanSSID );
+                    CleanupStack::PushL( buffer );
+                    bufferToCompare =
+                        cm.GetStringAttributeL( CMManager::EWlanSSID );
+                    if ( buffer->Compare( *bufferToCompare ) == 0 )
+                        {
+                        returnVal = ETrue;
+                        }
+                    CleanupStack::PopAndDestroy( buffer );
+                    delete bufferToCompare;
+                    bufferToCompare = NULL;
+                    break;
+                case KUidPacketDataBearerType:
+                    CCHUIDEBUG( "ConnectionMethodAlreadyExistsL - KUidPacketDataBearerType" );
+                    buffer = iCmManagerExt.GetConnectionMethodInfoStringL(
+                        aIapId, CMManager::EPacketDataAPName );
+                    CleanupStack::PushL( buffer );
+                    bufferToCompare =
+                        cm.GetStringAttributeL( CMManager::EPacketDataAPName );
+                    if ( buffer->Compare( *bufferToCompare ) == 0 )
+                        {
+                        returnVal = ETrue;
+                        }
+                    CleanupStack::PopAndDestroy( buffer );
+                    delete bufferToCompare;
+                    bufferToCompare = NULL;
+                    break;
+                default:
+                    break;
+                }
+            }
+        CleanupStack::PopAndDestroy( &cm );
+        }
+    CCHUIDEBUG2( "CCchUiConnectionHandler::ConnectionMethodAlreadyExistsL - return = %d", returnVal );
+    
+    return returnVal;
+    }
+
 // ---------------------------------------------------------------------------
 // Copies specific iap from specific snap to target snap
 // ---------------------------------------------------------------------------
@@ -642,38 +711,26 @@ void CCchUiConnectionHandler::CopyIapToServiceSnapL(
         {
         CleanupClosePushL( targetSnap );
         }
-    CCHUIDEBUG( "CopyIapToServiceSnapL - Get source connection");    
     
-    RCmConnectionMethodExt sourceConn = 
-        iCmManagerExt.ConnectionMethodL( aSourceIap );       
-    CleanupClosePushL( sourceConn );
-    
-    TInt conMethodCount = targetSnap.ConnectionMethodCount();
-    TUint32 sourceIapId = sourceConn.GetIntAttributeL( CMManager::ECmIapId );
-    TBool matchFound( EFalse );
-    
-    for ( TInt ndx = 0 ; ndx < conMethodCount && matchFound == 0; ndx ++ )
-        {
-        RCmConnectionMethodExt cm = targetSnap.ConnectionMethodL( ndx );
-        CleanupClosePushL( cm );
-        
-        TUint32 targetIapId = cm.GetIntAttributeL( CMManager::ECmIapId );
-        
-        if( targetIapId == sourceIapId )
-            {
-            matchFound = ETrue;
-            }
-        CleanupStack::PopAndDestroy( &cm );
-        }
-    if( !matchFound )
+    if( !ConnectionMethodAlreadyExistsL( aSourceIap, targetSnap ) )
         {
         CCHUIDEBUG( 
-          "CopyIapToServiceSnapL - Get source connection ok -> add connection");
+            "CopyIapToServiceSnapL - connection not exists -> add connection" );
         
-        targetSnap.AddConnectionMethodL( sourceConn.CreateCopyL() );
+        RCmConnectionMethodExt sourceConn = 
+            iCmManagerExt.ConnectionMethodL( aSourceIap );       
+        CleanupClosePushL( sourceConn );
+        
+        RCmConnectionMethodExt newConnection = sourceConn.CreateCopyL();
+        CleanupClosePushL( newConnection );
+        targetSnap.AddConnectionMethodL( newConnection );
+        CleanupStack::PopAndDestroy( &newConnection );
+        CleanupStack::PopAndDestroy( &sourceConn );
+        
+        targetSnap.UpdateL();
         }
-    CleanupStack::PopAndDestroy( &sourceConn );
-    CleanupStack::PopAndDestroy( &targetSnap );      
+    
+    CleanupStack::PopAndDestroy( &targetSnap ); 
     
     CCHUIDEBUG( "CCchUiConnectionHandler::CopyIapToServiceSnapL - OUT" );
     }     

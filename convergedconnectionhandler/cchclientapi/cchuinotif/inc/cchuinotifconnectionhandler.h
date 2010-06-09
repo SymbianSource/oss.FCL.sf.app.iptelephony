@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -96,18 +96,51 @@ public:
     void GetDestinationsL(
         TDesC& aServiceName,
         RArray<TUint32>& aDestinationIds );
-     
+
+    /**
+     * Gets service´s destination Id where the given iapid belongs.
+     *
+     * @since S60 9.2
+     * @param aIapId internet accesspoint Id.
+     * @param aError error code in return 
+     * @param aDestinationId returns destination id
+     */
+    void GetDestinationL( 
+        TUint aIapId, TInt& aError, TUint32& aDestinationId );
+    
     /**
      * Gets all access point ids from snap.
      *
      * @since S60 5.0
      * @param aIapIds will store iap ids
      * @param aDestinationId id of destination to use
-     */    
+     */
     void GetAccessPointsFromSnapL(
         RArray<TUint32>& aIapIds, 
         TUint32 aDestinationId );
-       
+    
+    /**
+     * Gets all gprs accesspoints id's from the service's snap.
+     *
+     * @since S60 9.2
+     * @param aIapIds will store iap ids
+     * @param aDestinationId id of destination to use
+     * @return error. KErrNotFound if no gprs accesspoints
+     */
+    TInt GetGprsAccessPointsSetToServiceSnapL(
+        CDesCArray& aIaps, RArray<TUint32>& aIapIds, TUint aIapId );
+    
+    /**
+     * Checks given connection methods equality   
+     *
+     * @since S60 9.2
+     * @param aIapId Iap Id.
+     * @param aIapIdToCompare Iap Id to compare.
+     * @return ETrue if equals
+     */
+    TBool IsConnectionMethodSimilarL(
+        TUint32 aIapId, TUint32 aIapIdToCompare );
+    
 private:
 
     CCchUiNotifConnectionHandler();

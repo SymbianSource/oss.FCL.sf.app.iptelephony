@@ -372,7 +372,7 @@ private: // data
      */
 	CCchImpl* iImplementation;
 
-#ifdef _DEBUG
+#ifdef CCHUI_EUNIT
     friend class UT_CchUi;
 #endif
     };

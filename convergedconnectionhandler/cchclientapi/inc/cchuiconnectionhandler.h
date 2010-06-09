@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -154,6 +154,17 @@ private:
         CMManager::TWlanSecMode aSecurityMode,
         TBool& aAlreadyExists,
         TBool aHidden );
+    
+    /**
+     * Checks if connection method already exists.
+     *
+     * @since S60 9.2
+     * @param aIapId internet accespoint ID.
+     * @param aTargetSnap target destination.
+     * @return ETrue if exists.
+     */
+    TBool ConnectionMethodAlreadyExistsL(
+        TUint32 aIapId, RCmDestinationExt& aTargetSnap ) const;
     
     /**
      * Adds new connection method to snap.

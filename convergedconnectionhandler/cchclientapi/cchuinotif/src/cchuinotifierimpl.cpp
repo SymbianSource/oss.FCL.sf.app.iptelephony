@@ -299,15 +299,23 @@ void CCCHUiNotifierImpl::ShowNoConnectionsQueryL(
         iResultParams.iDialogMode = currentType;
         iResultParams.iServiceId = aServiceId;
         iResultParams.iOperationCommand = commandArray[ result ];        
-          
+        TInt error = KErrNone;  
         if ( ECchUiCommandCopyGprs == commandArray[ result ] )
             {
-            ShowGprsSelectionL( aServiceId );
+            error = ShowGprsSelectionL( aServiceId );
             }
-        CCHUIDEBUG( "ShowNoConnectionsQueryL - write and complete" );   
-        iMessage.WriteL( iReplySlot, 
-            TPckgBuf<TCCHUiNotifierParams>( iResultParams ) );
-        CompleteMessage( KErrNone );    
+        if ( !error )
+            {
+            CCHUIDEBUG( "ShowNoConnectionsQueryL - write and complete" );   
+            iMessage.WriteL( iReplySlot, 
+                TPckgBuf<TCCHUiNotifierParams>( iResultParams ) );
+            CompleteMessage( KErrNone );  
+            }
+        else
+            {
+            CCHUIDEBUG( "ShowNoConnectionsQueryL - complete with cancel" ); 
+            CompleteMessage( error );
+            }
         }
     else
         {
@@ -452,15 +460,23 @@ void CCCHUiNotifierImpl::ShowChangeConnectionQueryL(
             iResultParams.iDialogMode = type;
             iResultParams.iServiceId = aServiceId;
             iResultParams.iOperationCommand = commandArray[ result ];    
-            
+            TInt error = KErrNone;
             if ( ECchUiCommandCopyGprs == commandArray[ result ] )
                 {
-                ShowGprsSelectionL( aServiceId );
+                error = ShowGprsSelectionL( aServiceId );
                 }
-            CCHUIDEBUG( "ShowChangeConnectionQueryL - write and complete" );  
-            iMessage.WriteL( iReplySlot, 
-                TPckgBuf<TCCHUiNotifierParams>( iResultParams ) );
-            CompleteMessage( KErrNone );    
+            if ( !error )
+                {
+                CCHUIDEBUG( "ShowChangeConnectionQueryL - write and complete" );  
+                iMessage.WriteL( iReplySlot, 
+                    TPckgBuf<TCCHUiNotifierParams>( iResultParams ) );
+                CompleteMessage( KErrNone );    
+                }
+            else
+                {
+                CCHUIDEBUG( "ShowChangeConnectionQueryL - complete with cancel" ); 
+                CompleteMessage( error );
+                }
             }
         else
             {
@@ -717,10 +733,11 @@ void CCCHUiNotifierImpl::ShowConfirmChangeConnectionL(
 // Shows gprs iap selection.
 // ---------------------------------------------------------------------------
 //
-void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
+TInt CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
 	{ 
 	CCHUIDEBUG( "CCCHUiNotifierImpl::ShowGprsSelectionL - IN" );	
-
+	
+	TInt error = KErrNone;
     RArray<TUint32> iapIds;
     CleanupClosePushL( iapIds );
 
@@ -742,10 +759,8 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
     
     TUint sourceSnap = KErrNone;
     // Fill array here
-    CCchUiNotifConnectionHandler* connHandler = 
-        CCchUiNotifConnectionHandler::NewLC();
-    sourceSnap = connHandler->GetGprsAccessPointsL( *arrayforDialog, iapIds ); 
-    CleanupStack::PopAndDestroy( connHandler );    
+    sourceSnap = InternetGprsApsMissingFromServiceSnapL(
+        *arrayforDialog, iapIds );
     
     CCHUIDEBUG( "ShowGprsSelectionL - set item array" );	
     dialog->SetItemTextArray( arrayforDialog );
@@ -756,7 +771,8 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
         iEikEnv->EikAppUi())->SuppressAppSwitching(ETrue); 
     iAppKeyBlocked = ETrue;
     
-    CCHUIDEBUG( "ShowGprsSelectionL - run dialog" );	
+    CCHUIDEBUG( "ShowGprsSelectionL - run dialog" );
+    
     dialog->RunLD();
 
     // write result, result now holds the item number
@@ -768,7 +784,7 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
         }
     else
         {
-        User::Leave( KErrCancel );
+        error = KErrCancel;
         }
     
     // Remove application key blocking
@@ -780,7 +796,8 @@ void CCCHUiNotifierImpl::ShowGprsSelectionL( TUint aServiceId )
     CleanupStack::PopAndDestroy( arrayforDialog );     
     CleanupStack::PopAndDestroy( &iapIds );
 
-    CCHUIDEBUG( "CCCHUiNotifierImpl::ShowGprsSelectionL - OUT" );
+    CCHUIDEBUG2( "CCCHUiNotifierImpl::ShowGprsSelectionL -return %d", error );
+    return error;
 	}   	
 
 // ---------------------------------------------------------------------------
@@ -875,7 +892,7 @@ void CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL(
 
     CleanupStack::PopAndDestroy( useGprs );	
     CleanupStack::PopAndDestroy( searchWlan );	
-    CleanupStack::Pop();
+    CleanupStack::Pop( &aCommandArray );
     
     CCHUIDEBUG( 
         "CCCHUiNotifierImpl::FillNoConnectionsDefinedListboxL - OUT" );  	    
@@ -933,9 +950,10 @@ void CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL(
         
     aListItems.AppendL( *searchWlan );
     aCommandArray.AppendL( ECchUiCommandSearchWlan );
-
-    if ( !IsPhoneOfflineL() && IsGprsIapsAvailableL() 
-            && IsVoIPOverWCDMAAllowedL() )
+    
+    if ( !IsPhoneOfflineL() && IsGprsIapsAvailableL() &&
+        IsVoIPOverWCDMAAllowedL() &&
+        IsServiceSnapMissingInternetGprsApsL() )
         {
         aListItems.AppendL( *useGprs ); 
         aCommandArray.AppendL( ECchUiCommandCopyGprs ); 
@@ -948,6 +966,104 @@ void CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL(
             "CCCHUiNotifierImpl::FillChangeCurrentConnectionListboxL - OUT" );
     }
 
+// ---------------------------------------------------------------------------
+// CCCHUiNotifierImpl::IsServiceSnapMissingInternetGprsApsL
+// ---------------------------------------------------------------------------
+//
+TBool CCCHUiNotifierImpl::IsServiceSnapMissingInternetGprsApsL() const
+    {
+    CCHUIDEBUG( 
+        "CCCHUiNotifierImpl::IsServiceSnapMissingInternetGprsApsL - IN" );
+    
+    TBool isMissingGPRSIap = EFalse;
+    
+    RArray<TUint32> iapIds;
+    CleanupClosePushL( iapIds );
+    
+    CDesCArray* iaps = new (ELeave) CDesCArrayFlat( 1 );
+    CleanupStack::PushL( iaps );
+    
+    InternetGprsApsMissingFromServiceSnapL( *iaps, iapIds );
+    
+    if ( iapIds.Count() )
+        {
+        isMissingGPRSIap = ETrue;
+        }
+    CleanupStack::PopAndDestroy( iaps );
+    CleanupStack::PopAndDestroy( &iapIds );
+    
+    CCHUIDEBUG2( 
+        "CCCHUiNotifierImpl::IsServiceSnapMissingInternetGprsApsL - return: %d", isMissingGPRSIap );
+    
+    return isMissingGPRSIap;
+    }
+
+// ---------------------------------------------------------------------------
+// CCCHUiNotifierImpl::InternetGprsApsMissingFromServiceSnapL
+// ---------------------------------------------------------------------------
+//
+TUint32 CCCHUiNotifierImpl::InternetGprsApsMissingFromServiceSnapL(
+    CDesCArray& aIaps, RArray<TUint32>& aIapIds ) const
+    {
+    CCHUIDEBUG( 
+        "CCCHUiNotifierImpl::InternetGprsApsMissingFromServiceSnapL - IN" );
+    
+    TUint32 internetSnapId = KErrNone;
+    
+    CCchUiNotifConnectionHandler* connHandler = 
+        CCchUiNotifConnectionHandler::NewLC();
+    
+    CDesCArray* voipGprsIaps = new (ELeave) CDesCArrayFlat( 1 );
+    CleanupStack::PushL( voipGprsIaps );
+    
+    RArray<TUint32> voipGprsIapIds;
+    CleanupClosePushL( voipGprsIapIds );
+
+    connHandler->GetGprsAccessPointsSetToServiceSnapL(
+        *voipGprsIaps, voipGprsIapIds, iCurrentConnectionIapId );
+
+    CDesCArray* internetGprsIapNames = new (ELeave) CDesCArrayFlat( 2 );
+    CleanupStack::PushL( internetGprsIapNames );
+    
+    RArray<TUint32> internetGprsIapIds;
+    CleanupClosePushL( internetGprsIapIds );
+    
+    TRAPD( err, internetSnapId = connHandler->GetGprsAccessPointsL(
+        *internetGprsIapNames, internetGprsIapIds ) );
+    CCHUIDEBUG2( "-GetGprsAccessPointsL -Trap err = %d", err );
+    
+    if ( !KErrNone == err && !KErrNotFound == err )
+        {
+        User::Leave( err );
+        }
+    
+    for ( TInt i( 0 ); i < internetGprsIapIds.Count(); i++ )
+        {
+        TBool found = EFalse;
+        for ( TInt j( 0 ); j < voipGprsIapIds.Count() && !found; j++ )
+            {
+            found = connHandler->IsConnectionMethodSimilarL(
+                internetGprsIapIds[ i ], voipGprsIapIds[ j ] ); 
+            }
+        if ( !found )
+            {
+            CCHUIDEBUG2(
+                "IsVoIPSNAPMissingInternetGPRSAp -missing GPRS AP id: %d", internetGprsIapIds[ i ] );
+            aIapIds.AppendL( internetGprsIapIds[ i ] );
+            aIaps.AppendL( internetGprsIapNames->MdcaPoint( i ) );
+            }
+        }
+
+    CleanupStack::PopAndDestroy( &internetGprsIapIds );
+    CleanupStack::PopAndDestroy( internetGprsIapNames );
+    CleanupStack::PopAndDestroy( &voipGprsIapIds );
+    CleanupStack::PopAndDestroy( voipGprsIaps );
+    CleanupStack::PopAndDestroy( connHandler );
+    
+    CCHUIDEBUG( "CCCHUiNotifierImpl::InternetGprsApsMissingFromServiceSnapL - OUT" );
+    
+    return internetSnapId;
+    }
 
 // ---------------------------------------------------------------------------
 // Fills list items and commands for change connection dialog.
@@ -1048,6 +1164,7 @@ void CCCHUiNotifierImpl::StartL(
     CCCHUiNotifierBase::StartL( aBuffer, aReplySlot, aMessage );    
     iDialogMode = pckg().iDialogMode;
     iServiceId = pckg().iServiceId;
+    iCurrentConnectionIapId = pckg().iCurrentConnectionIapId;
     
     switch( pckg().iDialogMode )
         {

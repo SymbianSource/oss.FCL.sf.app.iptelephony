@@ -967,22 +967,25 @@ void CSVPTransferStateContext::CreateMceOutReferL( const TDesC& aTarget )
     HBufC8* recipient = NULL;
     const CMceSession& session = iSVPSession->Session();
     __ASSERT_ALWAYS( &session, User::Leave( KErrArgument ) );
-
-    if ( iSVPSession->IsMobileOriginated() ) 
+    
+    TBool isCLIROn = iSVPSession->IsCLIROnL();
+    
+    if ( ( iSVPSession->IsMobileOriginated() && !isCLIROn ) 
+            || ( !iSVPSession->IsMobileOriginated() && isCLIROn ) )
         {
-        SVPDEBUG1( "CSVPTransferStateContext::CreateMceOutReferL(aTarget), MO case" )
-        const TDesC8& recip = session.Recipient();
-        __ASSERT_ALWAYS( &recip, User::Leave( KErrArgument ) );
-        recipient = HBufC8::NewLC( recip.Length() );
-        recipient->Des().Copy( recip );
+        SVPDEBUG1( "CSVPTransferStateContext::CreateMceOutReferL(aTarget), orig" )
+        const TDesC8& orig = session.Originator(); 
+        __ASSERT_ALWAYS( &orig, User::Leave( KErrArgument ) );
+        recipient = HBufC8::NewLC( orig.Length() );
+        recipient->Des().Copy( orig );
         }
     else
         {
-        SVPDEBUG1( "CSVPTransferStateContext::CreateMceOutReferL(aTarget), MT case" )
-        const TDesC8& orig = session.Originator();
-        __ASSERT_ALWAYS( &orig, User::Leave( KErrArgument ) );
-        recipient = HBufC8::NewLC( orig.Length() );
-        recipient->Des().Copy( orig );    
+        SVPDEBUG1( "CSVPTransferStateContext::CreateMceOutReferL(aTarget), recip" )
+        const TDesC8& recip = session.Recipient(); 
+        __ASSERT_ALWAYS( &recip, User::Leave( KErrArgument ) );
+        recipient = HBufC8::NewLC( recip.Length() );
+        recipient->Des().Copy( recip );    
         }
 
     // remove all extra parameters from recipient address

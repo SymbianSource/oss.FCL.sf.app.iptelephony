@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2008-2010 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -252,11 +252,40 @@ private:
      *
      * @since S60 5.0
      * @param aServiceId, service id
+     * @return Error code.
      */
-    void ShowGprsSelectionL( TUint aServiceId );
+    TInt ShowGprsSelectionL( TUint aServiceId );
     
+    /**
+     * Returns ETrue if VoIP over WCDMA is allowed.
+     *
+     * @since S60 5.0
+     * @return ETrue if allowed.
+     */
     TBool IsVoIPOverWCDMAAllowedL();
 
+    /**
+     * Returns ETrue if current service SNAP is missing gprs accespoints
+     * which are set to the internet SNAP.
+     *
+     * @since S60 9.2
+     * @return ETrue if the internet snap has gprs connection
+     *         which are not in the services snap.
+     */
+    TBool IsServiceSnapMissingInternetGprsApsL() const;
+    
+    /**
+     * Returns internet GPRS IAP's informations which are not
+     * in the current service snap.
+     * 
+     * @since S60 9.2
+     * @param aIaps Iap names in return.
+     * @param aIapIds IapIds in return.
+     * @return internet SNAP ID.
+     */
+    TUint32 InternetGprsApsMissingFromServiceSnapL(
+        CDesCArray& aIaps, RArray<TUint32>& aIapIds ) const;
+    
 // from base class CCCHUiNotifierBase
 
     /**
@@ -335,7 +364,15 @@ private: // data
      */
     CCchUiCallStateListener* iCallStateListener;
     
+    /**
+     * Service ID.
+     */
     TUint iServiceId;
+    
+    /**
+     * Current connection IAP ID.
+     */
+    TUint iCurrentConnectionIapId;
     
     CCHUI_UNIT_TEST( T_CchUiNotifierImpl )
     };
