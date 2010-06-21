@@ -105,12 +105,15 @@ CCCHConnMonHandler* CCCHConnMonHandler::NewLC( CCCHServerBase& aServer )
 CCCHConnMonHandler::~CCCHConnMonHandler()
     {
     CCHLOGSTRING( "CCCHConnMonHandler::~CCCHConnMonHandler" );
-    iConnChangeListenerTimer->Cancel();
+    if ( iConnChangeListenerTimer )
+        {
+        iConnChangeListenerTimer->Cancel();
+        }		
     delete iConnChangeListenerTimer;
     StopNotify();
     Cancel();
     iPendingRequests.Close();
-	iUnsolvedConnIds.Close();
+    iUnsolvedConnIds.Close();
     iConnIapIds.Close();
     iAvailableSNAPs.Close();
     iAvailableIAPs.Close();
@@ -177,6 +180,7 @@ void CCCHConnMonHandler::SetSNAPsAvailabilityChangeListener(
     MCCHConnMonHandlerNotifier* aObserver )
     {
     CCHLOGSTRING( "CCCHConnMonHandler::SetSNAPsAvailabilityChangeListener" );
+	iConnChangeListenerTimer->Cancel();
     iSNAPsAvailabilityObserver = aObserver;
     if ( iSNAPsAvailabilityObserver )
         {
@@ -564,6 +568,7 @@ void CCCHConnMonHandler::DoCancel()
         }
     if ( iSNAPsAvailabilityObserver )
         {
+		iConnChangeListenerTimer->Cancel();
         iSNAPsAvailabilityObserver->SNAPsAvailabilityChanged( KErrCancel );
         iSNAPsAvailabilityObserver = NULL;
         }

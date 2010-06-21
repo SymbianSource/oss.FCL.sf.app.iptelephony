@@ -174,14 +174,16 @@ void CVoipXmlXdmHandler::SetSettingL( TInt aParam, const TDesC& aValue )
 void CVoipXmlXdmHandler::CreateProviderNameL( TDes& aName )
     {
     DBG_PRINT( "CVoipXmlXdmHandler::CreateProviderNameL begin" );
-
+	
+    const TInt maxModifyLength = 
+        KMaxNodeNameLength - KMaxProfileNameAppendLength;
     RArray<TInt> settingIds;
     CleanupClosePushL( settingIds ); // CS:1
     // CS:2
     CDesCArray* names = TXdmSettingsApi::CollectionNamesLC( settingIds );
 
     HBufC* newName = HBufC::NewLC( KMaxNodeNameLength ); // CS:3
-    newName->Des().Copy( aName );
+    newName->Des().Copy( aName.Left( maxModifyLength ) );
     const TInt count( names->MdcaCount() );
     TUint i( 1 ); // Add number to the name if name already in use.
 
@@ -196,7 +198,7 @@ void CVoipXmlXdmHandler::CreateProviderNameL( TDes& aName )
             {
             // If the name is changed we need to begin the comparison
             // again from the first profile.
-            newName->Des().Copy( aName );
+            newName->Des().Copy( aName.Left( maxModifyLength ) );
             newName->Des().Append( KOpenParenthesis() );
             newName->Des().AppendNum( i );
             newName->Des().Append( KClosedParenthesis() );  

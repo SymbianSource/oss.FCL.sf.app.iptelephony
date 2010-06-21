@@ -447,22 +447,23 @@ void CCSCServiceContainer::DeleteServiceL()
     if (  iListBoxItemArray.Count() )
         {
         TListBoxItem item = ListBoxItem();
-        TBool  disabled = iCCHHandler.IsServiceDisabled( item.iServiceId );
-        
-        // if enabled -> show unable to delete note
-        if ( !disabled )
-            {
-            CCSCNoteUtilities::ShowInformationNoteL( 
-                CCSCNoteUtilities::ECSCUnableToDeleteNote,
-                    iServiceHandler.ServiceNameL( item.iServiceId ) );
-            return;
-            }
 
         // Show confirmation query for service deletion                        
         if ( CCSCNoteUtilities::ShowCommonQueryL( 
             CCSCNoteUtilities::ECSCDeleteServiceQuery, 
             iServiceHandler.ServiceNameL( item.iServiceId ) ) )
             {
+            TBool  disabled = iCCHHandler.IsServiceDisabled( item.iServiceId );
+               
+            // if enabled -> show unable to delete note
+            if ( !disabled )
+                {
+                CCSCNoteUtilities::ShowInformationNoteL( 
+                    CCSCNoteUtilities::ECSCUnableToDeleteNote,
+                        iServiceHandler.ServiceNameL( item.iServiceId ) );
+                return;
+                }
+            
             // First check if there is a service plugin UID.
             TInt count = iServicePluginHandler.PluginCount( 
                 CCSCEngServicePluginHandler::EInitialized );

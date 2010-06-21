@@ -117,14 +117,27 @@ void CSVPMoSession::ConstructL(
     // Add P-Preferred-Identity header if CLIR is on  
     if ( iSVPUtility.IsCLIROnL() )
         {
-        const TDesC8* userAor = NULL;
-        TInt err = profile->GetParameter( KSIPUserAor, userAor );
+        HBufC8* userAor = NULL;
+        const MDesC8Array* aors( NULL ); // Array of registered address of records
         
-        if ( !err )
+        TInt result = profile->GetParameter( KSIPRegisteredAors, aors );
+        
+        if ( !aors || aors->MdcaCount() == KErrNone )
             {
-            iSVPUtility.AddPPreferredIdentityToUserHeadersL( 
-                *aUserHeaders, *userAor );
+            SVPDEBUG1( "CSVPMoSession::CompleteUriL - registered aors array empty" )
+            const TDesC8* userAorStr = NULL;
+            User::LeaveIfError( profile->GetParameter( KSIPUserAor, userAorStr ) );
+            SVPDEBUG2( "CSVPMoSession::CompleteUriL - KSIPUserAor result: %d", result )
+            userAor = userAorStr->AllocLC();
             }
+        else
+            {
+            userAor = aors->MdcaPoint( 0 ).AllocLC();
+            }    
+
+        iSVPUtility.AddPPreferredIdentityToUserHeadersL( 
+            *aUserHeaders, *userAor );
+        CleanupStack::PopAndDestroy(); //userAor
         }
     
     // create Mce out session 

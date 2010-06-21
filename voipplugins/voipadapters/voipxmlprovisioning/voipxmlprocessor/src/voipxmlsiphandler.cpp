@@ -499,17 +499,20 @@ void CVoipXmlSipHandler::ProfileRegistryErrorOccurred(
 void CVoipXmlSipHandler::CreateProviderNameL( const TDesC8& aName )
     {
     DBG_PRINT( "CVoipXmlSipHandler::CreateProviderNameL begin" );
-
+    
+    const TInt maxModifyLength = 
+        KMaxNodeNameLength - KMaxProfileNameAppendLength;
+    
     RPointerArray<CSIPProfile> profiles;
     CleanupResetAndDestroyL( profiles ); // CS:1
-
+    
     // Get all profiles based on profile types.
     iRegistry->ProfilesL( profiles );
     const TInt profileCount = profiles.Count();
-
+    
     // Go through loaded profiles and check for name duplicates.
     HBufC8* name = HBufC8::NewLC( KMaxNodeNameLength ); // CS:2
-    name->Des().Copy( aName );
+    name->Des().Copy( aName.Left( maxModifyLength ) );
     TUint i( 1 ); // Add number to the name if name already in use.
     const TInt count( profiles.Count() );
     for ( TInt counter = 0; counter < count; counter++ )
@@ -520,7 +523,7 @@ void CVoipXmlSipHandler::CreateProviderNameL( const TDesC8& aName )
         profile->GetParameter( KSIPProviderName, existingName );
         if ( 0 == existingName->Compare( *name ) )
             {
-            name->Des().Copy( aName );
+            name->Des().Copy( aName.Left( maxModifyLength ) );
             name->Des().Append( KOpenParenthesis8() );
             name->Des().AppendNum( i );
             name->Des().Append( KClosedParenthesis8() );  

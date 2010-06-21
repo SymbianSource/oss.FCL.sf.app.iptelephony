@@ -294,7 +294,7 @@ void CVoipXmlVoipHandler::SetCoreSettingL( TInt aParam, const TDesC& aValue )
         {
         case EName:
             {
-            TBuf<KMaxSettingsNameLength> name( KNullDesC );
+            TBuf<KMaxNodeValueLength> name( KNullDesC );
             name.Copy( aValue );
             TRAP_IGNORE( ValidateProfileNameL( name ) );
             iEntry->iProviderName.Copy( name );
@@ -809,7 +809,6 @@ void CVoipXmlVoipHandler::ValidateProfileNameL( TDes& aName )
     newName->Des().Copy( aName.Left( maxModifyLength ) );
 
     TUint i( 1 ); // Add number to the name if name already in use.
-    TBool changed( EFalse );
 
     // Go through each profile and see if the name of the new profile    
     // matches one of the existing names. If it does change it and
@@ -834,16 +833,11 @@ void CVoipXmlVoipHandler::ValidateProfileNameL( TDes& aName )
                 {
                 User::Leave( KErrBadName );
                 }
-            changed = ETrue;
             }
         CleanupStack::PopAndDestroy( profile ); // CS:2
         }
-
-    // Change setting only if it was changed.
-    if ( changed )
-        {
-        aName.Copy( newName->Des() );
-        }
+    
+    aName.Copy( *newName );
 
     // newName, &voipIds
     CleanupStack::PopAndDestroy( 2, &voipIds ); // CS:0

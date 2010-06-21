@@ -214,14 +214,16 @@ TInt CVoipXmlPresenceHandler::FinalizeSettings()
 void CVoipXmlPresenceHandler::CreateProviderNameL( TDes& aName )
     {
     DBG_PRINT( "CVoipXmlPresenceHandler::CreateProviderNameL begin" );
-
+    
+    const TInt maxModifyLength = 
+        KMaxNodeNameLength - KMaxProfileNameAppendLength;
     RArray<TInt> settingIds;
     CleanupClosePushL( settingIds ); // CS:1
     // CS:2
     CDesCArray* names = PresSettingsApi::GetAllSetsNamesLC( settingIds );
 
     HBufC* newName = HBufC::NewLC( KMaxNodeNameLength ); // CS:3
-    newName->Des().Copy( aName );
+    newName->Des().Copy( aName.Left( maxModifyLength ) );
     const TInt count( names->MdcaCount() );
     TUint i( 1 ); // Add number to the name if name already in use.
 
@@ -236,7 +238,7 @@ void CVoipXmlPresenceHandler::CreateProviderNameL( TDes& aName )
             {
             // If the name is changed we need to begin the comparison
             // again from the first profile.
-            newName->Des().Copy( aName );
+            newName->Des().Copy( aName.Left( maxModifyLength ) );
             newName->Des().Append( KOpenParenthesis() );
             newName->Des().AppendNum( i );
             newName->Des().Append( KClosedParenthesis() );  
