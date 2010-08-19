@@ -1103,6 +1103,17 @@ TBool CScpSipConnection::IsIapConnectionAvailable( TInt aIapId ) const
     }
 
 // -----------------------------------------------------------------------------
+// CScpSipConnection::BearerFiltteringSetting
+// -----------------------------------------------------------------------------
+//
+TInt CScpSipConnection::BearerFiltteringSetting(
+    TUint32& aBearerFilttering ) const
+    {
+    SCPLOGSTRING2( "CScpSipConnection[0x%x]::BearerFiltteringSetting - IN", this );
+    return iSipProfile->GetParameter( KBearerType, aBearerFilttering );
+    }
+
+// -----------------------------------------------------------------------------
 // CScpSipConnection::ConnectionStateChanged
 // -----------------------------------------------------------------------------
 //

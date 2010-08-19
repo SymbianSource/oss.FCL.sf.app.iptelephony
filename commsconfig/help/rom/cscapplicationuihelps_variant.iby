@@ -2,10 +2,10 @@
 #define __CSCHELPS_VARIANT_IBY__
 
 #if defined(FF_S60_HELPS_IN_USE)
-    data=LOCALISE(DATAZ_\resource\xhtml\%02d\0x1020E566\contents.zip, RESOURCE_FILES_DIR\xhtml\%02d\0x1020E566\contents.zip)
-    data=LOCALISE(DATAZ_\resource\xhtml\%02d\0x1020E566\index.xml, RESOURCE_FILES_DIR\xhtml\%02d\0x1020E566\index.xml)
-    data=LOCALISE(DATAZ_\resource\xhtml\%02d\0x1020E566\keywords.xml, RESOURCE_FILES_DIR\xhtml\%02d\0x1020E566\keywords.xml)
-    data=LOCALISE(DATAZ_\resource\xhtml\%02d\0x1020E566\meta.xml, RESOURCE_FILES_DIR\xhtml\%02d\0x1020E566\meta.xml)
+    data=LOCALISE(DATAZ_/resource/xhtml/%02d/0x1020E566/contents.zip, RESOURCE_FILES_DIR/xhtml/%02d/0x1020E566/contents.zip)
+    data=LOCALISE(DATAZ_/resource/xhtml/%02d/0x1020E566/index.xml, RESOURCE_FILES_DIR/xhtml/%02d/0x1020E566/index.xml)
+    data=LOCALISE(DATAZ_/resource/xhtml/%02d/0x1020E566/keywords.xml, RESOURCE_FILES_DIR/xhtml/%02d/0x1020E566/keywords.xml)
+    data=LOCALISE(DATAZ_/resource/xhtml/%02d/0x1020E566/meta.xml, RESOURCE_FILES_DIR/xhtml/%02d/0x1020E566/meta.xml)
 #endif
 
 #endif

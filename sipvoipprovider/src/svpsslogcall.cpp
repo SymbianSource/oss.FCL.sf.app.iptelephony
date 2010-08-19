@@ -321,9 +321,11 @@ void CSVPSSLogCall::HandleCallLoggingL( const TDesC8& aFrom )
     TTime eventTime;
     eventTime.UniversalTime();
     iLogEvent->SetTime(eventTime);
-    iLogClient->AddEvent(*iLogEvent, iStatus);
-
-    SetActive();
+    if( !IsActive() )
+        {
+        iLogClient->AddEvent(*iLogEvent, iStatus);
+        SetActive();
+        }
 	SVPDEBUG1("CSVPSSLogCall::HandleCallLoggingL, Exit");
     }
 

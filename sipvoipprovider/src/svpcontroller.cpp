@@ -1401,7 +1401,7 @@ void CSVPController::IncomingSessionHandlerL( CMceInSession* aSession,
         
         // disable rtp source and speaker sink so that audio is not on
         // before session is up signalling-wise
-        for ( TInt i = 0; i < streams.Count(); i++ )
+        for ( TInt i = 0; i < streams.Count(); )
             {
             SVPDEBUG1( "CSVPController::IncomingSessionHandlerL disabling" );
             
@@ -1428,6 +1428,8 @@ void CSVPController::IncomingSessionHandlerL( CMceInSession* aSession,
             
                 SVPAudioUtility::DisableSpeakerSinkL( stream1->Sinks() );
                 SVPAudioUtility::DisableMicSourceL( *stream1 );
+                //remove all streams that not audio stream
+                i++;
                 }
             }
             

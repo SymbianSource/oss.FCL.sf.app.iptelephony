@@ -178,7 +178,7 @@ private:
      *
      * @since S60 v5.0
      */
-    void HandleReturnToPreviousViewL();
+    void HandleReturnToPreviousViewL( TBool aViewBack = ETrue );
 
     /**
      * Handles exist from settingsui.

@@ -22,7 +22,7 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-    file=ABI_DIR\BUILD_DIR\voipxmlprocessor.dll SHARED_LIB_DIR\voipxmlprocessor.dll
+    file=ABI_DIR/BUILD_DIR/voipxmlprocessor.dll SHARED_LIB_DIR/voipxmlprocessor.dll
 
     ECOM_PLUGIN( voipprovrec.dll, 20026FE1.rsc )
 

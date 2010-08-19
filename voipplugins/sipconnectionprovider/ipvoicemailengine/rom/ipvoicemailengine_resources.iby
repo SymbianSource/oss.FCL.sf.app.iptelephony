@@ -21,6 +21,6 @@
 
 #include <data_caging_paths_for_iby.hrh>
     
-data=DATAZ_\RESOURCE_FILES_DIR\ipvoicemailengine.rsc     RESOURCE_FILES_DIR\ipvoicemailengine.rsc
+data=DATAZ_/RESOURCE_FILES_DIR/ipvoicemailengine.rsc     RESOURCE_FILES_DIR/ipvoicemailengine.rsc
 
 #endif // IPVOICEMAILENGINE_RESOURCES_IBY

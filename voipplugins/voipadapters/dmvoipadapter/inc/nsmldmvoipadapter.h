@@ -623,6 +623,22 @@ class CNSmlDmVoIPAdapter : public CSmlDmAdapter
          * Array for service provider settings.
          */
         RPointerArray<CDMVoIPSPSettings> iSPSettings;
+
+        /**
+         * the temporary string used to fetch profile id 
+         */
+        HBufC8* iTempProfileIdObject;
+
+        /**
+         * flag which indicates whether the profile type is set or not
+         */
+        TBool iIsProfileTypeSet;
+        
+        /**
+         * flag which indicates whether the AllowVoIPOverWCDMA flag is 
+         * modified or not
+         */
+        TBool iAllowVoIPOverWCDMAModified;
     };
 
 #endif // __NSMLDMVOIPADAPTER_H__

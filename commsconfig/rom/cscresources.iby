@@ -22,8 +22,8 @@
 #define CSCRESOURCES_IBY
 
 
-DATA=DATAZ_\RESOURCE_FILES_DIR\cscsettingsui.rsc	RESOURCE_FILES_DIR\cscsettingsui.rsc
-DATA=DATAZ_\RESOURCE_FILES_DIR\cscgspluginrsc.rsc   RESOURCE_FILES_DIR\cscgspluginrsc.rsc
+DATA=DATAZ_/RESOURCE_FILES_DIR/cscsettingsui.rsc	RESOURCE_FILES_DIR/cscsettingsui.rsc
+DATA=DATAZ_/RESOURCE_FILES_DIR/cscgspluginrsc.rsc   RESOURCE_FILES_DIR/cscgspluginrsc.rsc
 
 S60_APP_RESOURCE(CSC)
 S60_APP_CAPTION(CSC)

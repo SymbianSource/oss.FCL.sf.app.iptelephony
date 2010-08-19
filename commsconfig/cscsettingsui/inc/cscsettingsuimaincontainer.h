@@ -133,7 +133,7 @@ public:
      *
      * @since S60 v5.2
      */
-    void DeleteServiceL();
+    TBool DeleteServiceL();
 
     /**
      * Launches cleanup plugin to remove settings.

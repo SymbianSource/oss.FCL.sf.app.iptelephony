@@ -266,6 +266,17 @@ public:
      * @return ETrue if available
      */
     TBool IsIapConnectionAvailable( TInt aIapId ) const;
+    
+    /**
+     * Gets bearer filttering setting used by sip profile.
+     * 0 --> Not Specified.
+     * 1 --> WLAN Bearer Only.
+     * 2 --> Cellular Data Bearer Only.
+     * @param aBearerFilttering bearer filttering setting
+     * 
+     * @return KErrNone if succeed.
+     */
+    TInt BearerFiltteringSetting( TUint32& aBearerFilttering ) const;
 
 #ifdef _DEBUG
     void GetInfo( TDes& aInfo ) const;

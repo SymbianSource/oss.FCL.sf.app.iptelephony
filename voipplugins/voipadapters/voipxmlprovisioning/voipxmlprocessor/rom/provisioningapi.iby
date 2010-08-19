@@ -21,7 +21,7 @@
 #include <data_caging_paths_for_iby.hrh>
 
 #ifdef __VOIP
-    file=ABI_DIR\BUILD_DIR\provisioningapi.dll SHARED_LIB_DIR\provisioningapi.dll
+    file=ABI_DIR/BUILD_DIR/provisioningapi.dll SHARED_LIB_DIR/provisioningapi.dll
 #endif // __VOIP
 
 #endif // PROVISIONINGAPI_IBY

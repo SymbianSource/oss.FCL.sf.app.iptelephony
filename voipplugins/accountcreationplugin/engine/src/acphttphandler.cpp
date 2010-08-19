@@ -495,7 +495,7 @@ void CAcpHttpHandler::MHFRunL(
                 iConnectionOpen = EFalse;
                 iSession.Close();
                 iConnection.Close();
-                
+                iSocketServer.Close();
                 // Reopen session.
                 iSession.OpenL();
                 }
@@ -521,7 +521,7 @@ TInt CAcpHttpHandler::MHFRunError(
     iConnectionOpen = EFalse;
     iSession.Close();
     iConnection.Close();
-    
+    iSocketServer.Close();
     // Reopen session.
     TRAP_IGNORE( iSession.OpenL() );
     

@@ -242,6 +242,11 @@ const TInt    KIMSettingsId         = 1;
 // Default IM message tone
 _LIT( KDefaultTone,       "Message 2.aac" );
 
+// Bearer related constants
+const TUint32 KBearerNotSpecified = 0;
+const TUint32 KBearerWlanOnly = 1;
+const TUint32 KBearerCellularOnly = 2;
+
 // ---------------------------------------------------------------------------
 // CNSmlDmVoIPAdapter::ConstructL
 // Symbian 2nd phase constructor can leave.
@@ -302,7 +307,7 @@ CNSmlDmVoIPAdapter::~CNSmlDmVoIPAdapter()
         {
         delete iCRCSEProfile; 
         }
-
+    delete iTempProfileIdObject;
     iProfileModifs.Close();
     iCodecModifs.Close();
 
@@ -1268,6 +1273,7 @@ void CNSmlDmVoIPAdapter::UpdateLeafObjectL(
             {
             retValue = CSmlDmAdapter::EInvalidObject;   
             }
+        iAllowVoIPOverWCDMAModified = ETrue; 
         }
     // VoIP/x/VoIPDigits
     else if ( KNSmlDMVoIPVoIPDigits() == uriSeg )
@@ -1831,11 +1837,56 @@ CSmlDmAdapter::TError CNSmlDmVoIPAdapter::UpdateSettingIdsSpecificObjectL(
             {
             iProfileEntries[iProfileID]->iIds[DesToInt( 
                 LastURISeg( aLUID ).Right( 10 ))].iProfileType = 0;
+            // If the profile id is not saved and the string to fetch it is only temporaly stored,
+            // the profile id will be fetched from previously-stored member value and set as well 
+            // when saveing the profiletype.
+            if( iTempProfileIdObject )
+                {
+                TUint32 profileId = SetSipRefL( *iTempProfileIdObject ); 
+                if ( profileId > 0 )
+                    {
+                    // Set profileId to settingsids.
+                    iProfileEntries[iProfileID]->
+                        iIds[DesToInt( LastURISeg( aLUID ).Right( 10 ))].
+                        iProfileId = profileId;
+                    retValue = CSmlDmAdapter::EOk;
+                    }
+                else
+                    {
+                    retValue = CSmlDmAdapter::EInvalidObject;
+                    }       
+                } 
+            iIsProfileTypeSet = ETrue;
+            delete iTempProfileIdObject;
+            iTempProfileIdObject = NULL;
             }
         else if ( KNSmlDMVoIPProfileTypeSCCP() == aObject )
             {
             iProfileEntries[iProfileID]->iIds[DesToInt( 
                 LastURISeg( aLUID ).Right( 10 ))].iProfileType = 1;
+            // If the profile id is not saved and the string to fetch it is only temporaly stored,
+            // the profile id will be fetched from previously-stored member value and set as well 
+            // when saveing the profiletype.
+            if( iTempProfileIdObject )
+                {
+                TUint32 profileId = SetSccpRefL( *iTempProfileIdObject ); 
+                // profileId can be zero
+                if ( profileId > 0 || 0 == profileId )
+                    {
+                    // set profileId to settingsids
+                    iProfileEntries[iProfileID]->iIds[DesToInt( 
+                        LastURISeg( aLUID ).Right( 10 ))].
+                        iProfileId = profileId;
+                    retValue = CSmlDmAdapter::EOk;
+                    }
+                else
+                    {
+                    retValue = CSmlDmAdapter::EInvalidObject;
+                    }
+                }
+            iIsProfileTypeSet = ETrue;
+            delete iTempProfileIdObject;
+            iTempProfileIdObject = NULL;       
             }
         else
             {
@@ -1882,6 +1933,17 @@ CSmlDmAdapter::TError CNSmlDmVoIPAdapter::UpdateSettingIdsSpecificObjectL(
                 {
                 retValue = CSmlDmAdapter::EInvalidObject;
                 }
+            }
+        // If the ProfileType has not been set yet,
+        // the string used to fetch ProfileId temporarily is stored to a member value. 
+        else if ( !iIsProfileTypeSet )
+            {
+            if( iTempProfileIdObject )
+            	{
+            	delete iTempProfileIdObject;
+            	iTempProfileIdObject = NULL;
+            	}
+                iTempProfileIdObject = aObject.AllocL();
             }
         else
             {
@@ -2275,20 +2337,44 @@ CSmlDmAdapter::TError CNSmlDmVoIPAdapter::FetchObjectL(
     // VoIP/x/AllowVoIPOverWCDMA
     else if ( KNSmlDMVoIPAllowVoIPOverWCDMA() == uriSeg )
         {
-        if ( Entry::EOONotSet == iProfileEntries[iProfileID]->
-            iAllowVoIPoverWCDMA )
+        TInt sipProfileId(0);
+        TUint32 bearerFilttering(0);
+        
+        for ( TInt index = 0; index < iProfileEntries[iProfileID]->
+                iIds.Count(); index++ )
             {
-            segmentResult.Copy( KNSmlDMVoIPValueNotSet );
+            if ( iProfileEntries[iProfileID]->iIds[index].iProfileType == 0 )
+                {
+                sipProfileId = iProfileEntries[iProfileID]->
+                    iIds[index].iProfileId;
+                break;
+                }
             }
-        if ( Entry::EOn == iProfileEntries[iProfileID]->
-            iAllowVoIPoverWCDMA )
+        
+        CSIPProfile* sipProf = NULL;
+        CSIPProfileRegistryObserver* sipRegObs =
+            CSIPProfileRegistryObserver::NewLC(); // CS:1
+        CSIPManagedProfileRegistry* sipProfReg = 
+            CSIPManagedProfileRegistry::NewLC( *sipRegObs ); // CS:2
+        TRAPD( err, ( sipProf = sipProfReg->ProfileL( sipProfileId ) ) );
+        
+        if ( KErrNone == err )
             {
-            segmentResult.Copy( KNSmlDMVoIPValueTrue );
+            User::LeaveIfError( sipProf->GetParameter( 
+                KBearerType, bearerFilttering ) );
             }
-        if ( Entry::EOff == iProfileEntries[iProfileID]->
-            iAllowVoIPoverWCDMA )
+        
+        CleanupStack::PopAndDestroy( sipProfReg ); // CS:1
+        CleanupStack::PopAndDestroy( sipRegObs ); // CS:0
+        
+        if ( bearerFilttering == KBearerWlanOnly )
             {
             segmentResult.Copy( KNSmlDMVoIPValueFalse );
+            }
+        
+        else if ( bearerFilttering == KBearerNotSpecified )
+            {
+            segmentResult.Copy( KNSmlDMVoIPValueTrue );
             }
         }
     // VoIP/x/VoIPDigits
@@ -4288,13 +4374,14 @@ void CNSmlDmVoIPAdapter::CompleteOutstandingCmdsL()
                 if ( ( 0 == iProfileEntries[counter]->
                     iIds[index].iProfileType ) 
                     && iProfileEntries[counter]->
-                        iIds[index].iProfileId > 1
+                        iIds[index].iProfileId > 0
                     && ( iProfileEntries[counter]->
                         iSIPVoIPUAHTerminalType ||
                         iProfileEntries[counter]->
                         iSIPVoIPUAHeaderWLANMAC ||
                         iProfileEntries[counter]->
-                        iSIPVoIPUAHeaderString.Length() > 0 ) )
+                        iSIPVoIPUAHeaderString.Length() > 0 ||
+                        iAllowVoIPOverWCDMAModified ) )
                     {
                     // Create objects that allow the creation of
                     // CSIPManagedProfile object.
@@ -4355,6 +4442,27 @@ void CNSmlDmVoIPAdapter::CompleteOutstandingCmdsL()
                             User::LeaveIfError( 
                                 sipManProf->SetParameter( 
                                 KSIPHeaders, *uahArray ) );
+                            }
+                        
+                        if ( iAllowVoIPOverWCDMAModified )
+                            {
+                            if ( iProfileEntries[iProfileID]->
+                                    iAllowVoIPoverWCDMA == 
+                                     CRCSEProfileEntry::EOn )
+                                {
+                                User::LeaveIfError( 
+                                    sipManProf->SetParameter( 
+                                    KBearerType, KBearerNotSpecified ) );
+                                }
+                            else if ( iProfileEntries[iProfileID]->
+                                         iAllowVoIPoverWCDMA ==
+                                         CRCSEProfileEntry::EOff )
+                                {
+                                User::LeaveIfError( 
+                                    sipManProf->SetParameter( 
+                                    KBearerType, KBearerWlanOnly ) );
+                                }
+                            iAllowVoIPOverWCDMAModified = EFalse;
                             }
 
                         sipProfReg->SaveL( *sipManProf );

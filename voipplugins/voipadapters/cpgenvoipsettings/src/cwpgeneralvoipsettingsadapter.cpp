@@ -20,7 +20,7 @@
 #include <CWPAdapter.h>
 #include <CWPCharacteristic.h>
 #include <CWPParameter.h>
-#include <WPGeneralVoIPSettingsAdapter.rsg>
+#include <wpgeneralvoipsettingsadapter.rsg>
 #include <bldvariant.hrh>
 #include <commdb.h>
 #include <e32des8.h>

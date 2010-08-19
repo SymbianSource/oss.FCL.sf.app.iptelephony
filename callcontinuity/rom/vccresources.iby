@@ -20,6 +20,6 @@
 #define VCCRESOURCES_IBY
 
 // wpvccprovisioning
-data=DATAZ_\RESOURCE_FILES_DIR\wpvccadapterrsc.rsc    RESOURCE_FILES_DIR\wpvccadapterrsc.rsc
+data=DATAZ_/RESOURCE_FILES_DIR/wpvccadapterrsc.rsc    RESOURCE_FILES_DIR/wpvccadapterrsc.rsc
 
 #endif // VCCRESOURCES_IBY

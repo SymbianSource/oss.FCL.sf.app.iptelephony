@@ -436,6 +436,16 @@ HBufC8* CSVPTransferStateContext::CompleteReplacesL( const TDesC8& aString )
         CleanupStack::Pop( 1 ); // string, ReAlloc possible
         CleanupStack::PushL( string );
         }
+    // Check "?X-Sipx-Authidentity=" and remove text after it if exists
+    position = CheckAuthidentity( *string );
+
+    if ( KErrNotFound != position )
+        {
+        // "?X-Sipx-Authidentity=" found
+        CutStringFromPosition( string, position );
+        CleanupStack::Pop( 1 ); // string, ReAlloc possible
+        CleanupStack::PushL( string );
+        }
     
     // Check ">" and remove text after it if exists
     position = CheckRightBracket( *string );
@@ -758,6 +768,11 @@ TInt CSVPTransferStateContext::CheckAuthidentity( const TDesC8& aUri ) const
         {
         returnValue = aUri.Find( KSVPAuthidentity2 );
         SVPDEBUG2( "CSVPTransferStateContext::CheckAuthidentity second return: %d", returnValue )
+        }
+    if ( returnValue == KErrNotFound )
+        {
+        returnValue = aUri.Find( KSVPAuthidentity3 );
+        SVPDEBUG2( "CSVPTransferStateContext::CheckAuthidentity third return: %d", returnValue )
         }
     return returnValue;
     }

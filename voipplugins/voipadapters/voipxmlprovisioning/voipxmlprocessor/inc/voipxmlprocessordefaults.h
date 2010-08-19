@@ -131,6 +131,8 @@ _LIT( KParamData,                         "data" );
 
 // Other.
 const TInt KMaxNodeNameLength          = 32;
+const TInt KMaxDestinationNameLength   = 32;
+const TInt KSpaceForParenthesis        = 4;
 const TInt KMaxNodeValueLength         = 256;
 const TInt KMaxProfileNameAppendLength = 4; // e.g. (10) as in Provider(10)
 const TInt KMaxProfileNames            = 99;
@@ -161,6 +163,7 @@ _LIT8( KEscaped,            "%" );
 _LIT8( KColon,              ":" );
 _LIT8( KTcp,                "TCP" );
 _LIT8( KUdp,                "UDP" );
+_LIT8( KTls,                "TLS" );
 _LIT8( KUserAgent,          "User-Agent" );
 _LIT8( KSpace,              " " );
 const TInt KMaxTerminalTypeLength            = 64;

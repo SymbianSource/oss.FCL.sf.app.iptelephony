@@ -20,7 +20,7 @@
 #include <eikdoc.h>
 #include <StringLoader.h>
 #include <AknQueryDialog.h>
-#include <VoIPProvisioningApp.rsg>
+#include <voipprovisioningapp.rsg>
 #include <aknnotewrappers.h>
 #include <apgcli.h> // RApaLsSession
 #include <bautils.h>

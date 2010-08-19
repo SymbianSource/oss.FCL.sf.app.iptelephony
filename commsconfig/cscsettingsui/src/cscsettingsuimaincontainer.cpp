@@ -872,12 +872,13 @@ void CCSCSettingsUiMainContainer::FocusChanged(
 // Deletes service.
 // ---------------------------------------------------------------------------
 //
-void CCSCSettingsUiMainContainer::DeleteServiceL()
+TBool CCSCSettingsUiMainContainer::DeleteServiceL()
     {
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::DeleteServiceL - begin" );
 
     // Show confirmation query for service deletion.
     // Create confirmation query dialog.
+    TBool isDelete( EFalse );
     HBufC* string = NULL;
     CAknQueryDialog* query = 
         new( ELeave ) CAknQueryDialog( CAknQueryDialog::ENoTone );
@@ -902,9 +903,11 @@ void CCSCSettingsUiMainContainer::DeleteServiceL()
             iModel.SettingsHandler().DeleteServiceL( 
                 iModel.CurrentSPEntryId() );
             }
+        isDelete = ETrue;
         }
 
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::DeleteServiceL - end" );
+    return isDelete;
     }
 
 // ---------------------------------------------------------------------------

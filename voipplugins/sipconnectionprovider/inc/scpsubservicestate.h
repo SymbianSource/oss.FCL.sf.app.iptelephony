@@ -99,12 +99,6 @@ public:
     virtual void ServiceDisconnected( CScpSubService& aSubService ) const;
 
     /**
-     * Bandwidth limited
-     * @param aSubService Sub service
-     */
-    virtual void BandwidthLimited( CScpSubService& aSubService ) const;
-
-    /**
      * Authentication failed
      * @param aSubService Sub service
      */
@@ -121,12 +115,6 @@ public:
      * @param aSubService Sub service
      */
     virtual void ServiceConnectionCanceled( CScpSubService& aSubService ) const;
-    
-    /**
-     * Bearer is not supported
-     * @param aSubService Sub service
-     */
-    virtual void BearerNotSupported( CScpSubService& aSubService ) const;
     
     /**
      * Registration pending

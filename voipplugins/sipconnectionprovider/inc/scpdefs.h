@@ -31,11 +31,9 @@ enum TScpConnectionEvent
     EScpDeregistered,           // = CSIPProfileRegistry::EventOccurred(EDeregistered)
     EScpRegistrationFailed,     // = CSIPProfileRegistry::ErrorOccurred(-34)
     EScpInvalidSettings,        // = CSIPProfileRegistry::ErrorOccurred(-6)
-    EScpBandwidthLimited,       // = ENWNetworkModeGsm
     EScpAuthenticationFailed,   // = KErrSIPForbidden
     EScpRoaming,                // = MSipProfileAlrObserver::EMigrationStarted
     EScpRegistrationCanceled,   // = CSIPProfileRegistry::ErrorOccurred(-3)
-    EScpBearerNotSupported,     // = RCSE parameter iAllowVoIPoverWCDMA
     EScpRegistrationPending     // = XIMP Bind / VMBX Subscribe(-11)
     };
 

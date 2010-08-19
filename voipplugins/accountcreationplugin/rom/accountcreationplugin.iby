@@ -19,8 +19,8 @@
 #ifndef ACCOUNTCREATIONPLUGIN_IBY
 #define ACCOUNTCREATIONPLUGIN_IBY
 
-file=ABI_DIR\BUILD_DIR\accountcreationengine.dll SHARED_LIB_DIR\accountcreationengine.dll
+file=ABI_DIR/BUILD_DIR/accountcreationengine.dll SHARED_LIB_DIR/accountcreationengine.dll
 ECOM_PLUGIN( accountcreationplugin.dll, 1020E56D.rsc )
-data=DATAZ_\APP_BITMAP_DIR\acpicons.mif APP_BITMAP_DIR\acpicons.mif
+data=DATAZ_/APP_BITMAP_DIR/acpicons.mif APP_BITMAP_DIR/acpicons.mif
 
 #endif ACCOUNTCREATIONPLUGIN_IBY

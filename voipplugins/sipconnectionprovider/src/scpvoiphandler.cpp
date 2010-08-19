@@ -17,7 +17,6 @@
 
 
 #include <e32property.h>
-#include <networkhandlingdomainpskeys.h>
 #include <spdefinitions.h>
 #include "scpvoiphandler.h"
 #include "scpprofilehandler.h"
@@ -27,7 +26,6 @@
 #include "scpsettinghandler.h"
 #include "scpsipconnection.h"
 #include "scputility.h"
-#include "scppropertynotifier.h"
 #include "csipclientresolverutils.h"
 
 // : These need to be in some common header
@@ -53,8 +51,6 @@ void CScpVoipHandler::ConstructL()
     SCPLOGSTRING2( "CScpVoipHandler[0x%x]::ConstructL", this );
     
     BaseConstructL();
-    iNetworkMode = CScpPropertyNotifier::NewL( KPSUidNetworkInfo, 
-        KNWTelephonyNetworkMode, *this ) ;
     iSipClientResolver = CSipClientResolverUtils::NewL();
     }
 
@@ -82,7 +78,6 @@ CScpVoipHandler::~CScpVoipHandler()
     {
     SCPLOGSTRING2( "CScpVoipHandler[0x%x]::~CScpVoipHandler", this );
     delete iSipClientResolver;
-    delete iNetworkMode;
     }
 
 // -----------------------------------------------------------------------------
@@ -198,13 +193,11 @@ void CScpVoipHandler::HandleSipConnectionEventL( TUint32 aProfileId,
                                                 TScpConnectionEvent aEvent )
     {
     SCPLOGSTRING4( "CScpVoipHandler[0x%x]::HandleSipConnectionEvent id: %d event: %d",
-                   this, aProfileId, aEvent );
+        this, aProfileId, aEvent );
 
     if( iSubService.SipProfileId() == aProfileId &&
         iSubService.EnableRequestedState() != CScpSubService::EScpNoRequest )
         {
-        // When in 2G mode with GPRS iap we are enabled but can't
-        // create or receive any VoIP calls
         if( aEvent == EScpRegistered &&
             iSubService.EnableRequestedState() == CScpSubService::EScpEnabled )
             {
@@ -212,40 +205,11 @@ void CScpVoipHandler::HandleSipConnectionEventL( TUint32 aProfileId,
             contactHeaderUser.CleanupClosePushL();
             GetSipProfileContactHeaderUserL( contactHeaderUser );
             
-            HBufC* string = HBufC::NewLC(contactHeaderUser.Length());
-            string->Des().Copy(contactHeaderUser);
-         
-            SCPLOGSTRING2( "CScpVoipHandler::HandleSipConnectionEventL(), contactHeaderUser %S", string );
+            SCPLOGSTRING( "HandleSipConnectionEventL -> register client" );
             
-            CleanupStack::PopAndDestroy(string);
-
-            TInt networkMode = KErrNotFound;
-            TInt result = iNetworkMode->GetValue( networkMode );
-
-            if( result == KErrNone &&
-                networkMode == ENWNetworkModeGsm &&
-                iSubService.GetIapType() == EScpGprs )
-                {
-                aEvent = EScpBandwidthLimited;    
-                iSipClientResolver->UnRegisterClientWithUserL( 
-                    GetCallProviderImplementationUidL(), contactHeaderUser );
-                }
-            else if ( KErrNone == result &&
-                EScpGprs == iSubService.GetIapType() &&
-                !iSubService.ServiceStorage().SettingsHandler().IsVoIPOverWcdmaAllowedL( iSubService.SubServiceId() ) )
-                {
-                aEvent = EScpBearerNotSupported;
-                SCPLOGSTRING( "CScpVoipHandler::HandleSipConnectionEventL(), VoIP over 3G not allowed" );
-                iSipClientResolver->UnRegisterClientWithUserL( 
-                    GetCallProviderImplementationUidL(), contactHeaderUser );
-                }
-            else
-                {
-                iSipClientResolver->RegisterClientWithUserL( 
-                    GetCallProviderImplementationUidL(), contactHeaderUser, KResolver );
-                SCPLOGSTRING( "CScpVoipHandler::HandleSipConnectionEventL(), client resolver" );
-                }
-
+            iSipClientResolver->RegisterClientWithUserL( 
+                GetCallProviderImplementationUidL(), contactHeaderUser, KResolver );
+            
             CleanupStack::PopAndDestroy( &contactHeaderUser );
             }
 

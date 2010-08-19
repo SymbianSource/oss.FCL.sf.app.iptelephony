@@ -18,7 +18,7 @@
 
 // INCLUDE FILES
 #include <e32std.h>
-#include    <WPVoIPAdapter.rsg>
+#include    <wpvoipadapter.rsg>
 #include    <charconv.h>
 #include    <in_sock.h>                // TInetAddr, TSockAddr
 #include    <crcseprofileentry.h>
@@ -72,6 +72,11 @@ const TInt KVmbxResubscribeDefault = 600;
 const TUint32 KIMSubServicePluginId = 0x1027545A; // KSIPConnectivityPluginImplUid
 const TUint32 KIMLaunchUid          = 0x200255D0;
 const TInt    KIMSettingsId         = 1;
+
+// Bearer related constants
+const TUint32 KBearerNotSpecified = 0;
+const TUint32 KBearerWlanOnly = 1;
+const TUint32 KBearerCellularOnly = 2;
 
 // Following lines are for enabling debug prints.
 #ifdef _DEBUG
@@ -877,9 +882,22 @@ TUint CWPVoIPItem::StoreL()
             priorityArray.Append( iCodecs[codecIndex]->iPriorityIndex );
             }
         priorityArray.Sort();
+        
+        //delete possible duplicate priority index
+        for ( TInt index = 0; index < priorityArray.Count()-1; ++index )
+            {
+            TInt tmpIndex = index + 1; 
+            while ( tmpIndex < priorityArray.Count() &&
+                    priorityArray[tmpIndex] == priorityArray[index] )
+                {
+                priorityArray.Remove( tmpIndex );
+                }
+            }
+
         RPointerArray<CWPVoIPCodec> tmpArray;
 
-        for ( TInt priorityIndex = 0; priorityIndex < numberOfCodecs; 
+        TInt numberOfPriority = priorityArray.Count();
+        for ( TInt priorityIndex = 0; priorityIndex < numberOfPriority; 
             priorityIndex++ )
             {
             for ( TInt codecIndex = 0; codecIndex < numberOfCodecs; 
@@ -990,13 +1008,6 @@ TUint CWPVoIPItem::StoreL()
     if ( KNotSet != iVoIPPluginUid )
         {
         cRCSEProfileEntry->iVoIPPluginUID = iVoIPPluginUid;
-        }
-
-    // AllowVoIPOverWCDMA
-    if ( KNotSet != iAllowVoIPOverWCDMA )
-        {
-        cRCSEProfileEntry->iAllowVoIPoverWCDMA = 
-            static_cast<VoIPProfileEntry::TOnOff>( iAllowVoIPOverWCDMA );
         }
 
     // VoIPDigits
@@ -1569,6 +1580,7 @@ void CWPVoIPItem::SavingFinalizedL()
         CleanupStack::PushL( sipManagedProf ); // CS:4
         sipManagedProf->SetParameter( KSIPSnapId, iSnapId );
         sipManagedProf->SetParameter( KSIPAccessPointId, (TUint32)0 );
+        DBG_PRINT2( "CWPVoIPItem::SavingFinalizedL - SNAP ID (1): %d", iSnapId );
         sipReg->SaveL( *sipManagedProf );
         CleanupStack::PopAndDestroy( sipManagedProf ); // CS:3
         CleanupStack::Pop( sipProf ); // CS:2
@@ -1718,6 +1730,7 @@ void CWPVoIPItem::SavingFinalizedL()
                 // Update sip profile to use default snap
                 sipManagedProf->SetParameter( KSIPAccessPointId, (TUint32)0 );
                 sipManagedProf->SetParameter( KSIPSnapId, iSnapId );
+                DBG_PRINT2( "CWPVoIPItem::SavingFinalizedL - SNAP ID (2): %d", iSnapId );
                 sipReg->SaveL( *sipManagedProf );
                 }
             }
@@ -1727,6 +1740,7 @@ void CWPVoIPItem::SavingFinalizedL()
         sipProf = NULL;
         // sipReg, sipObs
         CleanupStack::PopAndDestroy( 2, sipObs ); // CS:0
+        sipReg = NULL;
         }
 
     if ( iSnapIdSet )
@@ -1771,6 +1785,51 @@ void CWPVoIPItem::SavingFinalizedL()
     User::LeaveIfError( spSettings->UpdateEntryL( *spEntry ) );
     DBG_PRINT( "CWPVoIPItem::SavingFinalizedL - \
         Service provider entry updated" );
+
+    DBG_PRINT2( "CWPVoIPItem::SavingFinalizedL - \
+        set allow VoIP over wcdma iAlowVoIPOverWCDMA=%d", iAllowVoIPOverWCDMA );
+    
+    //***********************
+    // Allow VoIP over WCDMA
+    //***********************
+    CSIPProfileRegistryObserver* sipObs = 
+        CSIPProfileRegistryObserver::NewLC(); // CS:1
+    CSIPManagedProfileRegistry* sipReg =
+        CSIPManagedProfileRegistry::NewLC( *sipObs ); // CS:2
+    CSIPProfile* sipProf = NULL;
+    sipProf = sipReg->ProfileL( iSipId );
+    CleanupStack::PushL( sipProf ); // CS:3
+    CSIPManagedProfile* sipManagedProf = 
+        static_cast<CSIPManagedProfile*>( sipProf );
+    CleanupStack::PushL( sipManagedProf ); // CS:4
+        
+    if ( iAllowVoIPOverWCDMA == 1 )
+        {
+        DBG_PRINT( "CWPVoIPItem::SavingFinalizedL - \
+          set bearer not specified" );
+    
+        // If VoIP is allowed over wcdma set bearer type to sip as 
+        // not specified.
+        sipManagedProf->SetParameter( KBearerType, KBearerNotSpecified );
+        }
+    else
+        {
+        DBG_PRINT( "CWPVoIPItem::SavingFinalizedL - \
+            set bearer setting wlan only" );
+    
+        // If not allowed set bearer type to sip as wlan only
+        sipManagedProf->SetParameter( KBearerType, KBearerWlanOnly );
+        }
+    
+    sipReg->SaveL( *sipManagedProf );   
+    CleanupStack::PopAndDestroy( sipManagedProf ); // CS:3
+    CleanupStack::Pop( sipProf ); // CS:2
+    sipProf = NULL;
+    // sipReg, sipObs
+    CleanupStack::PopAndDestroy( 2, sipObs ); // CS:0
+    
+    DBG_PRINT( "CWPVoIPItem::SavingFinalizedL - \
+      bearer settings set" );
 
     // property, spEntry spSettings, cRCSEProfileEntry, cRCSEProfileRegistry
     CleanupStack::PopAndDestroy( 5, cRCSEProfileRegistry ); // CS:0

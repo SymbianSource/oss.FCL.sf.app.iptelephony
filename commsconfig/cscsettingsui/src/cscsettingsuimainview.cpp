@@ -139,7 +139,7 @@ CCSCSettingsUiMainView::~CCSCSettingsUiMainView()
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainView::UpdateSoftkeysL
-// Processes situation when it´s notified that softkeys need to be changed.
+// Processes situation when itï¿½s notified that softkeys need to be changed.
 // ---------------------------------------------------------------------------
 //
 void CCSCSettingsUiMainView::UpdateSoftkeysL( )
@@ -261,9 +261,8 @@ void CCSCSettingsUiMainView::HandleCommandL( TInt aCommand )
         case ECSCSettingsUiDelete:
             {
             CSCSETUIDEBUG( "    HandleCommandL - delete service" );
-            iContainer->DeleteServiceL();
-            iDeleted = ETrue;
-            HandleReturnToPreviousViewL();
+            iDeleted = iContainer->DeleteServiceL();
+            HandleReturnToPreviousViewL( EFalse );
             break;
             }
         case EEikCmdExit:
@@ -873,7 +872,7 @@ void CCSCSettingsUiMainView::LaunchCMSettingsUiL()
 // Handles returning to previous view where settingsui was launced.
 // ---------------------------------------------------------------------------
 //
-void CCSCSettingsUiMainView::HandleReturnToPreviousViewL()
+void CCSCSettingsUiMainView::HandleReturnToPreviousViewL( TBool aViewBack )
     {
     CSCSETUIDEBUG( 
         "CCSCSettingsUiMainView::HandleReturnToPreviousViewL - IN" );
@@ -887,14 +886,9 @@ void CCSCSettingsUiMainView::HandleReturnToPreviousViewL()
             tabview.iUid = iModel.SettingsHandler().ServiceTabViewIdL( 
             iModel.CurrentSPEntryId() ) )
 
-        if ( iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
-            {
-            TVwsViewId idleId;
-            AknDef::GetPhoneIdleViewId( idleId );
-            ActivateViewL( idleId );
-            AppUi()->HandleCommandL( EEikCmdExit );
-            }
-        else if ( tabview.iUid == iModel.ReturnViewId().iUid )
+        // Launched from phonebookview.
+        // Press Back button, return PhoneBookTabView.
+        if ( aViewBack && tabview.iUid == iModel.ReturnViewId().iUid )
             {
             RxSPViewServices viewServices;
             TInt err = viewServices.Activate( 
@@ -905,10 +899,34 @@ void CCSCSettingsUiMainView::HandleReturnToPreviousViewL()
 
             AppUi()->HandleCommandL( EEikCmdExit );
             }
+        
+        if ( iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
+            {
+            // Launched from phonebookview.
+            // Press Ok button, return homescreen.
+            TVwsViewId idleId;
+            AknDef::GetPhoneIdleViewId( idleId );
+            ActivateViewL( idleId );
+            AppUi()->HandleCommandL( EEikCmdExit );
+            }
+        else if( !iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
+            {
+            // Launched from phonebookview.
+            // Press cancel button, return current view.
+            TUid curview = Id();
+            AppUi()->ActivateLocalViewL( curview );
+            }
+        else if( !aViewBack && !iDeleted && KCSCServiceViewId == iModel.ReturnViewId() )
+            {
+            // Launched from service view.
+            // Press cancel button, return current view.
+            TUid curview = Id();
+            AppUi()->ActivateLocalViewL( curview );
+            }
         else
             {
-            // Not deleted or launched from service tab,
-            // activate previous view.
+            // Launched from service view.
+            // Press Back button or Press Delete button, activate previous view.
             AppUi()->ActivateLocalViewL( iModel.ReturnViewId() );
             }
         }

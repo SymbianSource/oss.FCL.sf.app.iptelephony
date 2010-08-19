@@ -19,7 +19,7 @@
 #ifndef VOIPEVENTLOG_IBY
 #define VOIPEVENTLOG_IBY
 
-file=ABI_DIR\BUILD_DIR\voipeventlog.dll  SHARED_LIB_DIR\voipeventlog.dll
+file=ABI_DIR/BUILD_DIR/voipeventlog.dll  SHARED_LIB_DIR/voipeventlog.dll
 
 #endif // VOIPEVENTLOG_IBY
 

@@ -125,15 +125,6 @@ void TScpSubServiceState::ServiceDisconnected( CScpSubService& /*aSubService*/ )
     }
 
 // -----------------------------------------------------------------------------
-// TScpSubServiceState::BandwidthLimited
-// -----------------------------------------------------------------------------
-//
-void TScpSubServiceState::BandwidthLimited( CScpSubService& /*aSubService*/ ) const
-    {
-    SCPLOGSTRING( "TScpSubServiceState::BandwidthLimited" );
-    }
-
-// -----------------------------------------------------------------------------
 // TScpSubServiceState::AuthenticationFailed
 // -----------------------------------------------------------------------------
 //
@@ -158,15 +149,6 @@ void TScpSubServiceState::Roaming( CScpSubService& /*aSubService*/ ) const
 void TScpSubServiceState::ServiceConnectionCanceled( CScpSubService& /*aSubService*/ ) const 
     {
     SCPLOGSTRING( "TScpSubServiceState::ServiceConnectionCanceled" );
-    }
-
-// -----------------------------------------------------------------------------
-// TScpSubServiceState::BearerNotSupported
-// -----------------------------------------------------------------------------
-//
-void TScpSubServiceState::BearerNotSupported( CScpSubService& /*aSubService*/ ) const 
-    {
-    SCPLOGSTRING( "TScpSubServiceState::BearerNotSupported" );
     }
 
 // -----------------------------------------------------------------------------

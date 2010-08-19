@@ -26,6 +26,8 @@
 #include <cenrepnotifyhandler.h>
 #include <ctsydomainpskeys.h>
 #include <crcseprofileregistry.h>
+#include <sipprofile.h>
+#include <sipmanagedprofileregistry.h>
 #include <AknNotiferAppServerApplication.h>  // Application Key enable/disable
 
 #include "cchuilogger.h"
@@ -35,6 +37,7 @@
 #include "cchuinotifconnectionhandler.h"
 #include "cchuicallstatelistener.h"
 
+const TUint32 KBearerSettingWlanOnly = 1;
 
 // ======== MEMBER FUNCTIONS ========
 
@@ -55,6 +58,7 @@ void CCCHUiNotifierImpl::ConstructL()
     {
     CCCHUiNotifierBase::ConstructL();
     iCallStateListener = CCchUiCallStateListener::NewL( *this );
+    iSipProfileRegistry = CSIPManagedProfileRegistry::NewL( *this );
     }
 
 CCCHUiNotifierImpl::~CCCHUiNotifierImpl()
@@ -1104,21 +1108,69 @@ TBool CCCHUiNotifierImpl::IsVoIPOverWCDMAAllowedL()
     {
     CCHUIDEBUG( "CCCHUiNotifierImpl::IsVoIPOverWCDMAAllowed - IN" );
     
+    TBool allowed( EFalse );
     CRCSEProfileRegistry* cRCSEProfileRegistry;
     cRCSEProfileRegistry = CRCSEProfileRegistry::NewLC();
-    TBool ret = EFalse;
+    
     RPointerArray<CRCSEProfileEntry> entries;
+   
+    CleanupStack::PushL( TCleanupItem ( ResetAndDestroy, &entries ) );  //CS
+ 
     cRCSEProfileRegistry->FindByServiceIdL( iServiceId, entries );
     if( entries.Count() )
         {
-        ret = CRCSEProfileEntry::EOn == entries[ 0 ]->iAllowVoIPoverWCDMA;
+        RArray<TSettingIds> settingIdArray;
+        CleanupClosePushL( settingIdArray );    // CS 3
+        settingIdArray = entries[ 0 ]->iIds;
+        TInt sipProfileId( KErrNotFound );
+        for ( TUint i( 0 ) ; i < settingIdArray.Count() ; i++ )
+            {
+            if ( settingIdArray[ i ].iProfileType == 
+                CRCSEProfileEntry::EProtocolSIP )
+                {
+                sipProfileId = settingIdArray[ i ].iProfileId;
+                }
+            }
+        TUint32 bearerSetting( KErrNone );
+        if ( KErrNotFound != sipProfileId )
+            {
+            CSIPProfile* profile = 
+                iSipProfileRegistry->ProfileL( sipProfileId );
+            CleanupStack::PushL( profile ); // CS 4
+            User::LeaveIfError( 
+                profile->GetParameter( KBearerType, bearerSetting ) );
+            if ( KBearerSettingWlanOnly != bearerSetting )
+                {
+                allowed = ETrue;
+                }
+            CleanupStack::PopAndDestroy( profile ); // CS 3
+            }
+        CleanupStack::Pop( &settingIdArray ); // CS 2
         }
     
-    entries.ResetAndDestroy();
-    entries.Close();
-    CleanupStack::PopAndDestroy(); //cRCSEProfileRegistry
+    CleanupStack::PopAndDestroy( &entries ); // clItem    CS 1
     
-    return ret;
+    CleanupStack::PopAndDestroy(); //cRCSEProfileRegistry   CS 0
+    
+    return allowed;
+    }
+
+// ---------------------------------------------------------------------------
+// For deleting RPointerArray in case of leave
+// ---------------------------------------------------------------------------
+//
+void CCCHUiNotifierImpl::ResetAndDestroy( TAny* aPointerArray )
+    {
+    CCHUIDEBUG( "CCCHUiNotifierImpl::ResetAndDestroy - IN" );
+    if ( aPointerArray )
+        {
+        RPointerArray<CRCSEProfileEntry>* array =
+            reinterpret_cast<RPointerArray<CRCSEProfileEntry>*>( aPointerArray );
+        TInt i = array->Count();
+        array->ResetAndDestroy();
+        array->Close();
+        }
+    CCHUIDEBUG( "CCCHUiNotifierImpl::ResetAndDestroy - OUT" );
     }
 
 // ---------------------------------------------------------------------------
@@ -1271,4 +1323,25 @@ void CCCHUiNotifierImpl::CallStateChanged( TInt aCallState )
         }
     
     CCHUIDEBUG( "CCCHUiNotifierImpl::CallStateChangedL - End" );
+    }
+
+// ---------------------------------------------------------------------------
+// From class MSIPProfileRegistryObserver.
+// ---------------------------------------------------------------------------
+//
+void CCCHUiNotifierImpl::ProfileRegistryEventOccurred( 
+    TUint32 /*aSIPProfileId*/, 
+    TEvent /*aEvent*/ )
+    {
+    }
+
+
+// ---------------------------------------------------------------------------
+// From class MSIPProfileRegistryObserver.
+// ---------------------------------------------------------------------------
+//
+void CCCHUiNotifierImpl::ProfileRegistryErrorOccurred(
+    TUint32 /*aSIPProfileId*/,
+    TInt /*aError*/ )
+    {
     }

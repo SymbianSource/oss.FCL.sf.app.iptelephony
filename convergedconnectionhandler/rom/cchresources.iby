@@ -19,9 +19,9 @@
 #ifndef CCHRESOURCES_IBY
 #define CCHRESOURCES_IBY
 
-data=\epoc32\data\Z\Resource\apps\cch.RSC         resource\apps\cch.RSC
+data=/epoc32/data/Z/Resource/apps/cch.RSC         resource/apps/cch.RSC
 
 // CCH UI localized resources
-data=\epoc32\data\Z\Resource\apps\cchuinotif.rsc         resource\apps\cchuinotif.rsc
+data=/epoc32/data/Z/Resource/apps/cchuinotif.rsc         resource/apps/cchuinotif.rsc
 
 #endif // CCHRESOURCES_IBY

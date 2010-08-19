@@ -1524,7 +1524,8 @@ void CSVPSessionBase::HandleStreamStateChange( CMceMediaStream& aStream )
     TBool bothStreamsDisabled ( ETrue );
     TRAP_IGNORE( bothStreamsDisabled = IsBothStreamsDisabledL() );
     if ( bothStreamsDisabled &&
-         CMceSession::EEstablished == aStream.Session()->State() )
+         CMceSession::EEstablished == aStream.Session()->State() && 
+         IsErrorInULandDLFirstTime() )
         {
         SetErrorInULandDLFirstTime( EFalse ); 
         TRAP_IGNORE( StartTimerL( KSVPICMPErrorTime, KSVPICMPErrorTimerExpired ) )
@@ -3102,6 +3103,15 @@ void CSVPSessionBase::UpdateFailed( CMceSession& aSession, TInt aStatusCode )
     {
     SVPDEBUG1( "CSVPSessionBase::UpdateFailed In" )
     SVPDEBUG2( "CSVPSessionBase::UpdateFailed aStatusCode=%d", aStatusCode )
+    
+    // Check if MCE Session has changed
+    if ( &Session() != &aSession )
+        {
+        // And if, then update to the current session
+        SVPDEBUG1( "CSVPSessionBase::UpdateFailed - update MCE Session" )
+        delete iSession;
+        iSession = &aSession;
+        }
     
     if ( iHoldController )
         {

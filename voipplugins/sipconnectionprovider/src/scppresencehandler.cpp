@@ -244,6 +244,17 @@ void CScpPresenceHandler::HandleSipConnectionEvent( const TUint32 aProfileId,
     if ( iSubService.SipProfileId() == aProfileId &&
         iSubService.EnableRequestedState() != CScpSubService::EScpNoRequest )
         {
+        if ( EScpDeregistered == aEvent && 
+             iSubService.EnableRequestedState() == CScpSubService::EScpEnabled )
+            {
+            SCPLOGSTRING( "CScpPresenceHandler - EScpDeregistered -> unbind" );
+            TRAPD( err, HandleDeregistrationL( EFalse ) ); 
+            if ( KErrNotReady == err )
+                {
+                SCPLOGSTRING( "CScpPresenceHandler - EScpDeregistered -> not ready: unbind" );
+                TRAP_IGNORE( ServerUnBindL() );
+                }
+            }
         //if network lost, unbind context
         if ( EScpNetworkLost == aEvent )
             {

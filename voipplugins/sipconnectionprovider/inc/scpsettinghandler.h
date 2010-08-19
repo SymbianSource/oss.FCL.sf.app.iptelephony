@@ -139,14 +139,7 @@ public:
      * @return TInt length of free string.
      */
     TInt UahStringLengthL( TUint32 aServiceId ) const;
-     
-    /**
-     * Checks is service's VoIP subservice allowed to use WCDMA.
-     * @param aServiceId service id
-     * @return ETrue if allowed to use VoIP over 3G, otherwise EFalse.
-     */
-    TBool IsVoIPOverWcdmaAllowedL( TUint32 aServiceId ) const;
-    
+         
 private: 
 
     /**

@@ -23,8 +23,8 @@
 #include <e32std.h>
 #include <e32base.h>
 
-#include "CCHServer.h"
-#include "CCHClientServer.h"
+#include "cchserver.h"
+#include "cchclientserver.h"
 
 // CONSTANTS
 // None
