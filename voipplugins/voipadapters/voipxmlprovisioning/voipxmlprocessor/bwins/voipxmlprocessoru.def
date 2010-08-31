@@ -1,8 +1,0 @@
-EXPORTS
-	?GetBrandingData@CVoipXmlParser@@QAEXAAVTDes8@@0@Z @ 1 NONAME ABSENT ; void CVoipXmlParser::GetBrandingData(class TDes8 &, class TDes8 &)
-	?ImportDocument@CVoipXmlParser@@QAEHAAVRFile@@AAK@Z @ 2 NONAME ; int CVoipXmlParser::ImportDocument(class RFile &, unsigned long &)
-	?NewL@CVoipXmlParser@@SAPAV1@XZ @ 3 NONAME ; class CVoipXmlParser * CVoipXmlParser::NewL(void)
-	?NewLC@CVoipXmlParser@@SAPAV1@XZ @ 4 NONAME ; class CVoipXmlParser * CVoipXmlParser::NewLC(void)
-	?ReadDescriptionLC@CVoipXmlParser@@QAEPAVHBufC16@@AAVRFile@@@Z @ 5 NONAME ABSENT ; class HBufC16 * CVoipXmlParser::ReadDescriptionLC(class RFile &)
-	?ReadDescriptionLC@CVoipXmlParser@@QAEPAVHBufC16@@AAVRFile@@AAVTDes8@@@Z @ 6 NONAME ; class HBufC16 * CVoipXmlParser::ReadDescriptionLC(class RFile &, class TDes8 &)
-

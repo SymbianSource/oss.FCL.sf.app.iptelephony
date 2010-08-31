@@ -1,3 +1,0 @@
--c8,8 qgn_prop_set_service.svg
--c8,8 qgn_prop_voip_new_service.svg
--c8,8 qgn_prop_set_voip_advanced.svg

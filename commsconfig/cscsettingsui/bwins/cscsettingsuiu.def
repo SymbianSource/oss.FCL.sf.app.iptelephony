@@ -1,5 +1,0 @@
-EXPORTS
-	?LaunchSettingsUiL@CCSCSettingsUi@@QBEXXZ @ 1 NONAME ; void CCSCSettingsUi::LaunchSettingsUiL(void) const
-	?NewL@CCSCSettingsUi@@SAPAV1@AAVCEikonEnv@@@Z @ 2 NONAME ; class CCSCSettingsUi * CCSCSettingsUi::NewL(class CEikonEnv &)
-	?InitializeL@CCSCSettingsUi@@QAEXABVTUid@@IPBVMCoeView@@@Z @ 3 NONAME ; void CCSCSettingsUi::InitializeL(class TUid const &, unsigned int, class MCoeView const *)
-
