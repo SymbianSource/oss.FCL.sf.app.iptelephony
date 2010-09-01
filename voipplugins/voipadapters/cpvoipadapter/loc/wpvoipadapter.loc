@@ -1,0 +1,40 @@
+/*
+* Copyright (c) 2002-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for project cpvoipadapter
+*
+*/
+
+
+//d:Summary text for VoIP settings
+//l:msg_body_pane/opt
+//w:
+//r:VoIP Rel3.0
+//
+#define qtn_sm_default_name_voip "VoIP Settings"
+
+//d:Summary title for VoIP settings
+//l:msg_body_pane_t1
+//w:
+//r:VoIP Rel3.0
+//
+#define qtn_sm_head_voip "VoIP settings"
+
+//d:Default provider name. Used when saving the SIP settings.
+//l:popup_info_list_pane_t2/opt1
+//w:
+//r:VoIP Rel3.0
+//
+#define qtn_sm_provider_voip "Provider"
+
+// End of File

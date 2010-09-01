@@ -1,0 +1,13 @@
+EXPORTS
+	??1CVccUiPsProperty@@UAE@XZ @ 1 NONAME ; CVccUiPsProperty::~CVccUiPsProperty(void)
+	?DeleteKeys@CVccUiPsProperty@@QAEHXZ @ 2 NONAME ; int CVccUiPsProperty::DeleteKeys(void)
+	?GetCurrentRequest@CVccUiPsProperty@@QAEHAAW4TVccHoRequest@@@Z @ 3 NONAME ; int CVccUiPsProperty::GetCurrentRequest(enum TVccHoRequest &)
+	?NewL@CVccUiPsProperty@@SAPAV1@XZ @ 4 NONAME ; class CVccUiPsProperty * CVccUiPsProperty::NewL(void)
+	?NotifySubscriberL@CVccUiPsProperty@@QAEXW4TVccHoRequest@@@Z @ 5 NONAME ; void CVccUiPsProperty::NotifySubscriberL(enum TVccHoRequest)
+	??1CVccUiPsPropertyListener@@UAE@XZ @ 6 NONAME ; CVccUiPsPropertyListener::~CVccUiPsPropertyListener(void)
+	?AddObserverL@CVccUiPsPropertyListener@@QAEXAAVMVccPsPropertyListenerObserver@@@Z @ 7 NONAME ; void CVccUiPsPropertyListener::AddObserverL(class MVccPsPropertyListenerObserver &)
+	?CurrentValue@CVccUiPsPropertyListener@@QAEHXZ @ 8 NONAME ; int CVccUiPsPropertyListener::CurrentValue(void)
+	?NewL@CVccUiPsPropertyListener@@SAPAV1@I@Z @ 9 NONAME ; class CVccUiPsPropertyListener * CVccUiPsPropertyListener::NewL(unsigned int)
+	?RemoveObserver@CVccUiPsPropertyListener@@QAEXAAVMVccPsPropertyListenerObserver@@@Z @ 10 NONAME ; void CVccUiPsPropertyListener::RemoveObserver(class MVccPsPropertyListenerObserver &)
+	?Start@CVccUiPsPropertyListener@@QAEXXZ @ 11 NONAME ; void CVccUiPsPropertyListener::Start(void)
+

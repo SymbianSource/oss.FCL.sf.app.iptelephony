@@ -1,0 +1,82 @@
+/*
+* Copyright (c) 2002 - 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  This file contains the localised strings for IPVoiceMailAppEngine.dll
+*
+*/
+
+
+//  LOCALISATION STRINGS
+
+
+// d: there is only 1 new message and no old messages
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_new_voice_message "1 new voice message waiting in total 1 message "
+
+// d: there is 1 new message and one or more old messages
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_new_and_old_voice_msg "1 new voice message waiting in total %N messages "
+
+// d: there are several new messages waiting
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_new_voice_messages "%0N new messages waiting, in total %1N messages"
+
+// d: message account the new voice message
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_msg_account "Message account:\n"
+
+// d: there are several headers received at the same time
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_header_count "Message %N"
+
+// d: to address received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_to "To:\n"
+
+// d: from address received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_from "From:\n"
+
+// d: subject received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_subject "Subject:\n"
+
+// d: date received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_date "Date:\n"
+
+// d: priority received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_priority "Priority:\n"
+
+// d: message-id received in the message header
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_vm_msg_id "Message-ID:\n"
+
+// d: message amount is unknown.
+// l:set_text_pane_t1
+// r:VoIP Rel3.0
+#define qtn_voip_new_voice_messages_sum_unknown "New voice messages waiting"
+
+// End of File  

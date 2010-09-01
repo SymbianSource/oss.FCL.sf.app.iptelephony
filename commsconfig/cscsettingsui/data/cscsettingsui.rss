@@ -1,0 +1,663 @@
+/*
+* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for project CSCSettingsUi
+*
+*/
+
+
+NAME CSCS
+
+#include <eikon.rh>
+#include <avkon.rh>
+#include <avkon.rsg>
+#include <avkon.loc>
+#include <cscsettingsui.loc>
+#include <csc.loc>
+
+#include "cscsettingsui.hrh"
+
+
+// -----------------------------------------------------------------------------
+//
+// Define the resource file signature 
+// This resource should be empty
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+
+// -----------------------------------------------------------------------------
+//
+// Default Document Name
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_default_document_name
+    {
+    buf="";
+    }
+
+// -----------------------------------------------------------------------------
+//
+// Define default menu and status pane
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE EIK_APP_INFO 
+    {
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_mainview_title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_mainview_title
+    {
+    buf = qtn_voip_settings_title;
+    }
+
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_mainview_menubar
+// Menubar for CSCSettingsUi main view.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_BAR r_cscsettingsui_mainview_menubar
+    {
+    titles =
+        {
+        MENU_TITLE
+            {
+            menu_pane = r_cscsettingsui_mainview_menu;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_mainview_menu
+// Menu for CSCSettingsUi main view "Options".
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE MENU_PANE r_cscsettingsui_mainview_menu
+    {
+    items = 
+        {
+        MENU_ITEM
+            {
+            command = ECSCSettingsUiChange;
+            txt = qtn_options_change;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ECSCSettingsUiOpen;
+            txt = qtn_options_open;
+            flags = EEikMenuItemAction;
+            },
+        MENU_ITEM
+            {
+            command = ECSCSettingsUiDelete;
+            txt = qtn_voip_csc_option_delete_service;
+            },
+        MENU_ITEM
+            {
+            command = EAknCmdHelp;
+            txt = qtn_options_help;
+            },
+        MENU_ITEM
+            {
+            command = EAknSoftkeyExit;
+            txt = qtn_options_exit;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_mainview
+// CSCSettingsUi main view resource.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE AVKON_VIEW r_cscsettingsui_mainview
+    {
+    menubar = r_cscsettingsui_mainview_menubar;
+    cba = R_AVKON_SOFTKEYS_OPTIONS_BACK;
+    }
+
+//----------------------------------------------------
+//   
+//    r_cscsettingsui_softkeys_options_back_change
+//    Text association with MSK ( CHANGE )
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_cscsettingsui_softkeys_options_back_change
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyBack; 
+            txt = text_softkey_back; 
+            },
+        CBA_BUTTON 
+            {
+            id=ECSCMSKSettingsUiChange;
+            txt = qtn_msk_change;
+            }
+        };
+    }
+
+//----------------------------------------------------
+//   
+//    r_cscsettingsui_softkeys_options_back_open
+//    Text association with MSK ( OPEN )
+//
+//----------------------------------------------------
+//
+RESOURCE CBA r_cscsettingsui_softkeys_options_back_open
+    {
+    buttons =
+        {
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyOptions; 
+            txt = text_softkey_option;
+            },
+        CBA_BUTTON 
+            {
+            id=EAknSoftkeyBack; 
+            txt = text_softkey_back; 
+            },
+        CBA_BUTTON 
+            {
+            id=ECSCSettingsUiOpen;
+            txt = qtn_msk_open;
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_pres_pref_value_on
+// CSCSettingsUi setting item text when hen presence request preference has
+// autoaccpet invitations on.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_pres_pref_accept_automatically
+    {
+    buf = qtn_servtab_settings_auth_pres_value_off;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_pres_pref_automatically
+// CSCSettingsUi setting item text when hen presence request preference has
+// autoaccpet invitations off
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_pres_pref_always_ask
+    {
+    buf = qtn_servtab_settings_auth_pres_value_on;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_preferred_service_title
+//    CSCSettingsUi setting preferred service title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_preferred_service_title
+   {
+   buf = qtn_voip_settings_voip_preferred_setting;
+   } 
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_vcc_preferred_service_title
+//    CSCSettingsUi setting preferred service title when vcc is supported
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_vcc_preferred_service_title
+   {
+   buf = qtn_servtab_settings_voip_preferred_setting;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_handover_notif_tone_title
+//    CSCSettingsUi setting handover notification tone title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_handover_notif_tone_title
+   {
+   buf = qtn_servtab_settings_ho_notification_tone_setting;
+   }
+   
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_im_tone_title
+//    CSCSettingsUi setting im tone title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_im_tone_title
+   {
+   buf = qtn_servtab_settings_im_tone_setting;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_username_title
+//    CSCSettingsUi setting username title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_username_title
+   {
+   buf = qtn_servtab_settings_username_setting;
+   } 
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_password_title
+//    CSCSettingsUi setting password title
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_password_title
+   {
+   buf = qtn_servtab_settings_password_setting;
+   } 
+
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_preferred_service_on
+//    CSCSettingsUi setting preferred service on
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_preferred_service_on
+   {
+   buf = qtn_voip_setting_voip_pref_value_yes;
+   } 
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_preferred_service_off
+//    CSCSettingsUi setting preferred service off
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_preferred_service_off
+   {
+   buf = qtn_voip_setting_voip_pref_value_no;
+   } 
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_vcc_preferred_service_on
+//    CSCSettingsUi setting preferred service on when VCC is supported
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_vcc_preferred_service_on
+   {
+   buf = qtn_servtab_setting_vcc_preferred_value_yes;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_vcc_preferred_service_off
+//    CSCSettingsUi setting preferred service off when VCC is supported
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_vcc_preferred_service_off
+   {
+   buf = qtn_servtab_setting_vcc_preferred_value_no;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_handover_notif_tone_on
+//    CSCSettingsUi setting handover notification tone on
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_handover_notif_tone_on
+   {
+   buf = qtn_cp_setting_vcc_ho_notif_tone_on;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_setting_handover_notif_tone_off
+//    CSCSettingsUi setting handover notification tone off
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_setting_handover_notif_tone_off
+   {
+   buf = qtn_cp_setting_vcc_ho_notif_tone_off;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_handover_notification_tone_query
+//    CSCSettingsUi handover notification tone query
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_cscsettingsui_handover_notification_tone_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_SELECT_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtListQueryControl;
+            id = EListQueryControl;
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                listbox = LISTBOX
+                    {
+                    // Listbox is constructed dynamically.
+                    };
+                heading = qtn_cp_setting_vcc_ho_notif_tone_title;
+                };
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_presence_request_pref_query
+//    CSCSettingsUi presence request preference query
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_cscsettingsui_presence_request_pref_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_SELECT_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtListQueryControl;
+            id = EListQueryControl;
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                listbox = LISTBOX
+                    {
+                    // Listbox is constructed dynamically.
+                    };
+                heading = qtn_servtab_settings_pres_pref_title;
+                };
+            }
+        };
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_pref_service_setting_page
+//    CSCSettingsUi preferred service setting page
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_cscsettingsui_pref_service_setting_page
+    {
+    number = EAknSettingPageNoOrdinalDisplayed;
+    label = qtn_voip_setting_voip_preferred_title;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    type = EAknSetListBox;
+    editor_resource_id = r_setting_listbox;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_vcc_pref_service_setting_page
+//    CSCSettingsUi preferred service setting page
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_cscsettingsui_vcc_pref_service_setting_page
+    {
+    number = EAknSettingPageNoOrdinalDisplayed;
+    label = qtn_servtab_settings_vcc_preferred_title;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL__OK;
+    type = EAknSetListBox;
+    editor_resource_id = r_setting_listbox;
+    }
+
+// ---------------------------------------------------------------------------
+//   
+//    r_cscsettingsui_username_setting_page
+//    CSCSettingsUi username setting page
+//
+// ---------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_cscsettingsui_username_setting_page
+    {
+    label = qtn_servtab_setting_username_title;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EEikCtEdwin;
+    editor_resource_id = r_cscsettingsui_username_setting_page_editor;
+    }
+
+// ---------------------------------------------------------------------------
+//   
+//    r_cscsettingsui_username_setting_page_editor
+//    CSCSettingsUi username setting page editor definition.
+//
+// ---------------------------------------------------------------------------
+//
+RESOURCE EDWIN r_cscsettingsui_username_setting_page_editor
+    {
+    default_case = EAknEditorLowerCase;
+    allowed_case_modes = EAknEditorAllCaseModes;
+    flags = EEikEdwinNoHorizScrolling | EEikEdwinResizable;
+    width = 25;
+    lines = 1;
+    maxlength = 100;
+    }
+
+// ---------------------------------------------------------------------------
+//   
+//    r_cscsettingsui_password_setting_page
+//    CSCSettingsUi password setting page
+//
+// ---------------------------------------------------------------------------
+//
+RESOURCE AVKON_SETTING_PAGE r_cscsettingsui_password_setting_page
+    {
+    label = qtn_servtab_setting_password_title;
+    softkey_resource = R_AVKON_SOFTKEYS_OK_CANCEL;
+    type = EEikCtSecretEd;
+    editor_resource_id = r_cscsettingsui_password_setting_page_editor;
+    }
+
+// ---------------------------------------------------------------------------
+//   
+//    r_cscsettingsui_password_setting_page_editor
+//    CSCSettingsUi password setting page editor definition.
+//
+// ---------------------------------------------------------------------------
+//
+RESOURCE SECRETED r_cscsettingsui_password_setting_page_editor
+    {
+    num_letters = 50;
+    }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_edit_service_connectivity_title
+//    CSCSettingsUi service connectivity query title text.
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE TBUF r_cscsettingsui_edit_service_connectivity_title
+   {
+   buf = qtn_voip_settings_edit_service_connectivity_title;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_service_connectivity_text
+//    CSCSettingsUi service connectivity setting item text.
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE TBUF r_cscsettingsui_service_connectivity_text
+   {
+   buf = qtn_servtab_settings_connectivity_setting;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_conserted_service_connectivity_text
+//    CSCSettingsUi conserted service connectivity setting item text.
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE TBUF r_cscsettingsui_conserted_service_connectivity_text
+   {
+   buf = qtn_voip_settings_conserted_service_connectivity;
+   }
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_presence_request_pref_text
+//    CSCSettingsUi presence request preference setting item text
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE TBUF r_cscsettingsui_presence_request_pref_text
+   {
+   buf = qtn_servtab_settings_pres_pref_setting;
+   } 
+
+// -----------------------------------------------------------------------------
+//
+//    r_cscsettingsui_edit_settings_text
+//    CSCSettingsUi edit settings setting item text.
+//
+// -----------------------------------------------------------------------------
+//
+
+RESOURCE TBUF r_cscsettingsui_edit_settings_text
+   {
+   buf = qtn_voip_settings_edit_service_settings;
+   }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_unable_to_edit_setting_note
+// Unable to edit setting note text.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_unable_to_edit_setting_note
+    {
+    buf = qtn_voip_unable_to_edit_setting_note;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_unable_to_edit_while_online
+// Unable to edit setting note text.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_unable_to_edit_while_online
+    {
+    buf = qtn_servtab_setting_unable_to_edit_while_online;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_no_im_tone_text
+// Listbox text for chat alert tone if no tone selected.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_im_tone_off
+    {
+    buf = qtn_servtab_settings_im_tone_off;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_no_im_tone_text
+// No tone selected item text for im tone selection list
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_no_im_tone_text
+    {
+    buf = qtn_servtab_settings_no_im_tone_text;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_cscsettingsui_im_tone_popup_heading
+// Title text for chat alert tone selection list.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE TBUF r_cscsettingsui_im_tone_popup_heading
+    {
+    buf = qtn_servtab_settings_im_tone_popup_heading;
+    }
+
+// -----------------------------------------------------------------------------
+//
+// r_setting_listbox
+// Common listbox editor resource for setting pages.
+//
+// -----------------------------------------------------------------------------
+//
+RESOURCE LISTBOX r_setting_listbox
+    {
+    flags = EEikListBoxMultipleSelection;
+    }
+

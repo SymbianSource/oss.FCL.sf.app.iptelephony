@@ -1,0 +1,52 @@
+EXPORTS
+	_ZN13TVCCMiscUtils9URIValidLERK7TDesC16 @ 1 NONAME
+	_ZN13TVCCMiscUtils9VDNValidLERK7TDesC16 @ 2 NONAME
+	_ZN14CVccSPSettings10ProviderIdEv @ 3 NONAME
+	_ZN14CVccSPSettings11ServiceNameEv @ 4 NONAME
+	_ZN14CVccSPSettings12ImmediateDtLEv @ 5 NONAME
+	_ZN14CVccSPSettings13ConvertToIntLERK7TDesC16 @ 6 NONAME
+	_ZN14CVccSPSettings13CsHoTresholdLEv @ 7 NONAME
+	_ZN14CVccSPSettings13FindPropertyLEj20TServicePropertyNameR11CSPProperty @ 8 NONAME
+	_ZN14CVccSPSettings13PsHoTresholdLEv @ 9 NONAME
+	_ZN14CVccSPSettings13ReadSettingsLERK7TDesC16 @ 10 NONAME
+	_ZN14CVccSPSettings13VoipServiceIdEv @ 11 NONAME
+	_ZN14CVccSPSettings14SetProviderIdLERK7TDesC16 @ 12 NONAME
+	_ZN14CVccSPSettings15CsHoHysteresisLEv @ 13 NONAME
+	_ZN14CVccSPSettings15PsHoHysteresisLEv @ 14 NONAME
+	_ZN14CVccSPSettings15SetImmediateDtLERK7TDesC16 @ 15 NONAME
+	_ZN14CVccSPSettings15SetServiceNameLERK7TDesC16 @ 16 NONAME
+	_ZN14CVccSPSettings16DtCsToPsAllowedLEv @ 17 NONAME
+	_ZN14CVccSPSettings16DtPsToCsAllowedLEv @ 18 NONAME
+	_ZN14CVccSPSettings16PreferredDomainLEv @ 19 NONAME
+	_ZN14CVccSPSettings17FindServiceEntryLERK7TDesC16R8CSPEntry @ 20 NONAME
+	_ZN14CVccSPSettings17SetVoipServiceIdLERK7TDesC16 @ 21 NONAME
+	_ZN14CVccSPSettings17SetVoipServiceIdLEi @ 22 NONAME
+	_ZN14CVccSPSettings18SetDtCsHoTresholdLERK7TDesC16 @ 23 NONAME
+	_ZN14CVccSPSettings19SetDtCsToPsAllowedLERK7TDesC16 @ 24 NONAME
+	_ZN14CVccSPSettings19SetDtPsToCsAllowedLERK7TDesC16 @ 25 NONAME
+	_ZN14CVccSPSettings19SetPreferredDomainLERK7TDesC16 @ 26 NONAME
+	_ZN14CVccSPSettings20SetDtCsHoHysteresisLERK7TDesC16 @ 27 NONAME
+	_ZN14CVccSPSettings20SetDtWlanHoTresholdLERK7TDesC16 @ 28 NONAME
+	_ZN14CVccSPSettings22SetDtWlanHoHysteresisLERK7TDesC16 @ 29 NONAME
+	_ZN14CVccSPSettings23CsHoHysteresisTimerLowLEv @ 30 NONAME
+	_ZN14CVccSPSettings23PsHoHysteresisTimerLowLEv @ 31 NONAME
+	_ZN14CVccSPSettings24CsHoHysteresisTimerHighLEv @ 32 NONAME
+	_ZN14CVccSPSettings24PsHoHysteresisTimerHighLEv @ 33 NONAME
+	_ZN14CVccSPSettings26DtAllowedWhenCsOriginatedLEv @ 34 NONAME
+	_ZN14CVccSPSettings26DtHeldWaitingCallsAllowedLEv @ 35 NONAME
+	_ZN14CVccSPSettings28SetDtAllowedWhenCsOriginatedERK7TDesC16 @ 36 NONAME
+	_ZN14CVccSPSettings28SetDtCsHoHysteresisTimerLowLERK7TDesC16 @ 37 NONAME
+	_ZN14CVccSPSettings29SetDtCsHoHysteresisTimerHighLERK7TDesC16 @ 38 NONAME
+	_ZN14CVccSPSettings29SetDtHeldWaitingCallsAllowedLERK7TDesC16 @ 39 NONAME
+	_ZN14CVccSPSettings30SetDtWlanHoHysteresisTimerLowLERK7TDesC16 @ 40 NONAME
+	_ZN14CVccSPSettings31SetDtWlanHoHysteresisTimerHighLERK7TDesC16 @ 41 NONAME
+	_ZN14CVccSPSettings4NewLEv @ 42 NONAME
+	_ZN14CVccSPSettings6StoreLEv @ 43 NONAME
+	_ZN14CVccSPSettings7SetVdiLERK7TDesC16 @ 44 NONAME
+	_ZN14CVccSPSettings7SetVdnLERK7TDesC16 @ 45 NONAME
+	_ZN14CVccSPSettingsD0Ev @ 46 NONAME
+	_ZN14CVccSPSettingsD1Ev @ 47 NONAME
+	_ZN14CVccSPSettingsD2Ev @ 48 NONAME
+	_ZTI14CVccSPSettings @ 49 NONAME ; #<TI>#
+	_ZTV14CVccSPSettings @ 50 NONAME ; #<VT>#
+

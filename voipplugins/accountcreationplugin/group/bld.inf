@@ -1,0 +1,45 @@
+/*
+* Copyright (c) 2007-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build information file for project accountcreationplugin
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+// PRJ_EXPORTS
+PRJ_EXPORTS
+
+../conf/accountcreationplugin.confml         APP_LAYER_CONFML(accountcreationplugin.confml)
+../conf/accountcreationplugin_2001e321.crml  APP_LAYER_CRML(accountcreationplugin_2001e321.crml)
+
+../rom/accountcreationplugin.iby CORE_APP_LAYER_IBY_EXPORT_PATH( accountcreationplugin.iby )
+../rom/accountcreationpluginresources.iby LANGUAGE_APP_LAYER_IBY_EXPORT_PATH( accountcreationpluginresources.iby )
+../loc/accountcreationplugin.loc          APP_LAYER_LOC_EXPORT_PATH( accountcreationplugin.loc )
+
+
+// PRJ_MMPFILES
+PRJ_MMPFILES
+
+//gnumakefile acpicons_dc.mk
+
+../engine/group/accountcreationengine.mmp        
+accountcreationplugin.mmp
+
+PRJ_EXTENSIONS
+START EXTENSION s60/mifconv
+OPTION TARGETFILE acpicons.mif
+OPTION HEADERFILE acpicons.mbg
+OPTION SOURCES -c8,8 qgn_prop_set_conn_voip.svg
+END

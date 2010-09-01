@@ -1,0 +1,136 @@
+/*
+* Copyright (c) 2007-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization file for Account Creation Plugin.
+*
+*/
+
+
+// d: Wait note text shown when service catalog is being downloaded.
+// l: popup_note_wait_window
+// r: 3.2
+#define qtn_servtab_updating_service_catalog "Downloading service catalog"
+
+// d: Account Creation Plugin name shown in Internet communication settings.
+// l: list_single_large_graphic_pane_t1
+// r: 3.2
+#define qtn_servtab_plugin_name "Install net communication services"
+
+// d: Error note text shown when connection to the server fails.
+// l: popup_note_window
+// r: 3.2
+#define qtn_servtab_creating_connection_failed_note "Establishing connection failed"
+
+// d: Error note text shown when downloading a service fails.
+// l: popup_note_window
+// r: 3.2
+#define qtn_servtab_downloading_service_failed_note "Downloading %U failed. Please try again"
+
+// d: Softkey text for details.
+// l: control_pane_t3/opt7
+// r: 3.2
+#define qtn_msk_service_details "Details"
+
+// d: Menu item to view details.
+// l: list_single_pane_t1_cp2
+// r: 3.2
+#define qtn_voip_option_service_details "View details"
+
+// d: Provider list view title.
+// l: title_pane_t2/opt9
+// r: 3.2
+#define qtn_servtab_catalog_view_title "Service catalog"
+
+// d: Text displayed when the provider list is empty.
+// l: main_list_empty_pane
+// r: 3.2
+#define qtn_service_catalog_empty_text "No services available"
+
+// d: Menu item for get.
+// l: list_single_pane_t1_cp2
+// r: 3.2
+#define qtn_voip_option_service_download_service "Get"
+
+// d: Menu item for refresh.
+// l: list_single_pane_t1_cp2
+// r: 3.2
+#define qtn_servtab_catalog_options_refresh "Refresh"
+
+// d: Service installation completion note text.
+// l: popup_note_window
+// r: 3.2
+#define qtn_servtab_installation_completed_note "%U installed in Phonebook"
+
+// d: Text for name detail.
+// l: msg_body_pane_t2/opt1
+// r: 3.2
+#define qtn_servtab_cd_detail_name "Name:"
+
+// d: Text for type detail.
+// l: msg_body_pane_t2/opt1
+// r: 3.2
+#define qtn_servtab_cd_detail_type "Type:"
+
+// d: Text for application type.
+// l: msg_body_pane_t3/opt2
+// r: 3.2
+#define qtn_servtab_cd_type_application "Application"
+
+// d: Text for settings file type.
+// l: msg_body_pane_t3/opt2
+// r: 3.2
+#define qtn_servtab_cd_type_settings "Settings file"
+
+// d: Text for file type.
+// l: msg_body_pane_t3/opt2
+// r: 3.2
+#define qtn_servtab_cd_type_file "File"
+
+// d: Text for description detail.
+// l: msg_body_pane_t2/opt1
+// r: 3.2
+#define qtn_servtab_cd_detail_description "Description:"
+
+// d: Text for size detail.
+// l: msg_body_pane_t2/opt1
+// r: 3.2
+#define qtn_servtab_cd_detail_size "Size:"
+
+// d: Text for vendor detail.
+// l: msg_body_pane_t2/opt1
+// r: 3.2
+#define qtn_servtab_cd_detail_vendor "Vendor:"
+
+// d: Text shown for undefined detail values.
+// l: msg_body_pane_t3/opt2
+// r: 3.2
+#define qtn_servtab_cd_value_undefined "Undefined"
+
+// d: Softkey text for get.
+// l: control_pane_t3/opt7
+// r: 3.2
+#define qtn_servtab_cd_softkey_get "Get"
+
+// d: Text for the wait note while downloading a service.
+// l: popup_note_wait_window
+// r: 3.2
+#define qtn_servtab_downloading_settings_wait_note "Downloading %U"
+
+//d: Message query about succesfull service installation when installation
+//d: was initiated from homescreen service widget.
+//l: popup_info_list_pane_t1
+//r: 5.0
+//
+#define qtn_servtab_installation_completed_msg_query "%U installed in Phonebook. To install more Net communication services, use installation widget located in the Home Screen menu."
+
+// End of file.

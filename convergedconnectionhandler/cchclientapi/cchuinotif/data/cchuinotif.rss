@@ -1,0 +1,471 @@
+/*
+* Copyright (c) 2008-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for project CCH UI
+*
+*/
+
+
+NAME CNOT
+
+#include <avkon.rh>
+#include <eikon.rh>
+#include <avkon.loc>
+#include <avkon.rsg>
+#include <eikon.rsg>
+#include <avkon.mbg>
+#include <cchui.loc>
+
+
+RESOURCE RSS_SIGNATURE { }
+RESOURCE TBUF { buf=""; }
+
+
+// ---------------------------------------------------------------------------
+// r_cchuinotif_username_pwd_dialog
+// Multiline dialog for username and password
+// ---------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_cchuinotif_username_pwd_dialog
+    {
+    title   = "";
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    flags   = EEikDialogFlagWait;
+    items   =
+        {
+        DLG_LINE
+            {
+            type    = EAknCtMultilineQuery;
+            id      = EMultilineFirstLine;
+            control = AVKON_DATA_QUERY
+                {
+                layout = EMultiDataFirstEdwin;
+                label = qtn_servtab_service_auth_username_query;
+                control = EDWIN
+                    {
+                    default_case = EAknEditorLowerCase;
+                    allowed_case_modes = EAknEditorAllCaseModes;
+                    flags = EEikEdwinNoHorizScrolling | EEikEdwinResizable;
+                    width = 25;
+                    lines = 1;
+                    maxlength = 100;
+                    };
+                };
+            },
+        DLG_LINE
+            {
+            type    = EAknCtMultilineQuery;
+            id      = EMultilineSecondLine;
+            control = AVKON_DATA_QUERY
+                {
+                layout = EMultiDataSecondSecEd;
+                label = qtn_servtab_service_auth_password_query;
+                control = SECRETED
+                    {
+                    num_letters = 100;
+                    };
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// r_cchuinotif_no_connections_available
+// No connections available query
+// ---------------------------------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_cchuinotif_no_connections_available
+    {
+    flags = EGeneralQueryFlags;
+    softkeys = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items = 
+        {
+         AVKON_LIST_QUERY_DLG_LINE 
+            {
+            control = AVKON_LIST_QUERY_CONTROL_WITH_MSGBOX
+                {
+                actuallisttype = EAknCtSinglePopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST
+                    {
+                    flags = EAknListBoxSelectionList;
+                    };
+
+                heading = r_qtn_cchuinotif_no_connections_heading;
+                };
+            }
+        };
+    }
+    
+// ---------------------------------------------------------------------------
+// r_cchuinotif_change_connection_query
+// Change connection query
+// ---------------------------------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_cchuinotif_change_connection_query
+    {
+    flags = EGeneralQueryFlags;
+    softkeys = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items = 
+        {
+         AVKON_LIST_QUERY_DLG_LINE 
+            {
+            control = AVKON_LIST_QUERY_CONTROL_WITH_MSGBOX
+                {
+                actuallisttype = EAknCtSinglePopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST
+                    {
+                    flags = EAknListBoxSelectionList;
+                    };
+
+                heading = r_qtn_cchuinotif_change_connection_heading;
+                };
+            }
+        };
+    }
+
+// ---------------------------------------------------------------------------
+// r_cchuinotif_select_gprs_dialog
+// Select GPRS access point dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE AVKON_LIST_QUERY r_cchuinotif_select_gprs_dialog
+    {
+    flags = EGeneralQueryFlags;
+    softkeys = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items = 
+        {
+        DLG_LINE 
+            {
+            type = EAknCtListQueryControl;
+            id = EListQueryControl;
+            control = AVKON_LIST_QUERY_CONTROL
+                {
+                listtype = EAknCtSinglePopupMenuListBox;
+                listbox = AVKON_LIST_QUERY_LIST
+                    {
+                    flags = EAknListBoxSelectionList;
+                    };
+
+                heading = r_qtn_cchuinotif_select_gprs_access_point_heading;
+                };
+            }
+        };
+    }    
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_no_connections_heading
+// No connections query heading
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_no_connections_heading
+    { 
+    buf = qtn_servtab_no_conn_available_prompt_text;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_change_current_connection_heading
+// Change current connection query heading
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_change_current_connection_heading
+    { 
+    buf = qtn_servtab_change_current_conn_prompt;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_change_connection_heading
+// Change connection query heading
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_change_connection_heading
+    { 
+    buf = qtn_servtab_change_new_conn_query;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_select_gprs_access_point_heading
+// Query heading for gprs selection
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_select_gprs_access_point_heading
+    { 
+    buf = qtn_servtab_prmpt_select_gprs_access_point; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_no_connections_heading
+// No connections query heading
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_no_connections_defined_heading
+    { 
+    buf = qtn_servtab_no_conn_defined_prompt_text; 
+    }    
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_connect_when_av_text
+// Connect when available selection item for no connection available dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_connect_when_av_text
+    { 
+    buf = qtn_servtab_no_coverage_connect_when_av; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_servtab_prmpt_no_wlan_found
+// Heading for no wlan networks found dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_servtab_prmpt_no_wlan_found
+    { 
+    buf = qtn_servtab_prmpt_no_wlan_found; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_search_wlan_not_def_text
+// Search WLAN selection item for no connection defined dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_search_wlan_not_def_text
+    { 
+    buf = qtn_servtab_no_ap_defined_search_wlan; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_search_wlan_not_found_text
+// Search WLAN selection item for no connection found dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_search_wlan_not_found_text
+    { 
+    buf = qtn_servtab_no_wlan_found_search_wlan; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_search_wlan_no_coverage_text
+// Search WLAN selection item for no connection available dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_search_wlan_no_coverage_text
+    { 
+    buf = qtn_servtab_no_coverage_search_wlan; 
+    }
+    
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_search_wlan_change_current_connection_text
+// Search WLAN selection item for change current connection dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_search_wlan_change_current_connection_text
+    { 
+    buf = qtn_servtab_chng_current_conn_search_wlan; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_search_wlan_change_connection_text
+// Search WLAN selection item for change connection dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_search_wlan_change_connection_text
+    { 
+    buf = qtn_servtab_chng_conn_search_wlan; 
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_use_gprs_not_def_text
+// Use_gprs selection item for no connection defined dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_use_gprs_not_def_text
+    { 
+    buf = qtn_servtab_no_ap_defined_use_gprs; 
+    }    
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_use_gprs_not_found_text
+// Use_gprs selection item for no connection found dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_use_gprs_not_found_text
+    { 
+    buf = qtn_servtab_no_wlan_found_use_gprs; 
+    }    
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_use_gprs_no_coverage_text
+// Use_gprs selection item for no connection coverage dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_use_gprs_no_coverage_text
+    { 
+    buf = qtn_servtab_no_coverage_use_gprs; 
+    } 
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_use_gprs_change_current_connection_text
+// Use_gprs selection item for change current connection dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_use_gprs_change_current_connection_text
+    { 
+    buf = qtn_servtab_chng_current_conn_use_gprs; 
+    } 
+
+// ---------------------------------------------------------------------------
+// r_qtn_cchuinotif_use_gprs_change_connection_text
+// Use_gprs selection item for change connection dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_cchuinotif_use_gprs_change_connection_text
+    { 
+    buf = qtn_servtab_chng_conn_use_gprs;
+    } 
+
+// ---------------------------------------------------------------------------
+// r_qtn_servtab_conn_establsh_failed_permanently_note_text
+// Info note for incomplete settings case
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_servtab_conn_establsh_failed_permanently_note_text
+    { 
+    buf = qtn_servtab_conn_establsh_failed_permanently; 
+    }     
+    
+// ---------------------------------------------------------------------------
+// r_qtn_voip_wrong_sip_auth_note_text
+// Info note for wrong username/password.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_voip_wrong_sip_auth_note_text
+    { 
+    buf = qtn_voip_wrong_sip_auth_note;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_voip_changing_connectivity_failed_note_text
+// Info note for changing connectivity failed.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_voip_changing_connectivity_failed_note_text
+    { 
+    buf = qtn_voip_error_note_changing_connect_failed;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_voip_error_in_connection_note_text
+// Info note for error in connection. 
+// Used when access point is not usable for calling.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_voip_error_in_connection_note_text
+    { 
+    buf = qtn_voip_error_in_connection;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_servtab_ap_voip_not_supported_query_text
+// Query text for situation when access point is not usable for VoIP call.
+// Used when access point is used also by other services.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_servtab_ap_voip_not_supported_query_text
+    { 
+    buf = qtn_servtab_ap_voip_not_supported_query;
+    }
+
+// ---------------------------------------------------------------------------
+// r_qtn_servtab_ap_voip_not_supported_query_text
+// Query text for situation when access point is not usable for VoIP call.
+// Used when accesspoint is not used by other services.
+// ---------------------------------------------------------------------------
+//
+RESOURCE TBUF r_qtn_servtab_ap_voip_not_supported_reconnect_query_text
+    { 
+    buf = qtn_voip_calls_not_supported_reconnect_query;
+    }
+
+// -----------------------------------------------------------------------------
+// r_cchuinotif_change_connection_confirmation_query
+// Change connection confirmation query. Used when connection only changed.
+// -----------------------------------------------------------------------------
+//     
+RESOURCE DIALOG r_cchuinotif_change_connection_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = r_qtn_servtab_ap_voip_not_supported_query_text;
+                };
+            }
+        };
+    }  
+
+// -----------------------------------------------------------------------------
+// r_cchuinotif_remove_and_change_connection_confirmation_query
+// Change connection confirmation query. Used when old connection is removed
+// and new one taken to use.
+// -----------------------------------------------------------------------------
+//     
+RESOURCE DIALOG r_cchuinotif_remove_and_change_connection_confirmation_query
+    {
+    flags = EGeneralQueryFlags;
+    buttons = R_AVKON_SOFTKEYS_OK_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtQuery;
+            id = EGeneralQuery;
+            control= AVKON_CONFIRMATION_QUERY 
+                { 
+                layout = EConfirmationLayout;
+                label = r_qtn_servtab_ap_voip_not_supported_reconnect_query_text;
+                };
+            }
+        };
+    }  
+
+// ---------------------------------------------------------------------------
+// r_cchuinotif_wait_dialog
+// wait dialog
+// ---------------------------------------------------------------------------
+//
+RESOURCE DIALOG r_cchuinotif_wait_dialog
+    {
+    flags = EAknWaitNoteFlags | EEikDialogFlagNotifyEsc;
+    buttons=R_AVKON_SOFTKEYS_CANCEL;
+    items =
+        {
+        DLG_LINE
+            {
+            type = EAknCtNote;
+            id = EGeneralNote;
+            control = AVKON_NOTE
+                {
+                layout = EWaitLayout;
+                singular_label= "";
+                animation = R_QGN_GRAF_WAIT_BAR_ANIM;
+                };
+            }
+        };
+     }
+

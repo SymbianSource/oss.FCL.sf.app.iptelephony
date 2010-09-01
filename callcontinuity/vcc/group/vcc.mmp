@@ -1,0 +1,84 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:   VCC project file
+*
+*/
+
+
+#include <data_caging_paths.hrh>
+#include <platform_paths.hrh>
+
+
+TARGET          vccperformer.dll
+TARGETTYPE      PLUGIN
+
+// If automatic handover is wanted,
+// define the macro USE_HO_TRIGGER. When macro is defined
+// The hotrigger will trigger handover about every 20 or 30 sec. The
+// value depends on values defined in wlanstub server, method
+// WaitForNetworkSignalLevelL
+// MACRO USE_HO_TRIGGER
+
+// ECOM Dll recognition UID followed by the unique UID for this dll
+UID    0x10009D8D 0x2000CFA9
+CAPABILITY      CAP_ECOM_PLUGIN NetworkControl NetworkServices ReadDeviceData
+VENDORID        VID_DEFAULT
+
+SOURCEPATH      ../data
+START RESOURCE  2000CFA9.rss
+TARGET vccperformer.rsc
+END
+
+SOURCEPATH      ../src
+
+SOURCE			cvccproxy.cpp
+SOURCE      cvccdirector.cpp
+SOURCE			cvccperformer.cpp		 
+SOURCE			vccengpspropertylistener.cpp
+SOURCE 			vccengpsproperty.cpp
+SOURCE      rubydebug.cpp
+SOURCE 			cvccconferencecall.cpp
+SOURCE 			cvccdtmfprovider.cpp
+//state machine
+SOURCE			tvccstate.cpp
+SOURCE			tvccstateinit.cpp
+SOURCE			tvccstatecalling.cpp
+SOURCE      tvccstatefailing.cpp
+SOURCE			tvccstatereleasing.cpp
+SOURCE 			cvcctransferprovider.cpp
+
+SOURCEPATH 	../../settingsreader/src
+SOURCE			vccsettingsreader.cpp
+
+USERINCLUDE     ../inc
+USERINCLUDE	    ../../settingsreader/inc
+USERINCLUDE	    ../../vcchotrigger/inc
+
+SYSTEMINCLUDE	/epoc32/include/ecom
+
+APP_LAYER_SYSTEMINCLUDE 
+
+LIBRARY         euser.lib
+LIBRARY         flogger.lib             
+LIBRARY         centralrepository.lib
+LIBRARY         estor.lib
+LIBRARY         bafl.lib
+LIBRARY         ecom.lib                
+LIBRARY         efsrv.lib               //rubydebug
+LIBRARY			serviceprovidersettings.lib
+LIBRARY			vcchotrigger.lib
+LIBRARY			cce.lib
+LIBRARY			callprovider.lib
+
+LANG            SC

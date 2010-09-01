@@ -1,0 +1,44 @@
+/*
+* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  ECOM plugin resource file for cscgsplugin
+*
+*/
+
+
+#include <registryinfov2.rh>
+
+RESOURCE REGISTRY_INFO theInfo
+	{
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+	dll_uid     = 0x2001E639;  // dll UID
+	interfaces  =
+		{
+		INTERFACE_INFO
+			{
+			interface_uid   = 0x10207236;  // common UID for all GS plugins
+			implementations =
+				{
+				IMPLEMENTATION_INFO
+					{
+					implementation_uid  = 0x2001E63A;  // impl uid
+					version_no          = 1;
+					display_name        = "Internet communications settings";
+					default_data        = "0x10283341"; // Parent UID (admin plugin)
+					opaque_data         = "7"; // Order number
+					}
+				};
+			}
+		};
+	}
+

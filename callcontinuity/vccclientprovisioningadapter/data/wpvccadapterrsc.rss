@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:   Resource definitions for project WpUmaAdapter
+*
+*/
+
+
+
+#include <badef.rh>
+#include <bldvariant.hrh>
+#include "wpvccadapter.loc"
+
+// ---------------------------------------------------------------------------
+// r_qtn_sm_head_vcc
+// Summary title for VCC settings received via OMA SMS
+// ---------------------------------------------------------------------------
+//
+RESOURCE LBUF r_qtn_sm_head_vcc
+    {
+    txt = qtn_sm_head_vcc;
+    }

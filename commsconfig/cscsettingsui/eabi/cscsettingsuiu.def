@@ -1,0 +1,5 @@
+EXPORTS
+	_ZN14CCSCSettingsUi11InitializeLERK4TUidjPK8MCoeView @ 1 NONAME
+	_ZN14CCSCSettingsUi4NewLER9CEikonEnv @ 2 NONAME
+	_ZNK14CCSCSettingsUi17LaunchSettingsUiLEv @ 3 NONAME
+

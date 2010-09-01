@@ -1,0 +1,49 @@
+/*
+* Copyright (c) 2008-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource file for cscgsplugin.
+*
+*/
+
+
+NAME GSIS
+
+#include <csc.loc>
+#include <uikon.rh>
+#include <data_caging_paths_strings.hrh>
+
+
+//----------------------------------------------------
+//
+//
+//    Needed or loading the resource fails!
+//
+//----------------------------------------------------
+//
+RESOURCE RSS_SIGNATURE
+    {
+    }
+
+//----------------------------------------------------
+//
+//    r_csc_gsplugin_caption
+//    Plugin caption.
+//
+//----------------------------------------------------
+//
+RESOURCE TBUF r_cscgsplugin_caption
+    {
+    // from csc.loc
+    buf = qtn_set_folder_conn_service_configurator;
+    }
+

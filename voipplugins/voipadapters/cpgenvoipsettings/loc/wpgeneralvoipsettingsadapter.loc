@@ -1,0 +1,32 @@
+/*
+* Copyright (c) 2006-2007 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Localization strings for project WPGeneralVoIPSettignsAdapter
+*
+*/
+
+
+// LOCALISATION STRINGS
+//d:Summary text for general VoIP settings.
+//l:msg_body_pane/opt
+//r:VoIP Rel3.0
+//
+#define qtn_sm_default_name_general_voip_settings "VoIP Terminal Settings"
+
+//d:Summary title for general VoIP settings.
+//l:msg_body_pane_t1
+//r:VoIP Rel3.0
+//
+#define qtn_sm_head_general_voip_settings "VoIP terminal settings"
+
+// End of File

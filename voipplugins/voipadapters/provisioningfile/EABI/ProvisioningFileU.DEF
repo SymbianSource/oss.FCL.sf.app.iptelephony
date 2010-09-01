@@ -1,0 +1,6 @@
+EXPORTS
+	_ZN19CWPProvisioningFile20ProvFileContainsIapLEv @ 1 NONAME
+	_ZN19CWPProvisioningFile4NewLE4TBufILi256EE @ 2 NONAME
+	_ZN19CWPProvisioningFile9ProvFileLERm @ 3 NONAME
+	_ZN19CWPProvisioningFile9ProvFileLEv @ 4 NONAME
+

@@ -1,0 +1,71 @@
+/*
+* Copyright (c) 2006-2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project Converged Connection
+*                Client API
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+TARGET                  cch.dll
+TARGETTYPE              dll
+UID                     0x1000008d 0x20011117 
+
+CAPABILITY              CAP_CLIENT_DLL
+VENDORID                VID_DEFAULT
+
+SOURCEPATH              ../src
+SOURCE                  cch.cpp
+SOURCE                  cchimpl.cpp
+SOURCE                  cchserviceimpl.cpp 
+SOURCE                  cchtypes.cpp
+SOURCE                  cchclientobserver.cpp
+SOURCE                  cchuiprivateapi.cpp
+SOURCE                  cchuiapiimpl.cpp
+SOURCE                  cchuispshandler.cpp
+SOURCE                  cchuicchhandler.cpp
+SOURCE                  cchuinotehandler.cpp
+SOURCE                  cchuiconnectionhandler.cpp
+SOURCE                  cchuiglobalqueryhandler.cpp
+SOURCE                  cchuiclientobserver.cpp
+SOURCE                  cchuitimer.cpp
+SOURCE			cchserviceimplasynchroniser.cpp
+
+USERINCLUDE             ../inc
+USERINCLUDE             ../../inc           // CCH's internal headers
+
+APP_LAYER_SYSTEMINCLUDE 
+
+LIBRARY                 euser.lib
+LIBRARY                 flogger.lib          // for logging purposes
+LIBRARY                 cchclient.lib
+LIBRARY                 ecom.lib
+LIBRARY                 cone.lib 
+LIBRARY                 bafl.lib
+LIBRARY                 efsrv.lib
+LIBRARY                 estor.lib
+LIBRARY                 connmon.lib
+LIBRARY                 featmgr.lib
+LIBRARY                 commsdat.lib
+LIBRARY                 aknnotify.lib
+LIBRARY                 cmmanager.lib
+LIBRARY                 platformenv.lib
+LIBRARY                 commonengine.lib
+LIBRARY                 wepsecuritysettingsui.lib
+LIBRARY                 wpasecuritysettingsui.lib
+LIBRARY                 connectionuiutilities.lib
+LIBRARY                 serviceprovidersettings.lib
+
+

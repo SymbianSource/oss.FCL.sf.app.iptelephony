@@ -1,0 +1,56 @@
+/*
+* Copyright (c) 2009 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Resource definitions for project sipimresolver
+*
+*/
+
+
+#include <registryinfov2.rh>
+#include "sipimresolveruids.hrh"
+
+// ---------------------------------------------------------------------------
+// REGISTRY_INFO
+// ecom plugin resource info
+// ---------------------------------------------------------------------------
+//
+RESOURCE REGISTRY_INFO theInfo
+    {
+    resource_format_version = RESOURCE_FORMAT_VERSION_2;
+
+    dll_uid = KDllUidSipImResolver;
+
+    // Declare array of interface info
+    interfaces = 
+        {
+        INTERFACE_INFO
+            {
+            // CSIPResolvedClient2 interface UID
+            interface_uid = 0x10282EE5;
+            implementations = 
+                {
+                IMPLEMENTATION_INFO
+                    {
+                    implementation_uid = KImplUidSipImResolver;
+                    version_no         = 1;
+                    display_name       = "SIP IM Resolver";
+                    default_data       = "";
+                    opaque_data        = "";
+                    rom_only           = 0;
+                    }
+                };
+            }
+        };
+    }
+
+// End of File

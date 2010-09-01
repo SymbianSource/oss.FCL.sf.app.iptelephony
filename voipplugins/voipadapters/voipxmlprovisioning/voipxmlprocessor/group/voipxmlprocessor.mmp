@@ -1,0 +1,70 @@
+/*
+* Copyright (c) 2009-2010 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Project definition file for project VoIP XML processor.
+*
+*/
+
+
+#include <platform_paths.hrh>
+#include <data_caging_paths.hrh>
+
+ALWAYS_BUILD_AS_ARM
+
+TARGET        voipxmlprocessor.dll
+TARGETTYPE    dll
+UID           0x1000008d 0x20026FE4
+
+CAPABILITY    CAP_GENERAL_DLL
+VENDORID      VID_DEFAULT
+
+LANGUAGE_IDS
+
+SOURCEPATH    ../src
+SOURCE        voipxmlutils.cpp
+SOURCE        voipxmlparser.cpp
+SOURCE        voipxmlparamhandler.cpp
+SOURCE        voipxmlsiphandler.cpp
+SOURCE        voipxmlvoiphandler.cpp
+SOURCE        voipxmlxdmhandler.cpp
+SOURCE        voipxmlpresencehandler.cpp
+SOURCE        voipxmlnatfwhandler.cpp
+SOURCE        voipxmliaphandler.cpp
+
+USERINCLUDE   ../inc
+
+APP_LAYER_SYSTEMINCLUDE
+SYSTEMINCLUDE /sf/app/iptelephony/inc
+
+
+LIBRARY       euser.lib
+LIBRARY       efsrv.lib
+LIBRARY       xmlparser.lib
+LIBRARY       xmldom.lib
+LIBRARY       sipprofilecli.lib
+LIBRARY       inetprotutil.lib
+LIBRARY       rcse.lib
+LIBRARY       serviceprovidersettings.lib
+LIBRARY       ipapputils.lib
+LIBRARY       bafl.lib
+LIBRARY       vimpstsettings.lib // For setting IM tone.
+LIBRARY       PlatformEnv.lib // For getting rom digital tone path.
+LIBRARY       XdmSettingsApi.lib
+LIBRARY       presencesettingsapi.lib
+LIBRARY       centralrepository.lib
+LIBRARY       cmmanager.lib
+LIBRARY       WEPSecuritySettingsUi.lib
+LIBRARY       WPASecuritySettingsUi.lib
+LIBRARY       commsdat.lib
+LIBRARY       ecom.lib
+

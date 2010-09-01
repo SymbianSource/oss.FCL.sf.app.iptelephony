@@ -1,0 +1,62 @@
+/*
+* Copyright (c) 2002-2008 Nokia Corporation and/or its subsidiary(-ies).
+* All rights reserved.
+* This component and the accompanying materials are made available
+* under the terms of "Eclipse Public License v1.0"
+* which accompanies this distribution, and is available
+* at the URL "http://www.eclipse.org/legal/epl-v10.html".
+*
+* Initial Contributors:
+* Nokia Corporation - initial contribution.
+*
+* Contributors:
+*
+* Description:  Build info file
+*
+*/
+
+
+#include <platform_paths.hrh>
+
+
+PRJ_PLATFORMS
+default armv5
+
+PRJ_EXPORTS
+// Public headers
+../inc/crcseaudiocodecentry.h             |../../../inc/crcseaudiocodecentry.h
+../inc/crcseaudiocodecregistry.h          |../../../inc/crcseaudiocodecregistry.h
+
+// Database security policy file for emulator.
+../data/10202869.SPD                /epoc32/release/winscw/udeb/z/private/100012a5/policy/10202869.spd
+../data/10202869.SPD                /epoc32/release/winscw/urel/z/private/100012a5/policy/10202869.spd
+../data/10202869.SPD                /epoc32/data/z/private/100012a5/policy/10202869.spd
+
+// Backup registration file for databases.
+//../data/backup_registration.xml     z:/private/10202869/backup_registration.xml
+../data/backup_registration.xml     /epoc32/data/z/private/10202869/backup_registration.xml
+../data/backup_registration.xml     /epoc32/release/winscw/udeb/z/private/10202869/backup_registration.xml
+../data/backup_registration.xml     /epoc32/release/winscw/urel/z/private/10202869/backup_registration.xml
+
+// CenRep ini-file
+../cenrep/200100FD.txt                /epoc32/release/winscw/udeb/z/private/10202be9/200100fd.txt
+../cenrep/200100FD.txt                /epoc32/data/z/private/10202be9/200100fd.txt
+../cenrep/200100FD.txt		      /epoc32/winscw/c/private/10202be9/200100fd.txt
+
+../conf/rcse.confml             APP_LAYER_CONFML(rcse.confml)
+../conf/rcse_200100fd.crml      APP_LAYER_CRML(rcse_200100fd.crml)
+
+../rom/rcse2.iby CORE_APP_LAYER_IBY_EXPORT_PATH( rcse2.iby )
+
+// CenRep ini-file for codecs
+../cenrep/2001B26B.txt                /epoc32/release/winscw/udeb/z/private/10202be9/2001b26b.txt
+../cenrep/2001B26B.txt                /epoc32/data/z/private/10202be9/2001b26b.txt
+../cenrep/2001B26B.txt		      /epoc32/winscw/c/private/10202be9/2001b26b.txt
+
+../conf/rcse_2001b26b.crml      APP_LAYER_CRML(rcse_2001b26b.crml)
+
+
+PRJ_MMPFILES
+rcse.mmp
+
+//  End of File  
