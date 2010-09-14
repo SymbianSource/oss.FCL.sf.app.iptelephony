@@ -40,7 +40,7 @@
 // ---------------------------------------------------------------------------
 //
 CAcpHttpHandler::CAcpHttpHandler( MAcpHttpHandlerObserver& aObserver )
-    : CActive( CActive::EPriorityStandard ), iObserver( aObserver )
+    : CActive( CActive::EPriorityStandard ), iObserver( aObserver ), iCancelRequest( EFalse )
     {
     CActiveScheduler::Add( this );
     }
@@ -311,6 +311,7 @@ void CAcpHttpHandler::CancelTransaction()
     if ( !iTransactionRunning )
         {
         ACPLOG( "CAcpHttpHandler::CancelTransaction end (not running)" );
+        iCancelRequest = ETrue;
         return;
         }
     
@@ -559,9 +560,18 @@ void CAcpHttpHandler::RunL()
             iConnectionOpen = ETrue;
             }
         
-        // Submit the first transaction. Further transactions are submitted
-        // in GetDataL.
-        SubmitTransactionL();
+        // If the cancel button is pressed by the end user during the period of connection-opening,
+        // transaction need not to be submitted. Otherwise, need to be submitted.
+        if ( iCancelRequest )
+            {
+            iCancelRequest = EFalse;     
+            }
+        else
+            {
+            // Submit the first transaction. Further transactions are submitted
+            // in GetDataL.
+            SubmitTransactionL();
+            }
         }
     else
         {

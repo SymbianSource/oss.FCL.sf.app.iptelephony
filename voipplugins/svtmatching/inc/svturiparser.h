@@ -81,14 +81,14 @@ public:
     void CheckForSpacesL( const TDesC& aOriginal, 
                           RBuf& aCheckedAddress ) const;
 
-private:
-    
     /**
      * Checks is a string valid for CS call.
      * @param aOriginal - String to be checked.
      * @return ETrue if string valid for CS call.
      */ 
     TBool IsValidGsmNumber( const TDesC& aOriginal ) const;
+      
+private:
     
     /**
      * Parses username part from sip uri.

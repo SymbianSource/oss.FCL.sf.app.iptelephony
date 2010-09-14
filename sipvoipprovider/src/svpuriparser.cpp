@@ -694,19 +694,10 @@ HBufC* CSVPUriParser::ParseDisplayNameL( const TDesC8& aRemoteParty )
     
     // Escape decode
     CSVPUriParser::EscapeDecodeSipUriL( utf8 );
-    
-    // Convert from UTF8 to unicode
-    HBufC* unicode16 = EscapeUtils::ConvertToUnicodeFromUtf8L( *utf8 );
-    CleanupStack::PopAndDestroy( utf8 ); // CS:0
-    CleanupStack::PushL( unicode16 ); // CS:1
-    HBufC8* unicode8 = HBufC8::NewL( unicode16->Length() );
-    ( unicode8->Des() ).Copy( *unicode16 );
-    CleanupStack::PopAndDestroy( unicode16 ); // CS:0
-    CleanupStack::PushL( unicode8 ); // CS:1
-    
+
     // Create SIP From header
-    CSIPFromHeader* originatorHdr = CSIPFromHeader::DecodeL( *unicode8 );
-    CleanupStack::PopAndDestroy( unicode8 ); // CS:0
+    CSIPFromHeader* originatorHdr = CSIPFromHeader::DecodeL( *utf8 );
+    CleanupStack::PopAndDestroy( utf8 ); // CS:0
     CleanupStack::PushL( originatorHdr ); // CS:1
     
     // Extract and parse display name, format is "..."
@@ -761,7 +752,18 @@ HBufC* CSVPUriParser::ParseDisplayNameL( const TDesC8& aRemoteParty )
 
     SVPDEBUG2( "CSVPUriParser::ParseDisplayNameL, display name: %S", 
         displayName )
-    return displayName;
+    
+    CleanupStack::PushL( displayName );
+    HBufC8* utf8DisplayName8 = HBufC8::NewL( displayName->Length() );
+    ( utf8DisplayName8->Des() ).Copy( *displayName );
+    CleanupStack::PopAndDestroy( displayName );
+
+    CleanupStack::PushL( utf8DisplayName8 ); 
+    // Convert from UTF8 to unicode
+    HBufC* unicodeDisplayName = EscapeUtils::ConvertToUnicodeFromUtf8L( *utf8DisplayName8 );
+    CleanupStack::PopAndDestroy(utf8DisplayName8);
+
+    return unicodeDisplayName;
     }
 
 // ---------------------------------------------------------------------------
@@ -782,18 +784,9 @@ HBufC* CSVPUriParser::ParseRemotePartyUriL( const TDesC8& aRemoteParty )
     // Escape decode
     CSVPUriParser::EscapeDecodeSipUriL( utf8 );
     
-    // Convert from UTF8 to unicode
-    HBufC* unicode16 = EscapeUtils::ConvertToUnicodeFromUtf8L( *utf8 );
-    CleanupStack::PopAndDestroy( utf8 ); // CS:0
-    CleanupStack::PushL( unicode16 ); // CS:1
-    HBufC8* unicode8 = HBufC8::NewL( unicode16->Length() );
-    ( unicode8->Des() ).Copy( *unicode16 );
-    CleanupStack::PopAndDestroy( unicode16 ); // CS:0
-    CleanupStack::PushL( unicode8 ); // CS:1
-    
     // Create SIP From header
-    CSIPFromHeader* originatorHdr = CSIPFromHeader::DecodeL( *unicode8 );
-    CleanupStack::PopAndDestroy( unicode8 ); // CS:0
+    CSIPFromHeader* originatorHdr = CSIPFromHeader::DecodeL( *utf8 );
+    CleanupStack::PopAndDestroy( utf8 ); // CS:0
     CleanupStack::PushL( originatorHdr ); // CS:1
         
     // Extract URI, returned without angle brackets
@@ -807,10 +800,9 @@ HBufC* CSVPUriParser::ParseRemotePartyUriL( const TDesC8& aRemoteParty )
         {
         uri8->Des().Delete( posSemiColon, uri8->Length() - posSemiColon );
         }
-
-    // Convert to 16-bit
-    HBufC* uri = HBufC::NewL( uri8->Length() );
-    ( uri->Des() ).Copy( *uri8 );
+    
+    // Convert from UTF8 to unicode
+    HBufC* uri = EscapeUtils::ConvertToUnicodeFromUtf8L( *uri8 );
     CleanupStack::PopAndDestroy( uri8 ); // CS:0
 
     // Handle anonymous

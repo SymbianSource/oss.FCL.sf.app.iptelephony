@@ -349,8 +349,10 @@ void CVccHoTrigger::GsmSignalChanged(
     TVccHoStatus hoStatus( EVccHoStateUnknown );
     iEngPsProperty->GetCurrentHoStatus( hoStatus );
     
-    if( hoStatus != EVccCsToPsHoStarted || hoStatus != EVccCsToPsHoInprogress 
-        || hoStatus != EVccPsToCsHoStarted || hoStatus != EVccPsToCsHoInprogress )
+    RUBY_DEBUG1( " hoStatus = %d ", hoStatus );
+    
+    if( hoStatus != EVccCsToPsHoStarted && hoStatus != EVccCsToPsHoInprogress 
+        && hoStatus != EVccPsToCsHoStarted && hoStatus != EVccPsToCsHoInprogress )
         {
         RUBY_DEBUG0( "HO not in progress,  updating keys" );
         TRAP_IGNORE( UpdatePsKeysL() );

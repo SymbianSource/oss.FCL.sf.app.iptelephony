@@ -438,33 +438,12 @@ void CCSCSettingsUiMainView::DynInitMenuPaneL(
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::DynInitMenuPaneL - begin" );
     
     if ( aMenuPane && R_CSCSETTINGSUI_MAINVIEW_MENU == aResourceId )
-        {
-        TMainListBoxItem listBoxItem = iContainer->CurrentItem();
-    
-        switch ( listBoxItem.iItem )
-            {
-            // Hide "Change" and show "Open"
-            case TMainListBoxItem::EServiceConn:
-                aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
-                aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, EFalse );
-                break;
-            // Show "Change" and hide "Open"
-            case TMainListBoxItem::EUsername:
-            case TMainListBoxItem::EPassword:
-            case TMainListBoxItem::EPreferredService:
-            case TMainListBoxItem::EVccPreferredService:
-            case TMainListBoxItem::EHandoverNotifTone:
-            case TMainListBoxItem::EAutoacceptInv:     
-            case TMainListBoxItem::EImTone:
-                aMenuPane->SetItemDimmed( ECSCSettingsUiChange, EFalse );
-                aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
-                break;   
-            // Hide both of options. Case should not be possible.       
-            default:
-                 aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
-                 aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
-            break;
-            }
+        {        
+        // Hide "Change" and "Open".
+        // Because there is no highlight now.
+        aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
+        aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
+           
         if ( !(iModel.CCHHandler().IsServiceDisabled( 
             iModel.CurrentSPEntryId() ) ) )
             {
