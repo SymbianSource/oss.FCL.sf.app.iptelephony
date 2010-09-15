@@ -567,6 +567,13 @@ class CNSmlDmVoIPAdapter : public CSmlDmAdapter
          */
         void VoipChildListL( CBufBase* const aCurrentURISegmentList );
 
+        /**
+         * Updates given profiles service id.
+         * @since S60 3.2
+         * @param aProfile Profile to update.
+         */
+        void UpdateServiceIdL( CRCSEProfileEntry* aProfile );
+        
     private:    // Data
 
         /**

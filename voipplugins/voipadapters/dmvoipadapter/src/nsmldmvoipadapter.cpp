@@ -4005,6 +4005,7 @@ void CNSmlDmVoIPAdapter::AddNodeObjectL(
         // Add new VoIP profile.
         TUint32 profileID = iCRCSEProfile->AddL( *newProfileEntry );
         newProfileEntry->iId = profileID;
+        UpdateServiceIdL( newProfileEntry );
         iProfileEntries.AppendL( newProfileEntry );
 
         // Add LUID mapping to first SettingIds of profile.
@@ -4087,7 +4088,7 @@ void CNSmlDmVoIPAdapter::AddNodeObjectL(
             iCRCSEProfile->UpdateL( iProfileEntries[iProfileID]->
                 iId, *iProfileEntries[iProfileID] );
             CleanupStack::Pop( newAudioCodecEntry );
-
+            UpdateServiceIdL( iProfileEntries[iProfileID] );
             // Add LUID mapping to new codecsettings entry.
             mappingInfo.Copy( KNSmlDMVoIPPrefix );
             TUint val( iProfileEntries[iProfileID]->iId );
@@ -4164,6 +4165,7 @@ void CNSmlDmVoIPAdapter::AddNodeObjectL(
             iCRCSEProfile->UpdateL( iProfileEntries[iProfileID]->iId, 
                 *iProfileEntries[iProfileID] );
             mappingInfo.Copy( KNSmlDMVoIPPrefix );
+            UpdateServiceIdL( iProfileEntries[iProfileID] );
             TUint val( iProfileEntries[iProfileID]->iId );
             mappingInfo.AppendNumFixedWidthUC( val, EDecimal, 10 );
             mappingInfo.Append( KNSmlDMVoIPSeparator );
@@ -5797,5 +5799,25 @@ MSmlDmAdapter::TError CNSmlDmVoIPAdapter::GetSnapUriL( TDes8& aObject,
     DBG_PRINT( "CNSmlDmVoIPAdapter::GetSnapUriL - end" );
     return status;
     }
-
+// ---------------------------------------------------------------------------
+// CNSmlDmVoIPAdapter::UpdateServiceIdL
+// Updates service id to our temp array.
+// ---------------------------------------------------------------------------
+//
+void CNSmlDmVoIPAdapter::UpdateServiceIdL( CRCSEProfileEntry* aProfile )
+    {
+    DBG_PRINT2("CNSmlDmVoIPAdapter::UpdateServiceIdL(): original service id : %d", 
+        aProfile->iServiceProviderId);
+        
+    CRCSEProfileEntry* profile = CRCSEProfileEntry::NewLC();
+    TRAPD( error, iCRCSEProfile->FindL( aProfile->iId, *profile ) );
+    DBG_PRINT2("CNSmlDmVoIPAdapter::UpdateServiceIdL(): error : %d", error);
+    if ( !error )
+        {
+        DBG_PRINT2("CNSmlDmVoIPAdapter::UpdateServiceIdL(): service id : %d", 
+            profile->iServiceProviderId);
+        aProfile->iServiceProviderId = profile->iServiceProviderId;
+        }
+    CleanupStack::PopAndDestroy( profile );
+    }
 // End of file.

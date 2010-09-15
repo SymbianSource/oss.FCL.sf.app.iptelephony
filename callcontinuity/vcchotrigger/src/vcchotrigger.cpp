@@ -366,12 +366,11 @@ void CVccHoTrigger::GsmSignalChanged(
     RUBY_DEBUG1( " -DoHoInHeldWaitingCalls=%x ", iPolicy.DoHoInHeldWaitingCalls() );  
     RUBY_DEBUG0( "0 = GOOD, 1 = WEAK, 2 = UNDEFINED" );
     
-    // If the previous class is the same as the new one
-    // - do nothing.
-    
-    if ( iPreviousGsmClass == iGsmClass && iWlanClass != ESignalClassWeak  )
+    // If the new one is the same with the previous class and not weak, do nothing. 
+    // Otherwise, the ho will be triggered.
+    if ( iPreviousGsmClass == iGsmClass && iGsmClass != ESignalClassWeak  )
         {
-        RUBY_DEBUG0( "No change in GSM signal class -> return" );
+        RUBY_DEBUG0( "No change in GSM signal class and it is not weak  -> return" );
     
         return;
         }
