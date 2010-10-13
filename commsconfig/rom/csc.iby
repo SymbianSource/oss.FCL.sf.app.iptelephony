@@ -22,15 +22,15 @@
 #define CSC_IBY__
 
 
-    file=ABI_DIR/BUILD_DIR/cscengine.dll      SHARED_LIB_DIR/cscengine.dll
-    file=ABI_DIR/BUILD_DIR/cscsettingsui.dll  SHARED_LIB_DIR/cscsettingsui.dll
+    file=ABI_DIR\BUILD_DIR\cscengine.dll      SHARED_LIB_DIR\cscengine.dll
+    file=ABI_DIR\BUILD_DIR\cscsettingsui.dll  SHARED_LIB_DIR\cscsettingsui.dll
 
-    DATA=DATAZ_/RESOURCE_FILES_DIR/cscengine.rsc RESOURCE_FILES_DIR/cscengine.rsc
+    DATA=DATAZ_\RESOURCE_FILES_DIR\cscengine.rsc RESOURCE_FILES_DIR\cscengine.rsc
 
     ECOM_PLUGIN( cscgsplugin.dll,2001E639.rsc )
 
 		// stub SIS, provides support for SIS upgrading
-		data=ZSYSTEM/install/commsconfig_stub.sis    System/Install/commsconfig_stub.sis
+		data=ZSYSTEM\install\commsconfig_stub.sis    System\Install\commsconfig_stub.sis
     ECOM_PLUGIN( cscsipvoipcleanupplugin.dll,2000B007.rsc )
 
     SCALABLE_IMAGE(APP_BITMAP_DIR,APP_BITMAP_DIR,CSC)

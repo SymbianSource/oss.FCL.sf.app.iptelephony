@@ -22,6 +22,6 @@
 #define __SIPCONNECTIONPROVIDER_IBY__
 
 ECOM_PLUGIN( sipconnectionprovider.dll, 1027545B.rsc )
-//data=ZSYSTEM/install/sipconnectionprovider_stub.sis System/Install/sipconnectionprovider_stub.sis
+//data=ZSYSTEM\install\sipconnectionprovider_stub.sis System\Install\sipconnectionprovider_stub.sis
 
 #endif // __SIPCONNECTIONPROVIDER_IBY__

@@ -21,14 +21,11 @@
 
 #include <cchuiobserver.h> // for dialog types
 #include <AknQueryDialog.h>
-#include <sipprofileregistryobserver.h>
 
 #include "cchuinotifier.h" // Base class
 #include "cchuicommon.hrh"
 #include "cchuicallstateobserver.h"
 
-class CSIPManagedProfile;
-class CSIPManagedProfileRegistry;
 class CCchUiPluginBrandingHandler;
 class CCchUiCallStateListener;
 
@@ -43,8 +40,7 @@ class CCchUiCallStateListener;
  *  @since S60 5.0
  */
 NONSHARABLE_CLASS( CCCHUiNotifierImpl ): public CCCHUiNotifierBase,
-                                         public MCchUiCallStateObserver,
-                                         public MSIPProfileRegistryObserver
+                                         public MCchUiCallStateObserver
     {
 public:
     
@@ -289,14 +285,6 @@ private:
      */
     TUint32 InternetGprsApsMissingFromServiceSnapL(
         CDesCArray& aIaps, RArray<TUint32>& aIapIds ) const;
-
-    /**
-     * For deleting RPointerArray in case of leave.
-     *
-     * @since S60 5.0
-     * @param aPointerArray for pointer array to be deleted
-     */
-     static void ResetAndDestroy( TAny* aPointerArray );
     
 // from base class CCCHUiNotifierBase
 
@@ -339,34 +327,6 @@ private:
      * From CActive
      */
     void RunL();
-    
-    
-    // from base class MSIPProfileRegistryObserver
-      
-    /** 
-     * From MSIPProfileRegistryObserver 
-     * SIP profile information event.
-     *
-     * @since S60 v3.0
-     * @param aProfileId is id for profile
-     * @param aEvent type of information event
-     */
-    void ProfileRegistryEventOccurred(
-        TUint32 aSIPProfileId, 
-        TEvent aEvent );
-
-          
-    /**
-     * From MSIPProfileRegistryObserver
-     * An asynchronous error has occurred related to SIP profile.
-     *
-     * @since S60 v3.0
-     * @param aSIPProfileId the id of failed profile 
-     * @param aError a error code
-     */
-     void ProfileRegistryErrorOccurred(
-         TUint32 aSIPProfileId,
-         TInt aError );
     
 public:
 
@@ -413,12 +373,6 @@ private: // data
      * Current connection IAP ID.
      */
     TUint iCurrentConnectionIapId;
-
-    /*
-     * Handle to SIP managed profile registry.
-     * Own.
-     */
-    CSIPManagedProfileRegistry* iSipProfileRegistry;
     
     CCHUI_UNIT_TEST( T_CchUiNotifierImpl )
     };

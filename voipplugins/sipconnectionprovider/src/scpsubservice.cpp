@@ -647,6 +647,12 @@ void CScpSubService::HandleConnectionEvent( TScpConnectionEvent aEvent )
             }
             break;
 
+        case EScpBandwidthLimited:
+            {
+            iSubServiceState->BandwidthLimited( *this );
+            }
+            break;
+
         case EScpAuthenticationFailed:
             {
             iSubServiceState->AuthenticationFailed( *this );
@@ -665,7 +671,13 @@ void CScpSubService::HandleConnectionEvent( TScpConnectionEvent aEvent )
             iSubServiceState->ServiceConnectionCanceled( *this );
             }
             break;
-                        
+            
+        case EScpBearerNotSupported:
+            {
+            iSubServiceState->BearerNotSupported( *this );
+            }
+            break;
+            
         case EScpRegistrationPending:
             {
             iSubServiceState->RegistrationPending( *this );

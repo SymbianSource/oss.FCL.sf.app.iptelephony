@@ -22,7 +22,7 @@
 
 // INCLUDES
 #include <e32base.h>
-#include <ccherror.h>
+#include <CchError.h>
 #include <cchtypes.h>
 // CONSTANTS
 const TUint KCCHMaxServiceNameLength  = 64; 
@@ -203,7 +203,7 @@ public:
     TFixedArray<TCCHSubservice, KCCHMaxSubservicesCount>    iSubservices;
     };
 
-#include "cchclientserver.inl"
+#include "CCHClientServer.inl"
 
 #endif // T_CCHCLIENTSERVER_H
 

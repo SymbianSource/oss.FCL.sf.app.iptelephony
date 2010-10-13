@@ -136,6 +136,16 @@ void TVccStateFailing::CheckAndMoveToInit(CVccPerformer& aContext, MCCPCall* aCa
            RUBY_DEBUG0( "Secondary call not exist - setting state to init");
            aContext.SetState(*iInit);
            }
+       
+ else  if ( aCall == aContext.SecondaryCall() )
+           {
+           if( aState == MCCPCallObserver::ECCPStateDisconnecting || 
+                   aState == MCCPCallObserver::ECCPStateIdle )
+               {
+               RUBY_DEBUG0( "Secondary call is disconnecting or idle - setting state to init");
+               aContext.SetState(*iInit);
+               }
+           }
      }
 
 // -----------------------------------------------------------------------------
@@ -154,8 +164,8 @@ void TVccStateFailing::InspectChangedStates (CVccPerformer& aContext,
 
     RUBY_DEBUG1("call state is: %d", aState);
     // Remote party has disconnected the call during the handover
-    if((aState == MCCPCallObserver::ECCPStateDisconnecting ||
-        aState == MCCPCallObserver::ECCPStateIdle) && aCall == aContext.SecondaryCall() )
+    if( aState == MCCPCallObserver::ECCPStateDisconnecting &&
+        aCall == aContext.SecondaryCall() )
         {
         ReleaseCall(aContext, *aContext.SecondaryCall(), *iInit, KVccHoNok );
         }

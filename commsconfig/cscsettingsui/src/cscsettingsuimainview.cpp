@@ -139,7 +139,7 @@ CCSCSettingsUiMainView::~CCSCSettingsUiMainView()
 
 // ---------------------------------------------------------------------------
 // CCSCSettingsUiMainView::UpdateSoftkeysL
-// Processes situation when itï¿½s notified that softkeys need to be changed.
+// Processes situation when it´s notified that softkeys need to be changed.
 // ---------------------------------------------------------------------------
 //
 void CCSCSettingsUiMainView::UpdateSoftkeysL( )
@@ -438,12 +438,33 @@ void CCSCSettingsUiMainView::DynInitMenuPaneL(
     CSCSETUIDEBUG( "CCSCSettingsUiMainView::DynInitMenuPaneL - begin" );
     
     if ( aMenuPane && R_CSCSETTINGSUI_MAINVIEW_MENU == aResourceId )
-        {        
-        // Hide "Change" and "Open".
-        // Because there is no highlight now.
-        aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
-        aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
-           
+        {
+        TMainListBoxItem listBoxItem = iContainer->CurrentItem();
+    
+        switch ( listBoxItem.iItem )
+            {
+            // Hide "Change" and show "Open"
+            case TMainListBoxItem::EServiceConn:
+                aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
+                aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, EFalse );
+                break;
+            // Show "Change" and hide "Open"
+            case TMainListBoxItem::EUsername:
+            case TMainListBoxItem::EPassword:
+            case TMainListBoxItem::EPreferredService:
+            case TMainListBoxItem::EVccPreferredService:
+            case TMainListBoxItem::EHandoverNotifTone:
+            case TMainListBoxItem::EAutoacceptInv:     
+            case TMainListBoxItem::EImTone:
+                aMenuPane->SetItemDimmed( ECSCSettingsUiChange, EFalse );
+                aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
+                break;   
+            // Hide both of options. Case should not be possible.       
+            default:
+                 aMenuPane->SetItemDimmed( ECSCSettingsUiChange, ETrue );
+                 aMenuPane->SetItemDimmed( ECSCSettingsUiOpen, ETrue );
+            break;
+            }
         if ( !(iModel.CCHHandler().IsServiceDisabled( 
             iModel.CurrentSPEntryId() ) ) )
             {
@@ -888,16 +909,10 @@ void CCSCSettingsUiMainView::HandleReturnToPreviousViewL( TBool aViewBack )
             ActivateViewL( idleId );
             AppUi()->HandleCommandL( EEikCmdExit );
             }
-        else if( !iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
+        else if( ( !iDeleted && KCSCServiceViewId != iModel.ReturnViewId() )
+        	  || ( !aViewBack && !iDeleted && KCSCServiceViewId == iModel.ReturnViewId() ) )
             {
-            // Launched from phonebookview.
-            // Press cancel button, return current view.
-            TUid curview = Id();
-            AppUi()->ActivateLocalViewL( curview );
-            }
-        else if( !aViewBack && !iDeleted && KCSCServiceViewId == iModel.ReturnViewId() )
-            {
-            // Launched from service view.
+            // Launched from phonebookview or service view.
             // Press cancel button, return current view.
             TUid curview = Id();
             AppUi()->ActivateLocalViewL( curview );

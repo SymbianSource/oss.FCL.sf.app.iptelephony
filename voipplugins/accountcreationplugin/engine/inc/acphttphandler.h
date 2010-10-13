@@ -279,12 +279,6 @@ private: // data
     TBool iPromptShown;
     
     /**
-     * The flag indicates whether the cancellation from end user is sponsored
-     * when opening the connection of downloading or not.
-     */ 
-    TBool iCancelRequest;
-    
-    /**
      * Selected IAP id.
      */
     TUint32 iIapId;

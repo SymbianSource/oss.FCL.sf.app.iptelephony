@@ -22,8 +22,8 @@
 #include <spproperty.h>
 #include <spsettingsvoiputils.h>
 #include <pressettingsapi.h>
-#include <XdmSettingsApi.h>
-#include <XdmSettingsCollection.h>
+#include <xdmsettingsapi.h>
+#include <xdmsettingscollection.h>
 
 #include "scpsettinghandler.h"
 #include "scpservice.h"
@@ -1007,6 +1007,41 @@ TInt CScpSettingHandler::UahStringLengthL(
     
     CleanupStack::PopAndDestroy( &entries );
     return length;
+    }
+
+// -----------------------------------------------------------------------------
+// CScpSettingHandler::IsVoIPOverWcdmaAllowedL
+// -----------------------------------------------------------------------------
+//
+TBool CScpSettingHandler::IsVoIPOverWcdmaAllowedL( 
+    TUint32 aServiceId ) const
+    {
+    SCPLOGSTRING( "CScpSettingHandler::IsVoIPOverWcdmaAllowedL IN" );
+
+    TBool response( EFalse );
+    RPointerArray<CRCSEProfileEntry> entries;
+
+    // Push entries to cleanup stack
+    CleanupStack::PushL( TCleanupItem( TScpUtility::ResetAndDestroyEntries, 
+                                       &entries ) );
+
+    iRcseProfileRegistry->FindByServiceIdL( aServiceId, entries );
+    
+    if ( entries.Count() )
+        {            
+        response = CRCSEProfileEntry::EOn == entries[ 0 ]->iAllowVoIPoverWCDMA;
+        }
+    else
+        {
+        User::Leave( KErrNotFound );
+        }
+    
+    CleanupStack::PopAndDestroy( &entries );
+    
+    SCPLOGSTRING2( 
+        "CScpSettingHandler::IsVoIPOverWcdmaAllowedL : allowed : %d OUT", 
+            response );
+    return response;
     }
 
 // -----------------------------------------------------------------------------

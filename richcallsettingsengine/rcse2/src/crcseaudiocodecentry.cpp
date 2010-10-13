@@ -268,7 +268,7 @@ EXPORT_C void CRCSEAudioCodecEntry::SetDefaultCodecValueSet( TPtrC aCodecType )
         iJitterBufferSize         = KRCSEDefaultJitterBufferSize;
         iOctetAlign               = EOff;
         iModeSet.Reset();
-        iModeChangePeriod         = KNotSet;
+        iModeChangePeriod         = 2;
         iModeChangeNeighbor       = EOn;
         iPtime                    = 20;
         iMaxptime                 = KRCSEDefaultMaxptime;

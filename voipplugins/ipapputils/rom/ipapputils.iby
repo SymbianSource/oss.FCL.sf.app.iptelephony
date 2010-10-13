@@ -19,7 +19,7 @@
 #ifndef IPAPPUTILS_IBY
 #define IPAPPUTILS_IBY
 
-file=ABI_DIR/BUILD_DIR/ipapputils.dll  SHARED_LIB_DIR/ipapputils.dll
+file=ABI_DIR\BUILD_DIR\ipapputils.dll  SHARED_LIB_DIR\ipapputils.dll
 
 
 #endif // IPAPPUTILS_IBY

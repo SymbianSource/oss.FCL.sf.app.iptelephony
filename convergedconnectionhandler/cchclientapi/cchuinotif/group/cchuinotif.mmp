@@ -69,7 +69,6 @@ LIBRARY                 eiksrvui.lib
 LIBRARY                 bsclient.lib
 LIBRARY                 cmmanager.lib
 LIBRARY                 commonengine.lib
-LIBRARY                 sipprofilecli.lib
 LIBRARY                 centralrepository.lib
 LIBRARY                 aknnotifierwrapper.lib
 LIBRARY                 serviceprovidersettings.lib

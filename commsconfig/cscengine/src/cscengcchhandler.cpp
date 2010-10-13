@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2007-2010 Nokia Corporation and/or its subsidiary(-ies).
+* Copyright (c) 2007-2007 Nokia Corporation and/or its subsidiary(-ies).
 * All rights reserved.
 * This component and the accompanying materials are made available
 * under the terms of "Eclipse Public License v1.0"
@@ -140,10 +140,9 @@ EXPORT_C TBool CCSCEngCCHHandler::IsServiceValidL( TInt aServiceId )
 EXPORT_C void CCSCEngCCHHandler::SupportedSubServicesL( 
     TInt aServiceId, TSupportedSubServices& aSupSubServices )
     {
-    // Create new cch client for access the latest service info data.
     CCchService* service = 
-        CCch::NewLC()->GetService( aServiceId );
-
+               iCchClientApi->GetService( aServiceId );
+        
     TBool supported( EFalse );
     
     if ( service )
@@ -160,9 +159,7 @@ EXPORT_C void CCSCEngCCHHandler::SupportedSubServicesL(
         service->IsSupported( ECCHVMBxSub, supported );
         aSupSubServices.iVmbx = supported;
         }
-    
-    CleanupStack::PopAndDestroy(); // cch
-    
+        
     CSCENGDEBUG2( 
             "CCSCEngCCHHandler::SupportedSubServicesL VoIP=%d", 
                 aSupSubServices.iVoIP );

@@ -28,7 +28,6 @@
 #include <csxhelp/voip.hlp.hrh>
 #include <csc.rsg>
 #include <aknnotedialog.h>
-#include <aknnotewrappers.h>
 
 #include "cscconstants.h"
 #include "cscsettingsui.hrh"
@@ -893,39 +892,18 @@ TBool CCSCSettingsUiMainContainer::DeleteServiceL()
     CleanupStack::PopAndDestroy( string );
     CleanupStack::Pop( query );
     if ( query->RunLD() )
-        {  
-        // Checke whether current service is disabled.
-        TBool  disabled = iModel.CCHHandler().IsServiceDisabled( iModel.CurrentSPEntryId() );
-        // The current service is deleted directly if the service is disabled.
-        if ( disabled )
-            {            
-            // First check if there is a service plugin UID.
-            TInt count = iModel.ServicePluginHandler().PluginCount( 
-                    CCSCEngServicePluginHandler::EInitialized );
+        {
+        // First check if there is a service plugin UID.
+        TInt count = iModel.ServicePluginHandler().PluginCount( 
+            CCSCEngServicePluginHandler::EInitialized );
 
-            TRAPD( err, LaunchCleanupPluginL( iModel.CurrentSPEntryId() ) );
-            if ( KErrNone != err )
-                {
-                iModel.SettingsHandler().DeleteServiceL( 
-                        iModel.CurrentSPEntryId() );
-                }
-            isDelete = ETrue;                  
-            }
-        else
+        TRAPD( err, LaunchCleanupPluginL( iModel.CurrentSPEntryId() ) );
+        if ( KErrNone != err )
             {
-            // A note that indicates unable to delete service is shown if the service is enabled.
-            HBufC* string = NULL;
-            string = StringLoader::LoadL( 
-                            R_QTN_CSC_UNABLE_TO_DELETE_NOTE,
-                            iModel.SettingsHandler().ServiceNameL( iModel.CurrentSPEntryId() ) );
-            if ( string )
-                {
-                CleanupStack::PushL( string );   
-                CAknInformationNote* note = new ( ELeave ) CAknInformationNote( ETrue );
-                note->ExecuteLD( *string );
-                CleanupStack::PopAndDestroy( string );
-                }         
+            iModel.SettingsHandler().DeleteServiceL( 
+                iModel.CurrentSPEntryId() );
             }
+        isDelete = ETrue;
         }
 
     CSCSETUIDEBUG( "CCSCSettingsUiMainContainer::DeleteServiceL - end" );

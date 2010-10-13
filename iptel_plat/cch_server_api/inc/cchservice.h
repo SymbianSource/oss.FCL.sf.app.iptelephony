@@ -25,7 +25,7 @@
 #include <ecom/ecom.h>
 #include <cchclientserver.h>
 
-#include "cchserviceobserver.h"
+#include "CCHServiceObserver.h"
 
 
 // CONSTANTS
@@ -235,7 +235,7 @@ protected: // Constructors
     
     };
 
-#include "cchservice.inl"
+#include "CCHService.inl"
 
 #endif // C_CCHSERVICE_H
 

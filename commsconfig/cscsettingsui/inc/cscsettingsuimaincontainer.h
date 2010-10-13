@@ -132,6 +132,7 @@ public:
      * Deletes the service in hand.
      *
      * @since S60 v5.2
+     * @return ETrue if delete the service, EFalse if not delete the service.
      */
     TBool DeleteServiceL();
 

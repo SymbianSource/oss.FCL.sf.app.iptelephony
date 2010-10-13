@@ -40,7 +40,7 @@
 // ---------------------------------------------------------------------------
 //
 CAcpHttpHandler::CAcpHttpHandler( MAcpHttpHandlerObserver& aObserver )
-    : CActive( CActive::EPriorityStandard ), iObserver( aObserver ), iCancelRequest( EFalse )
+    : CActive( CActive::EPriorityStandard ), iObserver( aObserver )
     {
     CActiveScheduler::Add( this );
     }
@@ -311,7 +311,6 @@ void CAcpHttpHandler::CancelTransaction()
     if ( !iTransactionRunning )
         {
         ACPLOG( "CAcpHttpHandler::CancelTransaction end (not running)" );
-        iCancelRequest = ETrue;
         return;
         }
     
@@ -496,7 +495,7 @@ void CAcpHttpHandler::MHFRunL(
                 iConnectionOpen = EFalse;
                 iSession.Close();
                 iConnection.Close();
-                iSocketServer.Close();
+                
                 // Reopen session.
                 iSession.OpenL();
                 }
@@ -522,7 +521,7 @@ TInt CAcpHttpHandler::MHFRunError(
     iConnectionOpen = EFalse;
     iSession.Close();
     iConnection.Close();
-    iSocketServer.Close();
+    
     // Reopen session.
     TRAP_IGNORE( iSession.OpenL() );
     
@@ -560,18 +559,9 @@ void CAcpHttpHandler::RunL()
             iConnectionOpen = ETrue;
             }
         
-        // If the cancel button is pressed by the end user during the period of connection-opening,
-        // transaction need not to be submitted. Otherwise, need to be submitted.
-        if ( iCancelRequest )
-            {
-            iCancelRequest = EFalse;     
-            }
-        else
-            {
-            // Submit the first transaction. Further transactions are submitted
-            // in GetDataL.
-            SubmitTransactionL();
-            }
+        // Submit the first transaction. Further transactions are submitted
+        // in GetDataL.
+        SubmitTransactionL();
         }
     else
         {

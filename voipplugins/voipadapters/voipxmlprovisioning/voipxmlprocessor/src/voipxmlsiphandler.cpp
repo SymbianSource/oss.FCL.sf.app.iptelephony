@@ -383,11 +383,6 @@ TInt CVoipXmlSipHandler::StoreSettings()
         tempBuf.Append( KTransport() );
         tempBuf.Append( KTcp() );
         }
-    else if ( ETls == iProxyTransport )
-        {
-        tempBuf.Append( KTransport() );
-        tempBuf.Append( KTls() );
-        }
     if ( iLr )
         {
         tempBuf.Append( KLr() );
@@ -421,11 +416,6 @@ TInt CVoipXmlSipHandler::StoreSettings()
         {
         tempBuf.Append( KTransport() );
         tempBuf.Append( KTcp() );
-        }
-    else if ( ETls == iProxyTransport )
-        {
-        tempBuf.Append( KTransport() );
-        tempBuf.Append( KTls() );
         }
     if ( iRegistrarUri->Des().MaxLength() >= 
         ( iRegistrarUri->Des().Length() + tempBuf.Length() ) )
@@ -596,10 +586,6 @@ CVoipXmlSipHandler::TTransportType CVoipXmlSipHandler::ValidateTransport(
     else if ( 0 == value.Compare( KTcp() ) )
         {
         return ETcp;
-        }
-    else if ( 0 == value.Compare( KTls() ) )
-        {
-        return ETls;
         }
     else
         {

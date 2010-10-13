@@ -20,7 +20,7 @@
 #define CCHSERVICE_INL
 
 //INCLUDES
-#include "cchserviceobserver.h"
+#include "CCHServiceObserver.h"
 
 // ---------------------------------------------------------------------------
 // CCchService::CCchService 

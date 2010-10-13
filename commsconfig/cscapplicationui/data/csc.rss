@@ -307,10 +307,10 @@ RESOURCE LOCALISABLE_APP_INFO r_csc_localisable_app_info
         caption = qtn_set_folder_conn_service_configurator;
 #ifdef __SCALABLE_ICONS
         number_of_icons = 1;
-        icon_file = "//resource//apps//csc_aif.mif";        
+        icon_file = "\\resource\\apps\\csc_aif.mif";        
 #else
         number_of_icons = 2;
-        icon_file = "//resource//apps//csc_aif.mbm";        
+        icon_file = "\\resource\\apps\\csc_aif.mbm";        
 #endif // __SCALABLE_ICONS
         };
     }

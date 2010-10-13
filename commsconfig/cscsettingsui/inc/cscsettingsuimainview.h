@@ -177,6 +177,8 @@ private:
      * Handles returning to previous view where settingsui was launced.
      *
      * @since S60 v5.0
+     * @param aViewBack for checking if back the view,
+     * ETrue if back the view, EFalse if not.
      */
     void HandleReturnToPreviousViewL( TBool aViewBack = ETrue );
 

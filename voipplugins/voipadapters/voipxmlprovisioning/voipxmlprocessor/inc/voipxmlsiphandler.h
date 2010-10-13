@@ -48,8 +48,7 @@ public:
         {
         EAutomatic = 0,
         EUdp,
-        ETcp,
-        ETls
+        ETcp
         };
 public:
 

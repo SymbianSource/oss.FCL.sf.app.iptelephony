@@ -21,15 +21,15 @@
 
 
 //Server EXE
-file=ABI_DIR/BUILD_DIR/CCHServer.exe    PROGRAMS_DIR/CCHServer.exe
+file=ABI_DIR\BUILD_DIR\CCHServer.exe    PROGRAMS_DIR\CCHServer.exe
 
 //Client DLL
-file=ABI_DIR/BUILD_DIR/CCHClient.dll   SHARED_LIB_DIR/CCHClient.dll
+file=ABI_DIR\BUILD_DIR\CCHClient.dll   SHARED_LIB_DIR\CCHClient.dll
 
-file=ABI_DIR/BUILD_DIR/cch.dll				 SHARED_LIB_DIR/cch.dll
+file=ABI_DIR\BUILD_DIR\cch.dll				 SHARED_LIB_DIR\cch.dll
 
 // CCH UI components
 ECOM_PLUGIN(cchuinotifwrapper.dll,	1020E567.RSC)
-file=ABI_DIR/BUILD_DIR/cchuinotif.dll      SHARED_LIB_DIR/cchuinotif.dll
+file=ABI_DIR\BUILD_DIR\cchuinotif.dll      SHARED_LIB_DIR\cchuinotif.dll
 
 #endif // CCH_IBY

@@ -21,6 +21,6 @@
 
 #include <bldvariant.hrh>
 
-data=DATAZ_/RESOURCE_FILES_DIR/wpvoipadapter.rsc        RESOURCE_FILES_DIR/wpvoipadapter.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\wpvoipadapter.rsc        RESOURCE_FILES_DIR\wpvoipadapter.rsc
 
 #endif // __WPVOIPADAPTERRESOURCES_IBY__

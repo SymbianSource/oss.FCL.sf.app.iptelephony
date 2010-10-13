@@ -107,8 +107,7 @@ void CSvtMatching::InitializeL(
 //
 TInt CSvtMatching::GetAddressForMatching( 
     RBuf& aParsedAddress, 
-    TInt& aMeaningfulDigits,
-    TBool& aAllowUserNameMatch )
+    TInt& aMeaningfulDigits )
     {
     if( iServiceId == 0 || !iOriginalAddress )
         {
@@ -128,31 +127,8 @@ TInt CSvtMatching::GetAddressForMatching(
         if ( KErrNone == ret )
             {
             aMeaningfulDigits = iSettingsHandler->MeaningfulDigits();
-            
-            switch ( iSettingsHandler->IgnoreDomainPartValue() )
-                {
-                case 1:
-                    {
-                    aAllowUserNameMatch = EFalse;
-                    if ( iUriParser->IsValidGsmNumber( aParsedAddress ) )
-                        {
-                        aAllowUserNameMatch = ETrue;
-                        }
-                    }
-                    break;
-                case 2:
-                    {
-                    aAllowUserNameMatch = ETrue;
-                    }
-                    break;
-                case 0:
-                default:
-                    aAllowUserNameMatch = EFalse;
-                    break;
-                }
-            }     
-        }
-    
+            }
+        }        
     return ret;
     }
 

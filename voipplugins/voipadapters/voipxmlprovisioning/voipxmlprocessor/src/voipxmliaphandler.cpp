@@ -522,16 +522,9 @@ void CVoipXmlIapHandler::StoreSettingsL()
         // Get destination ID's for checking if name to be set is reserved.
         CleanupClosePushL( destinationIds ); // CS:3
         cmm.AllDestinationsL( destinationIds );
-        HBufC* newName = HBufC::NewLC( KMaxDestinationNameLength + KSpaceForParenthesis ); // CS:4
-        if( iDestinationName->Des().Length() >= KMaxDestinationNameLength )
-            {
-            newName->Des().Copy( iDestinationName->Left( KMaxDestinationNameLength ) );
-            }
-        else
-            {
-            newName->Des().Copy( iDestinationName->Des() );
-            }
-        
+        HBufC* newName = HBufC::NewLC( KMaxNodeNameLength ); // CS:4
+        newName->Des().Copy( iDestinationName->Des() );
+
         // Check that name is unique.
         const TInt destinationCount = destinationIds.Count();
         for ( TInt counter = 0; counter < destinationCount; counter++ )
@@ -545,14 +538,7 @@ void CVoipXmlIapHandler::StoreSettingsL()
                 {
                 // If the name is changed we need to begin the comparison
                 // again from the first profile.
-                if ( iDestinationName->Des().Length() >= KMaxDestinationNameLength )
-                    {
-                    newName->Des().Copy( iDestinationName->Left( KMaxDestinationNameLength ) );
-                    }
-                else
-                    {
-                    newName->Des().Copy( iDestinationName->Des() );
-                    }
+                newName->Des().Copy( iDestinationName->Des() );
                 newName->Des().Append( KOpenParenthesis() );
                 newName->Des().AppendNum( i );
                 newName->Des().Append( KClosedParenthesis() );  
@@ -585,37 +571,6 @@ void CVoipXmlIapHandler::StoreSettingsL()
         // &newDestination, newName, &destinationIds
         CleanupStack::PopAndDestroy( 3, &destinationIds ); // CS:2
         }
-    
-    // no destination name is defined.
-    else 
-        {
-        RArray<TUint32> destinationIds;
-        CleanupClosePushL( destinationIds ); // CS:3
-        cmm.AllDestinationsL( destinationIds );
-        const TInt count = destinationIds.Count();
-        for (TInt counter = 0; counter < count ; counter ++)     
-            {
-            RCmDestinationExt destination = cmm.DestinationL( destinationIds[counter] );
-            CleanupClosePushL( destination ); // CS:4
-            if ( destination.MetadataL(
-                    CMManager::ESnapMetadataPurpose) == CMManager::ESnapPurposeInternet )
-               {
-               const TInt cmCount = iapIds.Count();
-               for ( TInt i = 0; i < cmCount; i++ ) 
-                   {
-                   RCmConnectionMethodExt connection = cmm.ConnectionMethodL(iapIds[i] );
-                   CleanupClosePushL( connection );
-                   destination.AddConnectionMethodL(connection );
-                   CleanupStack::PopAndDestroy( &connection );
-               }
-           } 
-           destination.UpdateL();
-           CleanupStack::PopAndDestroy( &destination ); // CS:3
-           CleanupStack::PopAndDestroy( &destinationIds ); // CS:2
-           break;
-           }
-        }
-    
     // &iapIds, &cmm
     CleanupStack::PopAndDestroy( 2, &cmm ); // CS:0
     }

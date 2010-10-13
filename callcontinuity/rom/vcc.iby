@@ -22,9 +22,9 @@
 
 #include <data_caging_paths_for_iby.hrh>
 
-file=ABI_DIR/BUILD_DIR/vccutils.dll 			SHARED_LIB_DIR/vccutils.dll
+file=ABI_DIR\BUILD_DIR\vccutils.dll 			SHARED_LIB_DIR\vccutils.dll
 // Stub sis
-data=ZSYSTEM/install/vcc_stub.sis 			System/Install/vcc_stub.sis
+data=ZSYSTEM\install\vcc_stub.sis 			System\Install\vcc_stub.sis
 
 // wpvccprovisioning
 ECOM_PLUGIN(wpvccadapter.dll,wpvccadapter.rsc)
@@ -33,10 +33,10 @@ ECOM_PLUGIN(wpvccadapter.dll,wpvccadapter.rsc)
 ECOM_PLUGIN(nsmldmvccadapter.dll,nsmldmvccadapter.rsc)
 
 // vcchotrigger
-file=ABI_DIR/BUILD_DIR/vcchotrigger.dll        		SHARED_LIB_DIR/vcchotrigger.dll
+file=ABI_DIR\BUILD_DIR\vcchotrigger.dll        		SHARED_LIB_DIR\vcchotrigger.dll
 
 ECOM_PLUGIN( vccperformer.dll, vccperformer.rsc )
 
-file=ABI_DIR/BUILD_DIR/vccuipropertyhandler.dll     	SHARED_LIB_DIR/vccuipropertyhandler.dll
+file=ABI_DIR\BUILD_DIR\vccuipropertyhandler.dll     	SHARED_LIB_DIR\vccuipropertyhandler.dll
 
 #endif // VCC_IBY

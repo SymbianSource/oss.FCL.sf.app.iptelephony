@@ -21,7 +21,7 @@
 #include <CWPAdapter.h>
 #include <CWPCharacteristic.h>
 #include <CWPParameter.h>
-#include <wpvoipadapter.rsg>
+#include <WPVoIPAdapter.rsg>
 #include <WPAdapterUtil.h> // Adapter utils
 #include <s32mem.h>        // RDesWriteStream
 #include <s32strm.h>

@@ -20,9 +20,9 @@
 #define RCSE_IBY
 
 
-file=ABI_DIR/BUILD_DIR/RCSE.dll SHARED_LIB_DIR/RCSE.dll
-data=ZPRIVATE/100012a5/policy/10202869.SPD PRIVATE/100012a5/policy/10202869.SPD
-data=ZPRIVATE/10202869/backup_registration.xml private/10202869/backup_registration.xml
+file=ABI_DIR\BUILD_DIR\RCSE.dll SHARED_LIB_DIR\RCSE.dll
+data=ZPRIVATE\100012a5\policy\10202869.SPD PRIVATE\100012a5\policy\10202869.SPD
+data=ZPRIVATE\10202869\backup_registration.xml private\10202869\backup_registration.xml
 
 
 #endif // RCSE_IBY

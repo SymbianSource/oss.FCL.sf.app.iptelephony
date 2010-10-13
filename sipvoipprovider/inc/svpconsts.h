@@ -116,7 +116,6 @@ _LIT8( KSVPRightBracketMark, ">");
 _LIT( KSVPRightBracketMark2, ">" );
 _LIT8( KSVPAuthidentity, "?X-Sipx-Authidentity=");
 _LIT8( KSVPAuthidentity2, "?X-sipX-Authidentity=");
-_LIT8( KSVPAuthidentity3, "&X-sipX-Authidentity=");
 
 // uri length
 const TUint KSVPMaxUriLength = 100;
@@ -223,7 +222,7 @@ _LIT8( KSVPMessageSipfrag, "message/sipfrag;version=2.0");
 _LIT8( KSVPSubsStateTerminated,   "Subscription-State: terminated;reason=noresource");
 
 _LIT( KSVPS60,"S60" );
-_LIT( KSVPCopyright, "?" );
+_LIT( KSVPCopyright, "©" );
 _LIT(KSVPSalesModelFileName, "\\resource\\versions\\model.txt");
 
 // Emergency constants

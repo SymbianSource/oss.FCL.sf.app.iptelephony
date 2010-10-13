@@ -20,6 +20,6 @@
 
 #include <bldvariant.hrh>
 
-data=DATAZ_/RESOURCE_FILES_DIR/accountcreationplugin.rsc RESOURCE_FILES_DIR/accountcreationplugin.rsc
+data=DATAZ_\RESOURCE_FILES_DIR\accountcreationplugin.rsc RESOURCE_FILES_DIR\accountcreationplugin.rsc
 
 #endif // ACCOUNTCREATIONPLUGINRESOURCES_IBY

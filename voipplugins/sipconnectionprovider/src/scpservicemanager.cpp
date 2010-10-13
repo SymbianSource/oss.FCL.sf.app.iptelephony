@@ -36,8 +36,6 @@ const TInt KUsernameMaxLength = 255;
 const TInt KDomainMaxLength = 255;
 const TInt KTempBufMaxLength = 255;
 
-const TUint32 KBearerWlanOnly = 1;
-
 #ifdef _DEBUG
 const TInt KDebugInfoMaxLength = 255;
 #endif
@@ -1024,25 +1022,21 @@ void CScpServiceManager::SetUsernameAndPasswordToXdmL(
 //
 void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
     {
-    TBool sipConnectionCreated( EFalse );
-    CScpSipConnection* sipConnection = GetSipConnectionL( 
+    if ( !iSettingHandler->IsVoIPOverWcdmaAllowedL( aServiceId ) )
+        {
+        SCPLOGSTRING( "CScpServiceManager::CheckRestrictedConnectionsL WCDMA not allowed" );
+        
+        TBool sipConnectionCreated( EFalse );
+        CScpSipConnection* sipConnection = GetSipConnectionL( 
                                                     aServiceId,
                                                     ECCHVoIPSub, 
                                                     sipConnectionCreated );
         
-    if( sipConnectionCreated )
-        {
-        CleanupStack::PushL( sipConnection );
-        }
-    // Check bearer filttering setting from sip
-    TUint32 bearerFilttering( 0 );
-    TInt err = sipConnection->BearerFiltteringSetting( bearerFilttering );
+        if( sipConnectionCreated )
+            {
+            CleanupStack::PushL( sipConnection );
+            }
         
-    SCPLOGSTRING2( "CScpServiceManager::CheckAvailableConnectionsL bearerFilttering = %d", bearerFilttering );
-    
-    if ( ( KErrNone == err ) && ( KBearerWlanOnly == bearerFilttering ) )
-        {
-        SCPLOGSTRING( "CScpServiceManager::CheckAvailableConnectionsL WLAN only" );
         TUint32 snapId( KErrNone );
         sipConnection->GetSnap( snapId );
         
@@ -1095,7 +1089,10 @@ void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
         CleanupStack::PopAndDestroy( &cmm );
         CleanupStack::PopAndDestroy( &iaps );
         
-        
+        if( sipConnectionCreated )
+            {
+            CleanupStack::PopAndDestroy( sipConnection );
+            }
         
         if ( !available && wlanIapFound )
             {
@@ -1106,11 +1103,6 @@ void CScpServiceManager::CheckRestrictedConnectionsL( TUint aServiceId )
             {
             User::Leave( KCCHErrorAccessPointNotDefined );
             }
-        } 
-    
-    if( sipConnectionCreated )
-        {
-        CleanupStack::PopAndDestroy( sipConnection );
         }
     }
     
